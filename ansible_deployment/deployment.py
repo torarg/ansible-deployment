@@ -13,10 +13,10 @@ class Deployment:
         self.playbook = Playbook(self.path / 'playbook.yml', 'all', roles)
 
     def _create_role_objects(self, roles):
-        roles = []
+        parsed_roles = []
         for role_name in roles:
-            roles.append(Role(self.roles_path / role_name))
-        return roles
+            parsed_roles.append(Role(self.roles_path / role_name))
+        return parsed_roles
 
             
     def _create_deployment_directories(self):
