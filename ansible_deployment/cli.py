@@ -1,6 +1,6 @@
 import click
 from pathlib import Path
-from deployment import Deployment
+from ansible_deployment.deployment import Deployment
 
 @click.group()
 @click.version_option()
