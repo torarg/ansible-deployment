@@ -22,7 +22,7 @@ setuptools.setup(
     ],
     python_requires='>=3.6',
     entry_points={
-        'console_scripts': ['ansible_deployment=ansible_deployment.cli:cli']
+        'console_scripts': ['ansible-deployment=ansible_deployment.cli:main']
     },
     install_requires=['jinja2', 'PyYAML', 'click'],
     include_package_data=True
