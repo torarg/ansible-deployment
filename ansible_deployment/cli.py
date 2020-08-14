@@ -16,7 +16,7 @@ def init(roles, ansible_roles_dir):
     ansible_roles_path = Path(ansible_roles_dir)
     deployment_path = Path.cwd()
     deployment = Deployment(deployment_path, ansible_roles_path, roles)
-    deployment.initialie_deployment_directory()
+    deployment.initialize_deployment_directory()
 
 if __name__ == '__main__':
     cli(auto_envvar_prefix='AD')
