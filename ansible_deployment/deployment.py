@@ -15,7 +15,7 @@ class Deployment:
     def _create_role_objects(self, roles):
         roles = []
         for role_name in roles:
-            roles.append(Role(self.path / role_name))
+            roles.append(Role(self.roles_path / role_name))
         return roles
 
             
