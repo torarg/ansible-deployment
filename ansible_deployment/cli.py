@@ -1,6 +1,7 @@
 import click
 from pathlib import Path
 from ansible_deployment.deployment import Deployment
+from ansible_deployment.helpers import save_object, load_object
 
 @click.group()
 @click.version_option()
@@ -17,6 +18,14 @@ def init(roles, ansible_roles_dir):
     deployment_path = Path.cwd()
     deployment = Deployment(deployment_path, ansible_roles_path, roles)
     deployment.initialize_deployment_directory()
+    save_object(deployment, deployment_path / '.deployment.state')
+
+@cli.command()
+def show():
+    deployment_state_path = Path.cwd() / '.deployment.state'
+    deployment = load_object(deployment_state_path)
+    print(deployment.__dict__)
+    
 
 def main():
     cli(auto_envvar_prefix='AD')
