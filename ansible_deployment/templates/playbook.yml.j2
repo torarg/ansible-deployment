@@ -2,6 +2,7 @@
 - hosts: {{ playbook.hosts }}
   tasks:
 {% for role in playbook.roles %}
-  - include_role:
-    name: {{ role.name }}
+  - name: include role {{ role.name }}
+    include_role:
+        name: {{ role.name }}
 {% endfor %}
