@@ -37,6 +37,9 @@ class Role:
         self.meta = self._parse_role_sub_directory('meta')
 
 
+    def __repr__(self):
+        return 'Role({})'.format(self.name)
+
     def _parse_yaml_file(self, file_path):
         """
         Parses a given yaml_file.

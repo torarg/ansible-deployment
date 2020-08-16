@@ -13,11 +13,8 @@ class Deployment:
         self.roles = self._create_role_objects(roles)
         self.playbook = Playbook(self.path / 'playbook.yml', 'all', self.roles)
 
-    def __str__(self):
-        return 'Deployment({})'.format(self.__dict__)
-
     def __repr__(self):
-        return self.__dict__
+        return 'Deployment({})'.format(self.__dict__)
 
 
     def _create_role_objects(self, roles):
