@@ -26,6 +26,12 @@ def show():
     deployment_state_path = Path.cwd() / '.deployment.state'
     deployment = load_object(deployment_state_path)
     pprint(deployment.__dict__)
+
+@cli.command()
+def delete():
+    deployment_state_path = Path.cwd() / '.deployment.state'
+    deployment = load_object(deployment_state_path)
+    deployment.delete()
     
 
 def main():

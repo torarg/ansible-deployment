@@ -2,9 +2,11 @@ from pathlib import Path
 from ansible_deployment.role import Role
 from ansible_deployment.playbook import Playbook
 import yaml
+import shutil
 
 class Deployment:
     directory_layout = ['host_vars', 'group_vars', 'roles']
+    deployment_files = ['playbook.yml', '.deployment.state']
 
     def __init__(self, deployment_path, roles_path, roles):
         self.path = Path(deployment_path)
@@ -50,3 +52,12 @@ class Deployment:
         self._copy_roles_to_deployment_directory()
         self.playbook.write()
         self._write_role_defaults_to_group_vars()
+
+    def delete(self):
+        for directory_name in self.directory_layout:
+            directory_path = self.path / directory_name
+            shutil.rmtree(directory_path)
+
+        for file_name in self.deployment_files:
+            file_path = self.path / file_name
+            file_path.unlink()
