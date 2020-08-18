@@ -7,15 +7,6 @@ import json
 import shutil
 import subprocess
 
-def load_deployment(deployment_state_file='deployment.json'):
-    with open(deployment_state_file) as deployment_state_file_stream:
-        deployment_state = json.load(deployment_state_file_stream)
-        deployment_path = Path(deployment_state_file).parent
-
-    return Deployment(deployment_path,
-                      deployment_state['ansible_roles_dir'],
-                      deployment_state['roles'], 
-                      deployment_state['inventory_type'])
 class Deployment:
     ansible_cfg = [
         '[defaults]',
