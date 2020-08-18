@@ -15,7 +15,7 @@ def cli():
     pass
 
 
-@cli.command()
+@cli.command(help='Initialize deployment directory.')
 @click.option('--role', '-r', 'roles', multiple=True, required=True, 
               help="""Role(s) to include in deployment.
                       May be specified multiple times.""")
@@ -29,7 +29,7 @@ def init(roles, ansible_roles, inventory_type):
     deployment.initialize_deployment_directory()
     deployment.save()
 
-@cli.command()
+@cli.command(help='Show deployment information.')
 @click.argument('attribute', required=False)
 def show(attribute):
     deployment = load_deployment()
@@ -42,17 +42,17 @@ def show(attribute):
     else:
         pprint(deployment.__dict__)
 
-@cli.command()
+@cli.command(help='Run deployment with ansible-playbook.')
 def run():
     deployment = load_deployment()
     deployment.run()
 
-@cli.command()
+@cli.command(help='Delete deployment.')
 def delete():
     deployment = load_deployment()
     deployment.delete()
 
-@cli.command()
+@cli.command('SSH into a given host of deployment inventory.')
 @click.argument('host')
 def ssh(host):
     deployment = load_deployment()
