@@ -38,9 +38,10 @@ class Deployment:
             parsed_roles.append(Role(self.roles_path / role_name ))
         return parsed_roles
 
-    def _clone_ansible_roles_repo(self, git_path):
+    def _clone_ansible_roles_repo(self, git_src):
         if not self.roles_path.exists():
-            Repo.clone_from(git_path, self.roles_path)
+            Repo.clone_from(git_src['repo'], self.roles_path,
+                            branch=git_src['branch'])
 
     def _update_ansible_roles_repo(self):
         if self.roles_path.exists():

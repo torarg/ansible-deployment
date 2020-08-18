@@ -21,17 +21,23 @@ def cli():
                       May be specified multiple times.""")
 @click.option('--ansible_roles',
               help='Clonable git repo containing ansible roles.')
+@click.option('--branch', '-b',
+              help='Branch to checkout from ansible roles repo.')
 @click.option('--inventory', '-i', 'inventory_type', 
               help='Inventory type. Supported: terraform, static')
-def init(roles, ansible_roles, inventory_type):
+def init(roles, ansible_roles, branch, inventory_type):
     deployment_path = Path.cwd()
     deployment_state_path = Path.cwd() / 'deployment.json'
+    ansible_roles_src = {
+        'repo': ansible_roles,
+        'branch': branch
+    }
     if deployment_state_path.exists():
         deployment = load_deployment()
-    elif not roles or not ansible_roles or not inventory_type:
+    elif not roles or not ansible_roles or not inventory_type or not branch:
         err_exit('Either supply command options or a deployment.json file')
     else:
-        deployment = Deployment(deployment_path, ansible_roles, roles, inventory_type)
+        deployment = Deployment(deployment_path, ansible_roles_src, roles, inventory_type)
     deployment.initialize_deployment_directory()
     deployment.save()
 
