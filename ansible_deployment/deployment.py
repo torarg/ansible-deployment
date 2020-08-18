@@ -42,7 +42,6 @@ class Deployment:
         return parsed_roles
 
     def _clone_ansible_roles_repo(self, git_path):
-        print('Cloning')
         if not self.roles_path.exists():
             Repo.clone_from(git_path, self.roles_path)
 
