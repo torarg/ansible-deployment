@@ -24,6 +24,6 @@ setuptools.setup(
     entry_points={
         'console_scripts': ['ansible-deployment=ansible_deployment.cli:main']
     },
-    install_requires=['jinja2', 'PyYAML', 'click', 'ansible'],
+    install_requires=['jinja2', 'PyYAML', 'click', 'ansible', 'GitPython'],
     include_package_data=True
 )
