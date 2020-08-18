@@ -20,10 +20,7 @@ class Deployment:
     def __init__(self, deployment_path, roles_path, roles, inventory_type):
         self.path = Path(deployment_path)
         self.roles_src = roles_path
-        if '.git' in roles_path:
-            self.roles_path = self.path / '.roles'
-        else:
-            self.roles_path = Path(roles_path)
+        self.roles_path = self.path / '.roles'
         self.name = self.path.name
         self.role_names = roles
         self.roles = self._create_role_objects()
@@ -45,20 +42,26 @@ class Deployment:
         if not self.roles_path.exists():
             Repo.clone_from(git_path, self.roles_path)
 
+    def _update_ansible_roles_repo(self):
+        if self.roles_path.exists():
+            roles_repo = Repo(self.roles_path)
+            roles_repo.remotes.origin.pull()
+
     def _create_deployment_directories(self):
         for directory_name in self.directory_layout:
             directory_path = self.path / directory_name
             if not directory_path.exists():
                 directory_path.mkdir()
 
-    def _copy_roles_to_deployment_directory(self):
+    def _symlink_roles_in_deployment_directory(self):
         for role in self.roles:
-            role.copy_to(self.path / 'roles')
+            role.symlink_to(self.path / 'roles')
 
     def _write_role_defaults_to_group_vars(self):
         group_vars_path = self.path / 'group_vars' / 'all'
+        group_vars_path_backup = self.path / 'group_vars' / 'all.BAK'
         if group_vars_path.exists():
-            group_vars_path.unlink()
+            shutil.move(group_vars_path, group_vars_path_backup)
 
         for role in self.roles:
             for defaults_file in role.defaults.values():
@@ -81,7 +84,7 @@ class Deployment:
         self._create_deployment_directories()
         self._clone_ansible_roles_repo(self.roles_src)
         self.roles = self._create_role_objects()
-        self._copy_roles_to_deployment_directory()
+        self._symlink_roles_in_deployment_directory()
         self.playbook.write()
         self.inventory.write()
         self._write_role_defaults_to_group_vars()
@@ -118,3 +121,8 @@ class Deployment:
             host_info = self.inventory.hosts['all']['hosts'][host]
             subprocess.run(['ssh', '-l', host_info['ansible_user'],
                             host_info['ansible_host']])
+
+    def update(self):
+        self._update_ansible_roles_repo()
+        self.roles = self._create_role_objects()
+        self._write_role_defaults_to_group_vars()
