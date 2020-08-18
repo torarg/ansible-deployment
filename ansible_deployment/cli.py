@@ -1,8 +1,8 @@
 import click
 from pathlib import Path
 from pprint import pprint
-from ansible_deployment.deployment import Deployment
-from ansible_deployment.helpers import save_object, load_object
+from ansible_deployment.deployment import Deployment, load_deployment
+
 
 @click.group()
 @click.version_option()
@@ -20,13 +20,13 @@ def init(roles, ansible_roles_dir, inventory_type):
     deployment_path = Path.cwd()
     deployment = Deployment(deployment_path, ansible_roles_path, roles, inventory_type)
     deployment.initialize_deployment_directory()
-    save_object(deployment, deployment_path / '.deployment.state')
+    deployment.save()
 
 @cli.command()
 @click.argument('attribute', required=False)
 def show(attribute):
     deployment_state_path = Path.cwd() / '.deployment.state'
-    deployment = load_object(deployment_state_path)
+    deployment = load_deployment()
     if attribute:
         pprint(deployment.__dict__[attribute].__dict__)
     else:
@@ -35,20 +35,20 @@ def show(attribute):
 @cli.command()
 def run():
     deployment_state_path = Path.cwd() / '.deployment.state'
-    deployment = load_object(deployment_state_path)
+    deployment = load_deployment()
     deployment.run()
 
 @cli.command()
 def delete():
     deployment_state_path = Path.cwd() / '.deployment.state'
-    deployment = load_object(deployment_state_path)
+    deployment = load_deployment()
     deployment.delete()
 
 @cli.command()
 @click.argument('host')
 def ssh(host):
     deployment_state_path = Path.cwd() / '.deployment.state'
-    deployment = load_object(deployment_state_path)
+    deployment = load_deployment()
     deployment.ssh(host)
     
 
