@@ -16,16 +16,22 @@ def cli():
 
 
 @cli.command(help='Initialize deployment directory.')
-@click.option('--role', '-r', 'roles', multiple=True, required=True, 
+@click.option('--role', '-r', 'roles', multiple=True, 
               help="""Role(s) to include in deployment.
                       May be specified multiple times.""")
-@click.option('--ansible_roles', required=True,
-              help='Path or git url to ansible roles directory.')
-@click.option('--inventory', '-i', 'inventory_type', required=True,
+@click.option('--ansible_roles',
+              help='Clonable git repo containing ansible roles.')
+@click.option('--inventory', '-i', 'inventory_type', 
               help='Inventory type. Supported: terraform, static')
 def init(roles, ansible_roles, inventory_type):
     deployment_path = Path.cwd()
-    deployment = Deployment(deployment_path, ansible_roles, roles, inventory_type)
+    deployment_state_path = Path.cwd() / 'deployment.json'
+    if deployment_state_path.exists():
+        deployment = load_deployment()
+    elif not roles or not ansible_roles or not inventory_type:
+        err_exit('Either supply command options or a deployment.json file')
+    else:
+        deployment = Deployment(deployment_path, ansible_roles, roles, inventory_type)
     deployment.initialize_deployment_directory()
     deployment.save()
 

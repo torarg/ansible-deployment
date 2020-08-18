@@ -14,7 +14,7 @@ class Deployment:
         'inventory = hosts.yml']
     directory_layout = ('host_vars', 'group_vars', 'roles')
     temporary_directories = ('.roles',)
-    deployment_files = ['playbook.yml', 'deployment.json', 'hosts.yml', 
+    deployment_files = ['playbook.yml', 'hosts.yml', 
                         'ansible.cfg']
 
     def __init__(self, deployment_path, roles_path, roles, inventory_type):
@@ -77,7 +77,6 @@ class Deployment:
         for directory in self.temporary_directories:
             directory_path = self.path / directory
             if directory_path.exists():
-                print('deleting ', directory_path)
                 shutil.rmtree(directory_path)
 
     def initialize_deployment_directory(self):
