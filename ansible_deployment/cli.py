@@ -42,6 +42,7 @@ def init(roles, ansible_roles, branch, inventory_type):
     }
 
     required_args = (roles, ansible_roles, branch, inventory_type)
+
     if all(required_args):
         deployment = Deployment(deployment_path, ansible_roles_src, roles, inventory_type)
     else:
@@ -85,6 +86,8 @@ def ssh(host):
 @cli.command(help='Update deployment roles.')
 def update():
     deployment = Deployment.load(deployment_state_path)
+    if not deployment:
+        err_exit("Failed to load deployment.json")
     deployment.update()
     
 
