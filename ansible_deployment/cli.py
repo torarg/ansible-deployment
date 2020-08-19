@@ -17,7 +17,7 @@ def cli():
     pass
 
 
-@cli.command(help='Initialize deployment directory.')
+@cli.command()
 @click.option('--role', '-r', 'roles', multiple=True, 
               help="""Role(s) to include in deployment.
                       May be specified multiple times.""")
@@ -28,6 +28,14 @@ def cli():
 @click.option('--inventory', '-i', 'inventory_type', 
               help='Inventory type. Supported: terraform, static')
 def init(roles, ansible_roles, branch, inventory_type):
+    """
+    Initialize deployment directory.
+
+    Initialization can be done either by
+    specifying all cli options or by
+    having a 'deployment.json' file in the current working directory.
+    """
+
     ansible_roles_src = {
         'repo': ansible_roles,
         'branch': branch
