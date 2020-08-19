@@ -58,8 +58,10 @@ def init(roles, ansible_roles, branch, inventory_type):
 @click.argument('attribute', required=False)
 def show(attribute):
     deployment = Deployment.load(deployment_state_path)
-    dict_types = (Deployment, Playbook, Role, Inventory, dict, list)
+    dict_types = (Deployment, Playbook, Role, Inventory, dict)
     if attribute:
+        if not attribute in deployment.__dict__:
+            err_exit("Attribute not found.")
         if type(deployment.__dict__[attribute]) in dict_types:
             pprint(deployment.__dict__[attribute].__dict__)
         else:
