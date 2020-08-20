@@ -17,9 +17,9 @@ class Deployment:
     deployment_files = ['playbook.yml', 'hosts.yml', 
                         'ansible.cfg']
 
-    def __init__(self, deployment_path, roles_path, roles, inventory_type):
+    def __init__(self, deployment_path, roles_src, roles, inventory_type):
         self.path = Path(deployment_path)
-        self.roles_src = roles_path
+        self.roles_src = roles_src
         self.roles_path = self.path / '.roles'
         self.name = self.path.name
         self.role_names = roles
