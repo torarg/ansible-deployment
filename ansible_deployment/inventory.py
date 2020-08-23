@@ -25,7 +25,8 @@ class Inventory:
                 host = instance['attributes']
                 if resource['type'] == 'hcloud_server': 
                     host['ansible_host'] = host['ipv4_address']
-                    host['ansible_user'] = 'root'
+                    host['ansible_user'] = 'ansible'
+                    host['bootstrap_user'] = 'root'
                     self.hosts['all']['hosts'][host['name']] = host
 
     def write(self):
