@@ -1,6 +1,14 @@
 ---
 - hosts: {{ playbook.hosts }}
+  gather_facts: no
   tasks:
+  - name: wait for host to become reachable
+    wait_for_connection:
+      delay: 10
+      timeout: 300
+
+  - name: gather facts
+    setup:
 {% for role in playbook.roles %}
   - name: include role {{ role.name }}
     include_role:
