@@ -12,7 +12,7 @@
       timeout: 300
 
   - name: test ssh connection with {{ ansible_user }}
-    shell: 'ssh -oBatchMode=yes {{ ansible_user }}@{{ ansible_ssh_host }} echo test'
+    shell: 'ssh -oStrictHostkeyChecking=no -oBatchMode=yes {{ ansible_user }}@{{ ansible_ssh_host }} echo test'
     register: connection_test
     ignore_errors: yes
 
