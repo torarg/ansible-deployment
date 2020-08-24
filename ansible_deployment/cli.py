@@ -18,35 +18,20 @@ def cli():
 
 
 @cli.command()
-@click.option('--role', '-r', 'roles', multiple=True, 
-              help="""Role(s) to include in deployment.
-                      May be specified multiple times.""")
-@click.option('--ansible_roles',
-              help='Clonable git repo containing ansible roles.')
-@click.option('--branch', '-b',
-              help='Branch to checkout from ansible roles repo.')
-@click.option('--inventory', '-i', 'inventory_type', 
-              help='Inventory type. Supported: terraform, static')
-def init(roles, ansible_roles, branch, inventory_type):
+def init():
     """
     Initialize deployment directory.
 
-    Initialization can be done either by
-    specifying all cli options or by
-    having a 'deployment.json' file in the current working directory.
+    Initialization requires a 'deployment.json' file in the
+    current working directory.
     """
 
     ansible_roles_src = {
-        'repo': ansible_roles,
-        'branch': branch
+        'repo': None,
+        'branch': None 
     }
 
-    required_args = (roles, ansible_roles, branch, inventory_type)
-
-    if all(required_args):
-        deployment = Deployment(deployment_path, ansible_roles_src, roles, inventory_type)
-    else:
-        deployment = Deployment.load(deployment_state_path)
+    deployment = Deployment.load(deployment_state_path)
 
     if not deployment:
         err_exit("Deployment initialization failed.")
