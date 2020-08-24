@@ -29,6 +29,10 @@
       meta: clear_facts
     - name: gather facts
       setup:
+    - name: set become_method to doas if running on openbsd
+      set_fact:
+        ansible_become_method: doas
+      when: ansible_distribution == 'OpenBSD'
   tasks:
 {% for role in playbook.roles %}
   - name: include role {{ role.name }}
