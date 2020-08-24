@@ -9,8 +9,10 @@
 
   - name: gather facts
     setup:
+
 {% for role in playbook.roles %}
   - name: include role {{ role.name }}
     include_role:
         name: {{ role.name }}
+
 {% endfor %}
