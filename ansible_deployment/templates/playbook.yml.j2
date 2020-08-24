@@ -19,7 +19,7 @@
   - name: set ansible_user to value of bootstrap_user
     set_fact:
         ansible_ssh_user: "{{ bootstrap_user|default('root') }}"
-    when: connection_test.stdout.find('Permission denied')
+    when: connection_test.failed
 {% endraw %}
 
 - hosts: {{ playbook.hosts }}
