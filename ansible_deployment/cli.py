@@ -76,7 +76,11 @@ def update():
     if not deployment:
         err_exit("Failed to load deployment.json")
     deployment.update()
-    
+    print(deployment.repo.git.diff())
+    if click.confirm('Commit changes? (no discards the changes)'):
+        deployment.update_git()
+    else:
+        deployment.repo.git.reset('--hard')
 
 
 def err_exit(error_message):
