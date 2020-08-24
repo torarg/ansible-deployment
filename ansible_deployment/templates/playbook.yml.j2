@@ -23,6 +23,12 @@
 {% endraw %}
 
 - hosts: {{ playbook.hosts }}
+  gather_facts: no
+  pre_tasks:
+    - name: clear facts
+      meta: clear_facts
+    - name: gather facts
+      setup:
   tasks:
 {% for role in playbook.roles %}
   - name: include role {{ role.name }}
