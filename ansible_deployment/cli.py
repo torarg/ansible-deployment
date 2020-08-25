@@ -43,16 +43,11 @@ def init():
 @click.argument('attribute', required=False)
 def show(attribute):
     deployment = Deployment.load(deployment_state_path)
-    dict_types = (Deployment, Playbook, Role, Inventory, dict)
-    if attribute:
-        if not attribute in deployment.__dict__:
-            err_exit("Attribute not found.")
-        if type(deployment.__dict__[attribute]) in dict_types:
-            click.echo(pformat(deployment.__dict__[attribute].__dict__))
-        else:
-            click.echo(pformat(deployment.__dict__[attribute]))
+    custom_types = (Deployment, Playbook, Role, Inventory)
+    if attribute and attribute in deployment.__dict__:
+        click.echo(pformat(deployment.__dict__[attribute]))
     else:
-        click.echo(pformat(deployment.__dict__))
+        click.echo(pformat(deployment))
 
 @cli.command(help='Run deployment with ansible-playbook.')
 def run():
