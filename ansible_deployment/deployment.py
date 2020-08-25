@@ -28,7 +28,7 @@ class Deployment:
         self.name = self.path.name
         self.role_names = roles
         self.roles = self._create_role_objects()
-        self.inventory = Inventory(inventory_type, 'hosts.yml')
+        self.inventory = Inventory(inventory_type, 'hosts.yml', groups=self.role_names)
         self.playbook = Playbook(self.path / 'playbook.yml', 'all', self.roles)
         self.state_file = self.path / 'deployment.json'
         self.repo = Repo.init(self.path)
@@ -82,13 +82,11 @@ class Deployment:
             role_dir.unlink()
 
     def _write_role_defaults_to_group_vars(self):
-        group_vars_path = self.path / 'group_vars' / 'all'
-        if group_vars_path.exists():
-            group_vars_path.unlink()
+        group_vars_path = self.path / 'group_vars'
 
         for role in self.roles:
             for defaults_file in role.defaults.values():
-                with open(group_vars_path, 'a') as group_vars_file:
+                with open(group_vars_path / role.name, 'w') as group_vars_file:
                     group_vars_file.write('# role: {}\n'.format(role.name))
                     yaml.dump(defaults_file['data'], group_vars_file)
                     group_vars_file.write('\n')
@@ -156,6 +154,7 @@ class Deployment:
         self.roles = self._create_role_objects()
         self._write_role_defaults_to_group_vars()
         self.playbook.write()
+        self.inventory.write()
 
     def update_git(self, message="Automatic ansible-deployment update."):
         self._git_add()
