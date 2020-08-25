@@ -47,8 +47,11 @@ class Inventory:
         return pformat(representation)
 
     def _load_vars(self, vars_type):
+        ignore_patterns = ('.swp',)
         vars_files = list(self.vars[vars_type]['path'].glob('*'))
         for vars_file in vars_files:
+            if any(map(vars_file.name.__contains__, ignore_patterns)):
+                continue
             vars_name = vars_file.stem
             with open(vars_file) as vars_file_stream:
                 self.vars[vars_type]['vars'][vars_name] = yaml.safe_load(vars_file_stream)
