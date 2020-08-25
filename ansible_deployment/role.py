@@ -50,11 +50,8 @@ class Role:
         Returns:
             Parsed yaml data.
         """
-        try:
-            with open(file_path) as file_stream:
-                yaml_data = yaml.safe_load(file_stream)
-        except Exception as e:
-                yaml_data = e
+        with open(file_path) as file_stream:
+            yaml_data = yaml.safe_load(file_stream)
         return yaml_data
 
 
