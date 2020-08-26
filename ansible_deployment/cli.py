@@ -60,9 +60,12 @@ def run(role):
 
 
 @cli.command(help='Delete deployment.')
-def delete():
+@click.pass_context
+def delete(ctx):
     deployment = Deployment.load(deployment_state_path)
-    deployment.deployment_dir.delete()
+    ctx.invoke(show)
+    if click.confirm('Delete deployment?'):
+        deployment.deployment_dir.delete()
 
 
 @cli.command(help='SSH into a given host of deployment inventory.')
