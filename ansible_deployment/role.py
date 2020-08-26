@@ -25,7 +25,6 @@ class Role:
         The attributes containing role sub directory information are 'None'
         if the corresponding sub directory does not exist.
     """
-
     def __init__(self, role_directory):
         self.path = Path(role_directory)
         self.name = self.path.name
@@ -71,11 +70,7 @@ class Role:
         Returns:
             dict: File information dictionary.
         """
-        return {
-            'name': path_object.name,
-            'path': path_object,
-            'data': data
-        }
+        return {'name': path_object.name, 'path': path_object, 'data': data}
 
     def _parse_role_sub_directory(self, sub_directory_name):
         """

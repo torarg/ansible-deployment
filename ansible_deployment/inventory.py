@@ -7,7 +7,10 @@ import yaml
 class Inventory:
     inventory_types = ['terraform']
 
-    def __init__(self, inventory_type, inventory_path, ansible_user='ansible',
+    def __init__(self,
+                 inventory_type,
+                 inventory_path,
+                 ansible_user='ansible',
                  groups=[]):
         self.hosts = self._generate_hosts_skeleton(groups)
         self.host_vars = {}
@@ -34,7 +37,7 @@ class Inventory:
         self._load_vars('group_vars')
 
     def __repr__(self):
-        filtered_attributes = ('vars',)
+        filtered_attributes = ('vars', )
         representation = {}
         for attribute in self.__dict__:
             if attribute in filtered_attributes:
@@ -53,17 +56,22 @@ class Inventory:
             'all': {
                 'hosts': {},
                 'children': {
-                    'ansible_deployment': {'hosts': {}}
+                    'ansible_deployment': {
+                        'hosts': {}
+                    }
                 }
             }
         }
         for group in groups:
             hosts['all']['children'][group] = {
-                'children': {'ansible_deployment': None}}
+                'children': {
+                    'ansible_deployment': None
+                }
+            }
         return hosts
 
     def _load_vars(self, vars_type):
-        ignore_patterns = ('.swp',)
+        ignore_patterns = ('.swp', )
         vars_files = list(self.vars[vars_type]['path'].glob('*'))
         for vars_file in vars_files:
             if any(map(vars_file.name.__contains__, ignore_patterns)):
@@ -85,12 +93,14 @@ class Inventory:
                     host['ansible_user'] = self.ansible_user
                     host['bootstrap_user'] = 'root'
                     self.hosts['all']['hosts'][host['name']] = None
-                    self.hosts['all']['children']['ansible_deployment']['hosts'][host['name']] = None
+                    self.hosts['all']['children']['ansible_deployment'][
+                        'hosts'][host['name']] = None
                     self.host_vars[host['name']] = host
 
     def write(self):
         for host in self.host_vars.values():
-            with open(self.host_vars_path / host['name'], 'w') as hostvars_file_stream:
+            with open(self.host_vars_path / host['name'],
+                      'w') as hostvars_file_stream:
                 yaml.dump(host, hostvars_file_stream)
 
         with open(self.inventory_path, 'w') as inventory_file_stream:

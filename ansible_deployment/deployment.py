@@ -13,15 +13,9 @@ class Deployment:
         self.deployment_dir = DeploymentDirectory(deployment_path, roles_src)
         self.name = self.deployment_dir.path.name
         self.roles = self._create_role_objects(roles)
-        self.inventory = Inventory(
-            inventory_type,
-            'hosts.yml',
-            groups=roles)
-        self.playbook = Playbook(
-            self.deployment_dir.path /
-            'playbook.yml',
-            'all',
-            self.roles)
+        self.inventory = Inventory(inventory_type, 'hosts.yml', groups=roles)
+        self.playbook = Playbook(self.deployment_dir.path / 'playbook.yml',
+                                 'all', self.roles)
 
     def __getitem__(self, attribute):
         return self.__dict__[attribute]
@@ -43,9 +37,7 @@ class Deployment:
         parsed_roles = []
         for role_name in role_names:
             parsed_roles.append(
-                Role(
-                    self.deployment_dir.roles_path /
-                    role_name))
+                Role(self.deployment_dir.roles_path / role_name))
         return parsed_roles
 
     def initialize_deployment_directory(self):
@@ -80,8 +72,10 @@ class Deployment:
     def ssh(self, host):
         if host in self.inventory.hosts['all']['hosts']:
             host_info = self.inventory.host_vars[host]
-            subprocess.run(['ssh', '-l', host_info['ansible_user'],
-                            host_info['ansible_host']])
+            subprocess.run([
+                'ssh', '-l', host_info['ansible_user'],
+                host_info['ansible_host']
+            ])
 
     def update(self):
         self.deployment_dir.update(self.roles)
@@ -92,7 +86,8 @@ class Deployment:
         deployment = None
         deployment_state_file_path = Path(deployment_state_file)
         if deployment_state_file_path.exists():
-            with open(deployment_state_file_path) as deployment_state_file_stream:
+            with open(deployment_state_file_path
+                      ) as deployment_state_file_stream:
                 deployment_state = json.load(deployment_state_file_stream)
                 deployment_path = deployment_state_file_path.parent
 

@@ -28,10 +28,7 @@ def init(ctx):
     current working directory.
     """
 
-    ansible_roles_src = {
-        'repo': None,
-        'branch': None
-    }
+    ansible_roles_src = {'repo': None, 'branch': None}
 
     deployment = Deployment.load(deployment_state_path)
 
@@ -88,7 +85,8 @@ def update():
     if not deployment:
         err_exit("Failed to load deployment.json")
     elif len(deployment.deployment_dir.unstaged_changes) > 0:
-        err_exit("Unstaged changes: {}".format(deployment.deployment_dir.unstaged_changes))
+        err_exit("Unstaged changes: {}".format(
+            deployment.deployment_dir.unstaged_changes))
     elif not deployment.deployment_dir.roles_path.exists():
         err_exit("Deployment directory not initialized.")
     deployment.update()
@@ -97,8 +95,7 @@ def update():
         update_choice = click.prompt(
             'Please select update strategy',
             default='keep_unstaged',
-            type=click.Choice(['apply', 'discard', 'keep_unstaged'])
-        )
+            type=click.Choice(['apply', 'discard', 'keep_unstaged']))
         if update_choice == 'apply':
             files_to_commit.append(file_name)
         elif update_choice == 'discard':
