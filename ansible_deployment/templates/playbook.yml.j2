@@ -4,43 +4,56 @@
   connection: local
   tasks:
 {% raw %}
-  - name: wait for host to become reachable
-    wait_for:
-      port: '{{ ansible_ssh_port|default(22) }}'
-      host: '{{ ansible_ssh_host }}'
-      search_regex: OpenSSH
-      timeout: 300
+  - name: connection test
+    block:
+    - name: wait for host to become reachable
+      wait_for:
+        port: '{{ ansible_ssh_port|default(22) }}'
+        host: '{{ ansible_ssh_host }}'
+        search_regex: OpenSSH
+        timeout: 300
 
-  - name: test ssh connection with {{ ansible_user }}
-    shell: |
-      ssh -p{{ ansible_ssh_port|default(22) }} \
-        -oStrictHostkeyChecking=no \
-        -oBatchMode=yes \
-        {{ ansible_user }}@{{ ansible_ssh_host }} echo test
-    register: connection_test
-    ignore_errors: yes
+    - name: test ssh connection with {{ ansible_user }}
+      shell: |
+        ssh -p{{ ansible_ssh_port|default(22) }} \
+          -oStrictHostkeyChecking=no \
+          -oBatchMode=yes \
+          {{ ansible_user }}@{{ ansible_ssh_host }} echo test
+      register: connection_test
+      ignore_errors: yes
 
-  - name: set ansible_user to value of bootstrap_user
-    set_fact:
-        ansible_ssh_user: "{{ bootstrap_user|default('root') }}"
-    when: connection_test.failed
+    - name: set ansible_user to value of bootstrap_user
+      set_fact:
+          ansible_ssh_user: "{{ bootstrap_user|default('root') }}"
+      when: connection_test.failed
+    tags:
+      - always
 {% endraw %}
 
 - hosts: {{ playbook.hosts }}
   gather_facts: no
   pre_tasks:
+  - name: connection setup
+    block:
     - name: clear facts
       meta: clear_facts
+
     - name: gather facts
       setup:
+
     - name: set become_method to doas if running on openbsd
       set_fact:
         ansible_become_method: doas
       when: ansible_distribution == 'OpenBSD'
+    tags:
+      - always
+
   tasks:
 {% for role in playbook.roles %}
   - name: include role {{ role.name }}
-    include_role:
+    import_role:
         name: {{ role.name }}
+    tags:
+      - {{ role.name }}
 
 {% endfor %}
