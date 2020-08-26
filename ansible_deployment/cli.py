@@ -87,8 +87,10 @@ def update():
     files_to_commit = []
     if not deployment:
         err_exit("Failed to load deployment.json")
-    if len(deployment.deployment_dir.unstaged_changes) > 0:
-        err_exit("Update aborted because of unstaged changes in git repository.")
+    elif len(deployment.deployment_dir.unstaged_changes) > 0:
+        err_exit("Unstaged changes: {}".format(deployment.deployment_dir.unstaged_changes))
+    elif not deployment.deployment_dir.roles_path.exists():
+        err_exit("Deployment directory not initialized.")
     deployment.update()
     for file_name in deployment.deployment_dir.unstaged_changes:
         click.echo(deployment.deployment_dir.repo.git.diff(file_name))
