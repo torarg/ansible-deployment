@@ -19,7 +19,8 @@ def cli():
 
 
 @cli.command()
-def init():
+@click.pass_context
+def init(ctx):
     """
     Initialize deployment directory.
 
@@ -37,8 +38,10 @@ def init():
     if not deployment:
         err_exit("Deployment initialization failed.")
 
-    deployment.initialize_deployment_directory()
-    deployment.save()
+    ctx.invoke(show)
+    if click.confirm('(Re)Initialize Deployment?'):
+        deployment.initialize_deployment_directory()
+        deployment.save()
 
 
 @cli.command(help='Show deployment information.')
