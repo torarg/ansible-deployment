@@ -62,7 +62,7 @@ def run(role):
 @cli.command(help='Delete deployment.')
 def delete():
     deployment = Deployment.load(deployment_state_path)
-    deployment.delete()
+    deployment.deployment_dir.delete()
 
 
 @cli.command(help='SSH into a given host of deployment inventory.')
@@ -85,9 +85,9 @@ def update():
         type=click.Choice(['commit', 'keep_unstaged', 'discard'])
     )
     if update_choice == 'commit':
-        deployment.update_git()
+        deployment.deployment_dir.update_git()
     elif update_choice == 'discard':
-        deployment.repo.git.reset('--hard')
+        deployment.deployment_dir.repo.git.reset('--hard')
 
 
 def err_exit(error_message):
