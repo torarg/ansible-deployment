@@ -47,9 +47,13 @@ class Deployment:
         return parsed_roles
 
     def initialize_deployment_directory(self):
+        role_names = (role.name for role in self.roles)
+        self.deployment_dir.create(self.roles)
+        self.roles = self._create_role_objects(role_names)
+        self.deployment_dir.update(self.roles)
         self.playbook.write()
         self.inventory.write()
-        self.deployment_dir.create(self.roles)
+        self.deployment_dir.update_git(message="initial commit")
 
 
     def save(self):
@@ -80,9 +84,9 @@ class Deployment:
                             host_info['ansible_host']])
 
     def update(self):
+        self.deployment_dir.update(self.roles)
         self.playbook.write()
         self.inventory.write()
-        self.deployment_dir.update(self.roles)
 
     def load(deployment_state_file):
         deployment = None

@@ -78,7 +78,7 @@ def update():
     if not deployment:
         err_exit("Failed to load deployment.json")
     deployment.update()
-    click.echo(deployment.repo.git.diff())
+    click.echo(deployment.deployment_dir.repo.git.diff())
     update_choice = click.prompt(
         'Please select update strategy',
         default='keep_unstaged',
