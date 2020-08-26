@@ -21,7 +21,6 @@ class DeploymentDirectory:
         self.path = Path(path)
         self.roles_src = roles_src
         self.roles_path = self.path / '.roles'
-        self.roles_repo = None
         self.state_file = self.path / 'deployment.json'
         self.repo = Repo.init(self.path)
         self.unstaged_changes = []
