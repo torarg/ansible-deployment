@@ -40,6 +40,12 @@ class Role:
     def __repr__(self):
         return 'Role({})'.format(self.name)
 
+    def __getitem__(self, attribute):
+        return self.__dict__[attribute]
+
+    def __contains__(self, attribute):
+        return attribute in self.__dict__
+
     def _parse_yaml_file(self, file_path):
         """
         Parses a given yaml_file.

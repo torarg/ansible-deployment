@@ -45,15 +45,18 @@ def init(ctx):
 
 
 @cli.command(help='Show deployment information.')
-@click.argument('attribute', required=False)
+@click.argument('attribute', required=False, nargs=-1)
 def show(attribute):
     deployment = Deployment.load(deployment_state_path)
+    output = deployment
     custom_types = (Deployment, Playbook, Role, Inventory)
-    if attribute and attribute in deployment.__dict__:
-        click.echo(pformat(deployment.__dict__[attribute]))
-    else:
-        click.echo(pformat(deployment))
+    if attribute:
+        for attr in attribute:
+            if not attr in output: err_exit('Attribute not found')
+            output = output[attr]
+    click.echo(pformat(output))
 
+    
 
 @cli.command(help='Run deployment with ansible-playbook.')
 @click.argument('role', required=False)
