@@ -9,17 +9,18 @@ import json
 import shutil
 import subprocess
 
+
 class Deployment:
     ansible_cfg = [
         '[defaults]',
         'inventory = hosts.yml',
-        'host_key_checking = False' ]
+        'host_key_checking = False']
     directory_layout = ('host_vars', 'group_vars', 'roles', '.git')
     temporary_directories = ('.roles',)
-    deployment_files = ['playbook.yml', 'hosts.yml', 
+    deployment_files = ['playbook.yml', 'hosts.yml',
                         'ansible.cfg']
-    git_repo_content = deployment_files + [ 'host_vars', 'group_vars', 
-                                            'deployment.json' ]
+    git_repo_content = deployment_files + ['host_vars', 'group_vars',
+                                           'deployment.json']
 
     def __init__(self, deployment_path, roles_src, roles, inventory_type):
         self.path = Path(deployment_path)
@@ -28,7 +29,10 @@ class Deployment:
         self.name = self.path.name
         self.role_names = roles
         self.roles = self._create_role_objects()
-        self.inventory = Inventory(inventory_type, 'hosts.yml', groups=self.role_names)
+        self.inventory = Inventory(
+            inventory_type,
+            'hosts.yml',
+            groups=self.role_names)
         self.playbook = Playbook(self.path / 'playbook.yml', 'all', self.roles)
         self.state_file = self.path / 'deployment.json'
         self.repo = Repo.init(self.path)
@@ -54,7 +58,7 @@ class Deployment:
     def _create_role_objects(self):
         parsed_roles = []
         for role_name in self.role_names:
-            parsed_roles.append(Role(self.roles_path / role_name ))
+            parsed_roles.append(Role(self.roles_path / role_name))
         return parsed_roles
 
     def _clone_ansible_roles_repo(self, git_src):
@@ -125,7 +129,6 @@ class Deployment:
         with open(self.state_file, 'w') as state_file_stream:
             json.dump(deployment_state, state_file_stream, indent=4)
 
-
     def delete(self):
         self._delete_temporary_directories()
         for directory_name in self.directory_layout:
@@ -167,10 +170,10 @@ class Deployment:
             with open(deployment_state_file_path) as deployment_state_file_stream:
                 deployment_state = json.load(deployment_state_file_stream)
                 deployment_path = deployment_state_file_path.parent
-    
+
             deployment = Deployment(deployment_path,
-                              deployment_state['ansible_roles_src'],
-                              deployment_state['roles'], 
-                              deployment_state['inventory_type'])
+                                    deployment_state['ansible_roles_src'],
+                                    deployment_state['roles'],
+                                    deployment_state['inventory_type'])
 
         return deployment

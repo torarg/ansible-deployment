@@ -7,6 +7,7 @@ class Playbook:
         autoescape=select_autoescape(['html', 'xml']),
         trim_blocks=True
     )
+
     def __init__(self, playbook_path, hosts, roles):
         self.path = playbook_path
         self.name = self.path.name

@@ -11,6 +11,7 @@ from ansible_deployment.inventory import Inventory
 deployment_path = Path.cwd()
 deployment_state_path = Path.cwd() / 'deployment.json'
 
+
 @click.group()
 @click.version_option()
 def cli():
@@ -28,7 +29,7 @@ def init():
 
     ansible_roles_src = {
         'repo': None,
-        'branch': None 
+        'branch': None
     }
 
     deployment = Deployment.load(deployment_state_path)
@@ -38,6 +39,7 @@ def init():
 
     deployment.initialize_deployment_directory()
     deployment.save()
+
 
 @cli.command(help='Show deployment information.')
 @click.argument('attribute', required=False)
@@ -49,21 +51,25 @@ def show(attribute):
     else:
         click.echo(pformat(deployment))
 
+
 @cli.command(help='Run deployment with ansible-playbook.')
 def run():
     deployment = Deployment.load(deployment_state_path)
     deployment.run()
+
 
 @cli.command(help='Delete deployment.')
 def delete():
     deployment = Deployment.load(deployment_state_path)
     deployment.delete()
 
+
 @cli.command(help='SSH into a given host of deployment inventory.')
 @click.argument('host')
 def ssh(host):
     deployment = Deployment.load(deployment_state_path)
     deployment.ssh(host)
+
 
 @cli.command(help='Update deployment roles.')
 def update():
@@ -82,12 +88,15 @@ def update():
     elif update_choice == 'discard':
         deployment.repo.git.reset('--hard')
 
+
 def err_exit(error_message):
     cli_context = click.get_current_context()
     cli_context.fail(error_message)
 
+
 def main():
     cli(auto_envvar_prefix='AD')
+
 
 if __name__ == '__main__':
     main()
