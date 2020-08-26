@@ -24,6 +24,8 @@ class DeploymentDirectory:
         self.roles_repo = None
         self.state_file = self.path / 'deployment.json'
         self.repo = Repo.init(self.path)
+        self.unstaged_changes = []
+        self._git_update_unstaged_changes()
 
     def __repr__(self):
         representation = {
@@ -35,8 +37,11 @@ class DeploymentDirectory:
         }
         return pformat(representation)
 
-    def _git_add(self):
-        for git_file in self.git_repo_content:
+    def _git_update_unstaged_changes(self):
+        self.unstaged_changes = [ diff.a_path for diff in self.repo.index.diff(None)]
+
+    def _git_add(self, files):
+        for git_file in files:
             self.repo.index.add(git_file)
 
     def _git_commit(self, message):
@@ -113,7 +118,9 @@ class DeploymentDirectory:
         self._unlink_roles_in_deployment_directory()
         self._symlink_roles_in_deployment_directory(roles)
         self._write_role_defaults_to_group_vars(roles)
+        self._git_update_unstaged_changes()
 
-    def update_git(self, message="Automatic ansible-deployment update."):
-        self._git_add()
+    def update_git(self, message="Automatic ansible-deployment update.", files=git_repo_content):
+        self._git_add(files)
         self._git_commit(message)
+        self._git_update_unstaged_changes()
