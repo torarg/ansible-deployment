@@ -83,6 +83,8 @@ class Inventory:
 
     def _parse_tfstate_file(self, tfstate_file_name='terraform.tfstate'):
         tfstate_file_path = Path.cwd() / tfstate_file_name
+        if not tfstate_file_path.exists():
+            return None
         with open(tfstate_file_path) as tfstate_file_stream:
             tfstate_data = json.load(tfstate_file_stream)
         for resource in tfstate_data['resources']:
