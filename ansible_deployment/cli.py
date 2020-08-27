@@ -93,12 +93,12 @@ def update():
     for file_name in deployment.deployment_dir.unstaged_changes:
         click.echo(deployment.deployment_dir.repo.git.diff(file_name))
         update_choice = click.prompt(
-            'Please select update strategy',
-            default='keep_unstaged',
-            type=click.Choice(['apply', 'discard', 'keep_unstaged']))
-        if update_choice == 'apply':
+            'Please select update strategy ([a]pply, [d]iscard, [k]eep unstaged)',
+            default='k',
+            type=click.Choice(['a', 'd', 'k']))
+        if update_choice == 'a':
             files_to_commit.append(file_name)
-        elif update_choice == 'discard':
+        elif update_choice == 'd':
             deployment.deployment_dir.repo.git.checkout(file_name)
 
         deployment.deployment_dir.update_git(files=files_to_commit)
