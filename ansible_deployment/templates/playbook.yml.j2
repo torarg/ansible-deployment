@@ -21,6 +21,7 @@
           {{ ansible_user }}@{{ ansible_ssh_host }} echo test
       register: connection_test
       ignore_errors: yes
+      changed_when: False
 
     - name: set ansible_user to value of bootstrap_user
       set_fact:
