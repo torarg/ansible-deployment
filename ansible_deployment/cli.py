@@ -56,7 +56,7 @@ def show(attribute):
 
 
 @cli.command(help='Run deployment with ansible-playbook.')
-@click.argument('role', required=False)
+@click.argument('role', required=False, nargs=-1)
 def run(role):
     deployment = Deployment.load(deployment_state_path)
     deployment.run(role)

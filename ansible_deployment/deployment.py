@@ -52,7 +52,7 @@ class Deployment(AnsibleDeployment):
     def run(self, tags=None):
         command = ['ansible-playbook', 'playbook.yml']
         if tags:
-            command += ['--tags', tags]
+            command += ['--tags', ','.join(tags)]
         subprocess.run(command)
 
     def ssh(self, host):
