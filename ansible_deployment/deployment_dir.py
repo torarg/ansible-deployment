@@ -91,4 +91,4 @@ class DeploymentDirectory(AnsibleDeployment):
                 self.repo.index.add(git_file)
         self._update_changed_files()
         if len(self.staged_changes) > 0 or force_commit:
-            self.repo.index.commit(message)
+            self.repo.index.commit("ansible-deployment: {}".format(message.capitalize()))
