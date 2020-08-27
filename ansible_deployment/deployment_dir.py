@@ -37,10 +37,10 @@ class DeploymentDirectory(AnsibleDeployment):
                 directory_path.mkdir()
 
     def _reset_role_symlinks(self, roles):
-        for role in roles:
-            role.symlink_to(self.path / 'roles')
         for role_dir in self.path.glob('roles/*'):
             role_dir.unlink()
+        for role in roles:
+            role.symlink_to(self.path / 'roles')
 
     def _write_role_defaults_to_group_vars(self, roles):
         group_vars_path = self.path / 'group_vars'
@@ -57,7 +57,7 @@ class DeploymentDirectory(AnsibleDeployment):
     def create(self, roles):
         self._create_deployment_directories()
         self.update_git('initial commit')
-        self.repo.create_submodule('.roles', str(self.roles_path),
+        self.repo.create_submodule('roles', str(self.roles_path),
                                    url=self.roles_src['repo'],
                                    branch=self.roles_src['branch']) 
         self._reset_role_symlinks(roles)
