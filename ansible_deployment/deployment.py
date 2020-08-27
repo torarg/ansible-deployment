@@ -53,6 +53,8 @@ class Deployment(AnsibleDeployment):
         command = ['ansible-playbook', 'playbook.yml']
         if tags:
             command += ['--tags', ','.join(tags)]
+        self.deployment_dir.update_git('Deployment run: {}'.format(command),
+                                        files=[], force_commit=True)
         subprocess.run(command)
 
     def ssh(self, host):
