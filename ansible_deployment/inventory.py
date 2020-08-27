@@ -1,11 +1,13 @@
 from pathlib import Path
 from pprint import pformat
+from ansible_deployment.class_skeleton import AnsibleDeployment
 import json
 import yaml
 
 
-class Inventory:
+class Inventory(AnsibleDeployment):
     inventory_types = ['terraform']
+    filtered_attributes = ['vars']
 
     def __init__(self,
                  inventory_type,
@@ -36,20 +38,6 @@ class Inventory:
         self._load_vars('host_vars')
         self._load_vars('group_vars')
 
-    def __repr__(self):
-        filtered_attributes = ('vars', )
-        representation = {}
-        for attribute in self.__dict__:
-            if attribute in filtered_attributes:
-                continue
-            representation[attribute] = self.__dict__[attribute]
-        return pformat(representation)
-
-    def __contains__(self, attribute):
-        return attribute in self.__dict__
-
-    def __getitem__(self, attribute):
-        return self.__dict__[attribute]
 
     def _generate_hosts_skeleton(self, groups):
         hosts = {

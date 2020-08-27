@@ -1,11 +1,12 @@
 from pathlib import Path
 from git import Repo
 from pprint import pformat
+from ansible_deployment.class_skeleton import AnsibleDeployment
 import yaml
 import shutil
 
 
-class DeploymentDirectory:
+class DeploymentDirectory(AnsibleDeployment):
     ansible_cfg = [
         '[defaults]', 'inventory = hosts.yml', 'host_key_checking = False'
     ]
@@ -24,22 +25,6 @@ class DeploymentDirectory:
         self.roles_repo = None
         self.unstaged_changes = []
         self._update_unstaged_changes()
-
-    def __getitem__(self, attribute):
-        return self.__dict__[attribute]
-
-    def __contains__(self, attribute):
-        return attribute in self.__dict__
-
-    def __repr__(self):
-        representation = {
-            'path': self.path,
-            'repo': self.repo,
-            'state_file': self.state_file,
-            'roles_src': self.roles_src,
-            'roles_path': self.roles_path
-        }
-        return pformat(representation)
 
     def _update_unstaged_changes(self):
         self.unstaged_changes = [
