@@ -24,9 +24,6 @@ class DeploymentDirectory(AnsibleDeployment):
         self.repo = Repo.init(self.path)
         self.unstaged_changes = []
         self._update_unstaged_changes()
-        self.roles_repo = None
-        if (self.roles_path / '.git').exists():
-            self.roles_repo = Repo(self.roles_path)
 
     def _update_unstaged_changes(self):
         self.unstaged_changes = [
@@ -59,9 +56,10 @@ class DeploymentDirectory(AnsibleDeployment):
 
     def create(self, roles):
         self._create_deployment_directories()
-        self.roles_repo = Repo.clone_from(self.roles_src['repo'],
-                                          self.roles_path,
-                                          branch=self.roles_src['branch'])
+        self.update_git('initial commit')
+        self.repo.create_submodule('.roles', str(self.roles_path),
+                                   url=self.roles_src['repo'],
+                                   branch=self.roles_src['branch']) 
         self._reset_role_symlinks(roles)
         self._write_ansible_cfg()
 
@@ -79,7 +77,7 @@ class DeploymentDirectory(AnsibleDeployment):
     def update(self, roles):
         if not self.roles_path.exists():
             return None
-        self.roles_repo.remotes.origin.pull()
+        self.repo.submodule_update(recursive=False)
         self._reset_role_symlinks(roles)
         self._write_role_defaults_to_group_vars(roles)
         self._write_ansible_cfg()
@@ -89,6 +87,7 @@ class DeploymentDirectory(AnsibleDeployment):
                    message="Automatic ansible-deployment update.",
                    files=git_repo_content):
         for git_file in files:
-            self.repo.index.add(git_file)
+            if Path(git_file).exists():
+                self.repo.index.add(git_file)
         self.repo.index.commit(message)
         self._update_unstaged_changes()
