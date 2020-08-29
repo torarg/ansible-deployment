@@ -32,11 +32,11 @@ class Inventory(AnsibleDeployment):
         }
         self.ansible_user = ansible_user
         self.inventory_type = inventory_type
+        self._load_vars('host_vars')
+        self._load_vars('group_vars')
         if self.inventory_type == 'terraform':
             self._parse_tfstate_file()
 
-        self._load_vars('host_vars')
-        self._load_vars('group_vars')
 
 
     def _generate_hosts_skeleton(self, groups):
