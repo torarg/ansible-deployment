@@ -12,7 +12,9 @@ class DeploymentDirectory(AnsibleDeployment):
         '[defaults]', 'inventory = hosts.yml', 'host_key_checking = False'
     ]
     directory_layout = ('host_vars', 'group_vars', '.git')
-    deployment_files = ['playbook.yml', 'hosts.yml', 'ansible.cfg', '.gitmodules']
+    deployment_files = [
+        'playbook.yml', 'hosts.yml', 'ansible.cfg', '.gitmodules'
+    ]
     git_repo_content = deployment_files + [
         'host_vars', 'group_vars', 'deployment.json'
     ]
@@ -57,8 +59,10 @@ class DeploymentDirectory(AnsibleDeployment):
                 with open(group_vars_file_path, 'a') as group_vars_file_stream:
                     yaml.dump(defaults_file['data'], group_vars_file_stream)
             if is_new:
-                commit_message = 'Add new group_vars file from role {}'.format(role.name)
-                self.update_git(commit_message, files=[str(group_vars_file_path)])
+                commit_message = 'Add new group_vars file from role {}'.format(
+                    role.name)
+                self.update_git(commit_message,
+                                files=[str(group_vars_file_path)])
 
     def _write_ansible_cfg(self):
         ansible_cfg_path = self.path / 'ansible.cfg'
@@ -68,7 +72,8 @@ class DeploymentDirectory(AnsibleDeployment):
     def create(self, roles):
         self._create_deployment_directories()
         self.update_git('initial commit', force_commit=True)
-        self.repo.git.subtree('add', '--prefix', 'roles', '--squash', self.roles_src['repo'], self.roles_src['branch'])
+        self.repo.git.subtree('add', '--prefix', 'roles', '--squash',
+                              self.roles_src['repo'], self.roles_src['branch'])
         self.update_git('add roles', force_commit=True)
         self._write_ansible_cfg()
 
@@ -89,7 +94,8 @@ class DeploymentDirectory(AnsibleDeployment):
     def update(self, roles):
         if not self.roles_path.exists():
             return None
-        self.repo.git.subtree('pull', '--prefix', 'roles', '--squash', self.roles_src['repo'], self.roles_src['branch'])
+        self.repo.git.subtree('pull', '--prefix', 'roles', '--squash',
+                              self.roles_src['repo'], self.roles_src['branch'])
         self._write_role_defaults_to_group_vars(roles)
         self._write_ansible_cfg()
         self._update_changed_files()
@@ -103,4 +109,5 @@ class DeploymentDirectory(AnsibleDeployment):
                 self.repo.index.add(git_file)
         self._update_changed_files()
         if len(self.staged_changes) > 0 or force_commit:
-            self.repo.index.commit("ansible-deployment: {}".format(message.capitalize()))
+            self.repo.index.commit("ansible-deployment: {}".format(
+                message.capitalize()))

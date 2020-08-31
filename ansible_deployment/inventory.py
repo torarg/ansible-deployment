@@ -37,8 +37,6 @@ class Inventory(AnsibleDeployment):
         if self.inventory_type == 'terraform':
             self._parse_tfstate_file()
 
-
-
     def _generate_hosts_skeleton(self, groups):
         hosts = {
             'all': {
