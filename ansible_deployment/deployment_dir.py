@@ -36,6 +36,7 @@ class DeploymentDirectory(AnsibleDeployment):
             ]
         except git_exc.BadName:
             self.staged_changes = []
+        self.changes = self.staged_changes + self.unstaged_changes
 
     def _create_deployment_directories(self):
         for directory_name in self.directory_layout:
@@ -46,9 +47,17 @@ class DeploymentDirectory(AnsibleDeployment):
     def _write_role_defaults_to_group_vars(self, roles):
         group_vars_path = self.path / 'group_vars'
         for role in roles:
+            group_vars_file_path = group_vars_path / role.name
+            is_new = True
+            if (group_vars_file_path).exists():
+                is_new = False
+                group_vars_file_path.unlink()
+
             for defaults_file in role.defaults.values():
-                with open(group_vars_path / role.name, 'w') as group_vars_file:
-                    yaml.dump(defaults_file['data'], group_vars_file)
+                with open(group_vars_file_path, 'a') as group_vars_file_stream:
+                    yaml.dump(defaults_file['data'], group_vars_file_stream)
+            if is_new:
+                self.repo.index.add(str(group_vars_file_path))
 
     def _write_ansible_cfg(self):
         ansible_cfg_path = self.path / 'ansible.cfg'
