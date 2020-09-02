@@ -1,12 +1,7 @@
-import sys
 import click
-import json
 from pathlib import Path, PosixPath
 from pprint import pformat
-from ansible_deployment.deployment import Deployment
-from ansible_deployment.playbook import Playbook
-from ansible_deployment.role import Role
-from ansible_deployment.inventory import Inventory
+from ansible_deployment import Deployment, cli_helpers
 
 deployment_path = Path.cwd()
 deployment_state_path = Path.cwd() / 'deployment.json'
@@ -33,7 +28,7 @@ def init(ctx):
     deployment = Deployment.load(deployment_state_path)
 
     if not deployment:
-        err_exit("Deployment initialization failed.")
+        cli_helpers.err_exit("Deployment initialization failed.")
 
     ctx.invoke(show)
     if click.confirm('(Re)Initialize Deployment?'):
@@ -41,17 +36,14 @@ def init(ctx):
         deployment.save()
 
 
+
 @cli.command(help='Show deployment information.')
 @click.argument('attribute', required=False, nargs=-1)
 def show(attribute):
     deployment = Deployment.load(deployment_state_path)
     output = deployment
-    custom_types = (Deployment, Playbook, Role, Inventory)
     if attribute:
-        for attr in attribute:
-            if attr not in output:
-                err_exit('Attribute not found')
-            output = output[attr]
+        output = cli_helpers.filter_output_by_attribute(output, attribute)
     click.echo(pformat(output))
 
 
@@ -60,7 +52,7 @@ def show(attribute):
 def run(role):
     deployment = Deployment.load(deployment_state_path)
     if deployment.deployment_dir.repo.is_dirty():
-        err_exit('Deployment repo has to be clean.')
+        cli_helpers.err_exit('Deployment repo has to be clean.')
     deployment.run(role)
 
 
@@ -80,40 +72,17 @@ def ssh(host):
     deployment.ssh(host)
 
 
+
+
 @cli.command(help='Update deployment roles.')
 def update():
     deployment = Deployment.load(deployment_state_path)
-    files_to_commit = []
-    if not deployment:
-        err_exit("Failed to load deployment.json")
-    elif deployment.deployment_dir.repo.is_dirty():
-        err_exit("Repo is dirty. Unstaged changes: {}".format(
-            deployment.deployment_dir.unstaged_changes))
-    elif not deployment.deployment_dir.roles_path.exists():
-        err_exit("Deployment directory not initialized.")
+    cli_helpers.check_environment(deployment)
     deployment.update()
-    for file_name in deployment.deployment_dir.changes:
-        if file_name in deployment.deployment_dir.unstaged_changes:
-            click.echo(deployment.deployment_dir.repo.git.diff(file_name))
-        elif file_name in deployment.deployment_dir.staged_changes:
-            click.echo(
-                deployment.deployment_dir.repo.git.diff('--staged', file_name))
-        update_choice = click.prompt(
-            'Please select update strategy ([a]pply, [d]iscard, [k]eep unstaged)',
-            default='k',
-            type=click.Choice(['a', 'd', 'k']),
-            show_choices=False)
-        if update_choice == 'a':
-            files_to_commit.append(file_name)
-        elif update_choice == 'd':
-            deployment.deployment_dir.repo.git.checkout(file_name)
-
+    files_to_commit = cli_helpers.prompt_for_update_choices(deployment.deployment_dir)
     deployment.deployment_dir.update_git(files=files_to_commit)
 
 
-def err_exit(error_message):
-    cli_context = click.get_current_context()
-    cli_context.fail(error_message)
 
 
 def main():
