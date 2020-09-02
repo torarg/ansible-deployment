@@ -1,95 +1,48 @@
 from pathlib import Path
 from pprint import pformat
 from ansible_deployment.class_skeleton import AnsibleDeployment
+from ansible_deployment.inventory_plugins.terraform import Terraform
 import json
 import yaml
 
-
 class Inventory(AnsibleDeployment):
-    inventory_types = ['terraform']
+    plugins = {
+        'terraform': Terraform
+    }
     filtered_attributes = ['vars']
 
-    def __init__(self,
-                 inventory_type,
-                 inventory_path,
-                 ansible_user='ansible',
-                 groups=[]):
-        self.hosts = self._generate_hosts_skeleton(groups)
-        self.host_vars = {}
-        self.group_vars = {}
-        self.inventory_path = Path(inventory_path)
-        self.host_vars_path = self.inventory_path.parent / 'host_vars'
-        self.group_vars_path = self.inventory_path.parent / 'group_vars'
-        self.vars = {
-            'group_vars': {
-                'vars': self.group_vars,
-                'path': self.group_vars_path
-            },
-            'host_vars': {
-                'vars': self.host_vars,
-                'path': self.host_vars_path
-            },
+    def __init__(self, inventory_path, inventory_plugin, ansible_user='ansible'):
+        self.plugins = {
+            'terraform': Terraform
         }
-        self.ansible_user = ansible_user
-        self.inventory_type = inventory_type
+        self.path = Path(inventory_path)
+        self.plugin = self.plugins[inventory_plugin]()
+        self.hosts = self.plugin.hosts
+        self.host_vars = self.plugin.host_vars
+        self.group_vars = self.plugin.group_vars
+        self.vars = {'host_vars': self.host_vars, 'group_vars': self.group_vars}
         self._load_vars('host_vars')
         self._load_vars('group_vars')
-        if self.inventory_type == 'terraform':
-            self._parse_tfstate_file()
+        self.plugin.update_inventory()
 
-    def _generate_hosts_skeleton(self, groups):
-        hosts = {
-            'all': {
-                'hosts': {},
-                'children': {
-                    'ansible_deployment': {
-                        'hosts': {}
-                    }
-                }
-            }
-        }
-        for group in groups:
-            hosts['all']['children'][group] = {
-                'children': {
-                    'ansible_deployment': None
-                }
-            }
-        return hosts
 
     def _load_vars(self, vars_type):
         ignore_patterns = ('.swp', )
-        vars_files = list(self.vars[vars_type]['path'].glob('*'))
+        vars_files = list((self.path / vars_type).glob('*'))
         for vars_file in vars_files:
             if any(map(vars_file.name.__contains__, ignore_patterns)):
                 continue
             vars_name = vars_file.stem
             with open(vars_file) as vars_file_stream:
-                self.vars[vars_type]['vars'][vars_name] = yaml.safe_load(
+                self.vars[vars_type][vars_name] = yaml.safe_load(
                     vars_file_stream)
 
-    def _parse_tfstate_file(self, tfstate_file_name='terraform.tfstate'):
-        tfstate_file_path = Path.cwd() / tfstate_file_name
-        if not tfstate_file_path.exists():
-            return None
-        with open(tfstate_file_path) as tfstate_file_stream:
-            tfstate_data = json.load(tfstate_file_stream)
-        for resource in tfstate_data['resources']:
-            for instance in resource['instances']:
-                host = instance['attributes']
-                if resource['type'] == 'hcloud_server':
-                    host['ansible_host'] = host['ipv4_address']
-                    host['ansible_user'] = self.ansible_user
-                    host['bootstrap_user'] = 'root'
-                    self.hosts['all']['hosts'][host['name']] = None
-                    self.hosts['all']['children']['ansible_deployment'][
-                        'hosts'][host['name']] = None
-                    self.host_vars[host['name']] = host
 
     def write(self):
         for host in self.host_vars.values():
-            with open(self.host_vars_path / host['name'],
+            with open(self.path / 'host_vars' / host['name'],
                       'w') as hostvars_file_stream:
                 yaml.dump(host, hostvars_file_stream)
 
-        with open(self.inventory_path, 'w') as inventory_file_stream:
+        with open(self.path / 'hosts.yml', 'w') as inventory_file_stream:
             yaml.dump(self.hosts, inventory_file_stream)
