@@ -42,8 +42,8 @@ class Deployment(AnsibleDeployment):
     def _create_role_objects(self, role_names):
         parsed_roles = []
         for role_name in role_names:
-            parsed_roles.append(
-                Role(self.deployment_dir.roles_path / role_name))
+            role_path = self.deployment_dir.roles_path / role_name
+            parsed_roles.append(Role(role_path))
         return parsed_roles
 
 
