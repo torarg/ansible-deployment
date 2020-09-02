@@ -1,3 +1,8 @@
+"""
+ansible-deployment is a cli application for managing
+ansible deployments coming with a set of classes
+representing the deployment.
+"""
 from ansible_deployment.class_skeleton import AnsibleDeployment
 from ansible_deployment.deployment_dir import DeploymentDirectory
 from ansible_deployment.playbook import Playbook
