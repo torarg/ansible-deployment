@@ -8,6 +8,27 @@ import shutil
 
 
 class DeploymentDirectory(AnsibleDeployment):
+    """
+    Represents an ansible deployment directory.
+
+    Args:
+        path (path): Path to deployment directory.
+        roles_src (dict): Dictionary containing roles repo information.
+                          The following keys need to be present:
+                          `repo` is a git clonable url.
+                          `branch` is branch name of that repo.
+        config_file (path): Path to deployment config file.
+
+    Attributes:
+        path (Path): Path to deployment directory.
+        roles_src (dict): Roles repo git information.
+        roles_path (Path): Path to deployment roles directory.
+        config_file (Path): Path to deployment config file.
+        repo (git.Repo): Deployment git repository.
+        unstaged_changes (list): List of unstaged files.
+        staged_changes (list): List of staged files.
+        changes (list): List of all changed files.
+    """
     ansible_cfg = [
         '[defaults]', 'inventory = hosts.yml', 'host_key_checking = False'
     ]
@@ -29,6 +50,14 @@ class DeploymentDirectory(AnsibleDeployment):
         self._update_changed_files()
 
     def _update_changed_files(self):
+        """
+        Set attributes representing file changes to current repository state.
+
+        Updates the following attributes:
+            `unstaged_changes`
+            `staged_changes`
+            `changes`
+        """
         self.unstaged_changes = [
             diff.a_path for diff in self.repo.index.diff(None)
         ]
@@ -41,12 +70,21 @@ class DeploymentDirectory(AnsibleDeployment):
         self.changes = self.staged_changes + self.unstaged_changes
 
     def _create_deployment_directories(self):
+        """
+        Create deployment directories.
+        """
         for directory_name in self.directory_layout:
             directory_path = self.path / directory_name
             if not directory_path.exists():
                 directory_path.mkdir()
 
     def _write_role_defaults_to_group_vars(self, roles):
+        """
+        Writes role defaults from a list of roles to group_vars.
+
+        Args:
+            roles (sequence): A sequence of Role objects.
+        """
         group_vars_path = self.path / 'group_vars'
         for role in roles:
             group_vars_file_path = group_vars_path / role.name
@@ -65,11 +103,17 @@ class DeploymentDirectory(AnsibleDeployment):
                                 files=[str(group_vars_file_path)])
 
     def _write_ansible_cfg(self):
+        """
+        Write ansible config file to deployment directory.
+        """
         ansible_cfg_path = self.path / 'ansible.cfg'
         with open(ansible_cfg_path, 'w') as ansible_cfg_stream:
             ansible_cfg_stream.writelines('\n'.join(self.ansible_cfg))
 
-    def create(self, roles):
+    def create(self):
+        """
+        Create deployment directory.
+        """
         self._create_deployment_directories()
         self.update_git('initial commit', force_commit=True)
         self.repo.git.subtree('add', '--prefix', 'roles', '--squash',
@@ -77,6 +121,9 @@ class DeploymentDirectory(AnsibleDeployment):
         self._write_ansible_cfg()
 
     def delete(self):
+        """
+        Delete deployment directory.
+        """
         for directory_name in self.directory_layout:
             directory_path = self.path / directory_name
             if directory_path.exists():
@@ -91,6 +138,14 @@ class DeploymentDirectory(AnsibleDeployment):
             shutil.rmtree(self.roles_path)
 
     def update(self, roles, playbook, inventory):
+        """
+        Update deployment directory.
+
+        The update will pull changes from the roles src repo and
+        will update all deployment files.
+
+        The update will NOT commit any changes to the main deployment directory.
+        """
         if not self.roles_path.exists():
             return None
         self.repo.git.subtree('pull', '--prefix', 'roles', '--squash',
@@ -105,6 +160,16 @@ class DeploymentDirectory(AnsibleDeployment):
                    message="Automatic ansible-deployment update.",
                    files=git_repo_content,
                    force_commit=False):
+        """
+        Updates the deployment git repository.
+
+        The update will add the specified files and commit them.
+
+        Args:
+            message (str): Commit message.
+            files (sequence): Files to commit.
+            force_commit (bool): Whether or not to force an empty commit.
+        """
         for git_file in files:
             if Path(git_file).exists():
                 self.repo.index.add(git_file)

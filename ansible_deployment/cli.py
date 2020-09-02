@@ -36,9 +36,14 @@ def init(ctx):
         deployment.save()
 
 
-@cli.command(help='Show deployment information.')
+@cli.command()
 @click.argument('attribute', required=False, nargs=-1)
 def show(attribute):
+    """
+    Show deployment information. 
+
+    Deployment information may be filtered by specifying attribute(s).
+    """
     deployment = Deployment.load(deployment_config_path)
     output = deployment
     if attribute:
@@ -46,33 +51,56 @@ def show(attribute):
     click.echo(pformat(output))
 
 
-@cli.command(help='Run deployment with ansible-playbook.')
+@cli.command()
 @click.argument('role', required=False, nargs=-1)
 def run(role):
+    """
+    Run deployment with ansible-playbook.
+
+    This will create a commit in the deployment repository
+    containing the executed command.
+    """
     deployment = Deployment.load(deployment_config_path)
     if deployment.deployment_dir.repo.is_dirty():
         cli_helpers.err_exit('Deployment repo has to be clean.')
     deployment.run(role)
 
 
-@cli.command(help='Delete deployment.')
+@cli.command()
 @click.pass_context
 def delete(ctx):
+    """
+    Delete deployment.
+
+    Deletes all created files and directories in deployment directory.
+    """
     deployment = Deployment.load(deployment_config_path)
     ctx.invoke(show)
     if click.confirm('Delete deployment?'):
         deployment.deployment_dir.delete()
 
 
-@cli.command(help='SSH into a given host of deployment inventory.')
+@cli.command()
 @click.argument('host')
 def ssh(host):
+    """
+    Run 'ssh' command to connect to a inventory host.
+    """
     deployment = Deployment.load(deployment_config_path)
     deployment.ssh(host)
 
 
 @cli.command(help='Update deployment roles.')
 def update():
+    """
+    Updates all deployment files and directories.
+
+    This will pull new changes from the roles source repository and
+    update all deployment files accordingly.
+    All changes will be shown as diff and the user needs to decide a.
+    update strategy.
+    """
+
     deployment = Deployment.load(deployment_config_path)
     cli_helpers.check_environment(deployment)
     deployment.update()
