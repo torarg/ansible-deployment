@@ -102,7 +102,7 @@ class Deployment(AnsibleDeployment):
             `deployment_dir` git update with new files.
         """
         role_names = (role.name for role in self.roles)
-        self.deployment_dir.create(self.roles)
+        self.deployment_dir.create()
         self.roles = self._create_role_objects(role_names)
         self.deployment_dir.update(self.roles, self.playbook, self.inventory)
         self.playbook.write()
