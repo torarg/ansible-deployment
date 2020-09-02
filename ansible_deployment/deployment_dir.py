@@ -74,7 +74,6 @@ class DeploymentDirectory(AnsibleDeployment):
         self.update_git('initial commit', force_commit=True)
         self.repo.git.subtree('add', '--prefix', 'roles', '--squash',
                               self.roles_src['repo'], self.roles_src['branch'])
-        self.update_git('add roles', force_commit=True)
         self._write_ansible_cfg()
 
     def delete(self):
