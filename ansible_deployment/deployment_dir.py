@@ -19,11 +19,11 @@ class DeploymentDirectory(AnsibleDeployment):
         'host_vars', 'group_vars', 'deployment.json'
     ]
 
-    def __init__(self, path, roles_src, state_file='deployment.json'):
+    def __init__(self, path, roles_src, config_file='deployment.json'):
         self.path = Path(path)
         self.roles_src = roles_src
         self.roles_path = self.path / 'roles'
-        self.state_file = self.path / 'deployment.json'
+        self.config_file = self.path / 'deployment.json'
         self.repo = Repo.init(self.path)
         self.unstaged_changes = []
         self._update_changed_files()

@@ -14,20 +14,20 @@ import subprocess
 DeploymentConfig = namedtuple('DeploymentConfig', 'roles roles_src inventory_plugin')
 class Deployment(AnsibleDeployment):
     filtered_values = ['playbook', 'inventory']
-    def load(deployment_state_file):
+    def load(deployment_config_file):
         deployment = None
-        deployment_state_file_path = Path(deployment_state_file)
-        deployment_path = deployment_state_file_path.parent
-        deployment_config = Deployment._load_state_file(deployment_state_file_path)
+        deployment_config_file_path = Path(deployment_config_file)
+        deployment_path = deployment_config_file_path.parent
+        deployment_config = Deployment._load_config_file(deployment_config_file_path)
         deployment = Deployment(deployment_path, deployment_config)
         return deployment
 
-    def _load_state_file(state_file_path):
-        with open(state_file_path) as state_file_stream:
-            deployment_state = json.load(state_file_stream)
-        deployment_path = state_file_path.parent
+    def _load_config_file(config_file_path):
+        with open(config_file_path) as config_file_stream:
+            deployment_config = json.load(config_file_stream)
+        deployment_path = config_file_path.parent
 
-        return DeploymentConfig(**deployment_state)
+        return DeploymentConfig(**deployment_config)
 
     def __init__(self, path, config):
         self.deployment_dir = DeploymentDirectory(path, config.roles_src)
@@ -56,8 +56,8 @@ class Deployment(AnsibleDeployment):
         self.deployment_dir.update_git(message="add deployment files")
 
     def save(self):
-        with open(self.deployment_dir.state_file, 'w') as state_file_stream:
-            json.dump(self.config._asdict(), state_file_stream, indent=4)
+        with open(self.deployment_dir.config_file, 'w') as config_file_stream:
+            json.dump(self.config._asdict(), config_file_stream, indent=4)
 
     def run(self, tags=None):
         command = ['ansible-playbook', 'playbook.yml']
