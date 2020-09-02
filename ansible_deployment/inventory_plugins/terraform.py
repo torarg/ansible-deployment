@@ -2,9 +2,10 @@ from ansible_deployment.inventory_plugins.inventory_plugin import InventoryPlugi
 from pathlib import Path
 import json
 
+
 class Terraform(InventoryPlugin):
     def __init__(self, inventory_src='terraform.tfstate'):
-        InventoryPlugin.__init__(self )
+        InventoryPlugin.__init__(self)
         self.name = 'terraform'
         self.inventory_src = inventory_src
         self.resource_functions = {
@@ -19,7 +20,7 @@ class Terraform(InventoryPlugin):
                 instances[resource['type']] = resource['instances']
 
         return instances
-        
+
     def _load_tf_state_file(self):
         tfstate_file_path = Path(self.inventory_src)
         if not tfstate_file_path.exists():
@@ -33,7 +34,7 @@ class Terraform(InventoryPlugin):
         instances = self._filter_instances(tfstate_data)
         for resource_type in instances:
             self.resource_functions[resource_type](instances[resource_type])
-        
+
     def parse_hcloud_servers(self, instances):
         for instance in instances:
             host = instance['attributes']

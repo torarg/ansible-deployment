@@ -36,7 +36,6 @@ def init(ctx):
         deployment.save()
 
 
-
 @cli.command(help='Show deployment information.')
 @click.argument('attribute', required=False, nargs=-1)
 def show(attribute):
@@ -72,17 +71,14 @@ def ssh(host):
     deployment.ssh(host)
 
 
-
-
 @cli.command(help='Update deployment roles.')
 def update():
     deployment = Deployment.load(deployment_config_path)
     cli_helpers.check_environment(deployment)
     deployment.update()
-    files_to_commit = cli_helpers.prompt_for_update_choices(deployment.deployment_dir)
+    files_to_commit = cli_helpers.prompt_for_update_choices(
+        deployment.deployment_dir)
     deployment.deployment_dir.update_git(files=files_to_commit)
-
-
 
 
 def main():
