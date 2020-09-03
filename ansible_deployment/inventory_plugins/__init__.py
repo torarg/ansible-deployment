@@ -1,1 +1,2 @@
 from ansible_deployment.inventory_plugins.terraform import Terraform
+from ansible_deployment.inventory_plugins.inventory_plugin import InventoryPlugin
