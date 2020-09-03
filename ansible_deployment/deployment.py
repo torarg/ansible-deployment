@@ -15,7 +15,9 @@ Attributes:
     roles (sequence): A sequence of role names.
     roles_src (dict): Dictionary containing roles repo information.
                       The following keys need to be present:
+
                       `repo` is a git clonable url.
+
                       `branch` is branch name of that repo.
     inventory_plugin (str): Name of the inventory plugin to use.
     ansible_user (str): Name of the default ansible user.
