@@ -13,10 +13,7 @@ class DeploymentDirectory(AnsibleDeployment):
 
     Args:
         path (path): Path to deployment directory.
-        roles_src (dict): Dictionary containing roles repo information.
-                          The following keys need to be present:
-                          `repo` is a git clonable url.
-                          `branch` is branch name of that repo.
+        roles_src (RolesRepo): Namedtuple containing roles repo config.
         config_file (path): Path to deployment config file.
 
     Attributes:
@@ -117,7 +114,7 @@ class DeploymentDirectory(AnsibleDeployment):
         self._create_deployment_directories()
         self.update_git('initial commit', force_commit=True)
         self.repo.git.subtree('add', '--prefix', 'roles', '--squash',
-                              self.roles_src['repo'], self.roles_src['branch'])
+                              self.roles_src.repo, self.roles_src.branch)
         self._write_ansible_cfg()
 
     def delete(self):
@@ -149,7 +146,7 @@ class DeploymentDirectory(AnsibleDeployment):
         if not self.roles_path.exists():
             return None
         self.repo.git.subtree('pull', '--prefix', 'roles', '--squash',
-                              self.roles_src['repo'], self.roles_src['branch'])
+                              self.roles_src.repo, self.roles_src.branch)
         playbook.write()
         inventory.write()
         self._write_role_defaults_to_group_vars(roles)
