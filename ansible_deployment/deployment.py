@@ -28,7 +28,6 @@ Args:
 """
 
 
-
 class Deployment(AnsibleDeployment):
     """
     Represents an ansible deployment.
@@ -45,7 +44,7 @@ class Deployment(AnsibleDeployment):
         inventory (Inventory): Inventory object representing deployment inventory.
         playbook (Playbok): Playbook object representing deployment playbook.
     """
-        
+
     filtered_values = ['playbook', 'inventory']
 
     def _load_config_file(config_file_path):
