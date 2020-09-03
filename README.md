@@ -1,6 +1,12 @@
-# ansible_deployment.cli
+# ansible-deployment
 
-## ansible-deployment
+## setup
+
+```
+pip install .
+```
+
+## usage
 
 ```
 ansible-deployment [OPTIONS] COMMAND [ARGS]...
@@ -9,7 +15,7 @@ ansible-deployment [OPTIONS] COMMAND [ARGS]...
 ### Options
 
 
-### --version()
+### --version
 Show the version and exit.
 
 ### delete
@@ -47,7 +53,7 @@ ansible-deployment run [OPTIONS] [ROLE]...
 ### Arguments
 
 
-### ROLE()
+### ROLE
 Optional argument(s)
 
 ### show
@@ -63,7 +69,7 @@ ansible-deployment show [OPTIONS] [ATTRIBUTE]...
 ### Arguments
 
 
-### ATTRIBUTE()
+### ATTRIBUTE
 Optional argument(s)
 
 ### ssh
@@ -77,7 +83,7 @@ ansible-deployment ssh [OPTIONS] HOST
 ### Arguments
 
 
-### HOST()
+### HOST
 Required argument
 
 ### update
