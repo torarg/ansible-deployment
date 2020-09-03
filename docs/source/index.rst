@@ -8,6 +8,7 @@ Welcome to ansible_deployment's documentation!
    :caption: Contents:
 
    AnsibleDeployment
+   RolesRepo
    DeploymentConfig
    Deployment
    DeploymentDirectory
