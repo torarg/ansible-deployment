@@ -95,10 +95,10 @@ class Deployment(AnsibleDeployment):
         """
         Initializes the deployment directory.
 
-        Initialization consists of the following steps:
-            `deployment_dir` object initialization.
-            `roles` object initialization.
-            `deployment_dir` update of roles, playbook and inventory.
+        Initialization consists of
+            `deployment_dir` object initialization,
+            `roles` object initialization,
+            `deployment_dir` update of roles, playbook and inventory,
             `deployment_dir` git update with new files.
         """
         role_names = (role.name for role in self.roles)
@@ -120,11 +120,11 @@ class Deployment(AnsibleDeployment):
         """
         Run deployment with ansible-playbook.
 
-        Every deployment run triggers a new git commit in 
-        `self.deployment_dir.repo` containing the executed command.
-
         Args:
             tags (sequence): an optional sequence of playbook tags.
+
+        Every deployment run triggers a new git commit in 
+        `self.deployment_dir.repo` containing the executed command.
         """
         command = ['ansible-playbook', 'playbook.yml']
         if tags:
