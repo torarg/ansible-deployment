@@ -17,10 +17,10 @@ class Deployment(AnsibleDeployment):
     Args:
         path (str): Path to deployment directory.
         config (DeploymentConfig): Namedtuple containing deployment config.
-                                   It needs to have the following attributes:
-                                   'roles': list of role names.
-                                   'roles_src': dict containing git info.
-                                   'inventory_plugin': name of inventory plugin.
+                                   It needs to have the following attributes.
+                                   'roles' is list of role names.
+                                   'roles_src' is a dict containing git info.
+                                   'inventory_plugin' is the name of the used inventory plugin.
 
     Attributes:
         deployment_dir (DeploymentDirectory): Deployment directory object.
