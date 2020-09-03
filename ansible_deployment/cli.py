@@ -90,7 +90,7 @@ def ssh(host):
     deployment.ssh(host)
 
 
-@cli.command(help='Update deployment roles.')
+@cli.command()
 def update():
     """
     Updates all deployment files and directories.
