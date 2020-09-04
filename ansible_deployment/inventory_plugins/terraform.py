@@ -4,12 +4,12 @@ import json
 
 
 class Terraform(InventoryPlugin):
-    def __init__(self, inventory_src='terraform.tfstate'):
-        InventoryPlugin.__init__(self)
+    def __init__(self, groups, inventory_src='terraform.tfstate'):
+        InventoryPlugin.__init__(self, groups)
         self.name = 'terraform'
         self.inventory_src = inventory_src
         self.resource_functions = {
-            "hcloud": self.parse_hcloud_servers,
+            "hcloud_server": self.parse_hcloud_servers,
         }
 
     def _filter_instances(self, tfstate_data):
@@ -39,7 +39,7 @@ class Terraform(InventoryPlugin):
         for instance in instances:
             host = instance['attributes']
             host['ansible_host'] = host['ipv4_address']
-            host['ansible_user'] = ansible_user
+            host['ansible_user'] = self.ansible_user
             host['bootstrap_user'] = 'root'
             self.all_hosts[host['name']] = None
             self.deployment_group[host['name']] = None

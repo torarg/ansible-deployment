@@ -87,8 +87,7 @@ class Deployment(AnsibleDeployment):
         self.name = self.deployment_dir.path.name
         self.config = config
         self.roles = self._create_role_objects(config.roles)
-        self.inventory = Inventory(self.deployment_dir.path,
-                                   config.inventory_plugin)
+        self.inventory = Inventory(self.deployment_dir.path, self.config)
         self.playbook = Playbook(self.deployment_dir.path / 'playbook.yml',
                                  'all', self.roles)
 
