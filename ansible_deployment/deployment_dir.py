@@ -2,8 +2,10 @@ from pathlib import Path
 from git import Repo
 import gitdb.exc as git_exc
 from pprint import pformat
+from cryptography.fernet import Fernet
 from ansible_deployment.class_skeleton import AnsibleDeployment
 from ansible_deployment.role import Role
+from ansible_deployment.deployment_vault import DeploymentVault
 import yaml
 import shutil
 
@@ -23,6 +25,9 @@ class DeploymentDirectory(AnsibleDeployment):
         roles_path (Path): Path to deployment roles directory.
         config_file (Path): Path to deployment config file.
         repo (git.Repo): Deployment git repository.
+        key (byte): Key used for encryption.
+                    Will be generated if `self.key_file`
+                    does not exist.
         unstaged_changes (list): List of unstaged files.
         staged_changes (list): List of staged files.
         changes (list): List of all changed files.
@@ -32,20 +37,27 @@ class DeploymentDirectory(AnsibleDeployment):
     ]
     directory_layout = ('host_vars', 'group_vars', '.git')
     deployment_files = [
-        'playbook.yml', 'hosts.yml', 'ansible.cfg', '.gitmodules'
+        'playbook.yml', 'hosts.yml', 'ansible.cfg'
     ]
     git_repo_content = deployment_files + [
         'host_vars', 'group_vars', 'deployment.json'
     ]
+    vault_files = deployment_files + list(directory_layout)
 
     def __init__(self, path, roles_src, config_file='deployment.json'):
         self.path = Path(path)
         self.roles_src = roles_src
         self.roles_path = self.path / 'roles'
         self.config_file = self.path / 'deployment.json'
-        self.repo = Repo.init(self.path)
         self.unstaged_changes = []
-        self._update_changed_files()
+
+        key_file = self.path / 'deployment.key'
+        vault_lock = self.path / '.lock'
+        self.vault = DeploymentVault(key_file, self.vault_files, vault_lock)
+
+        if not self.vault.locked:
+            self.repo = Repo.init(self.path)
+            self._update_changed_files()
 
     def _update_changed_files(self):
         """
