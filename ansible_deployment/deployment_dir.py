@@ -136,9 +136,20 @@ class DeploymentDirectory(AnsibleDeployment):
         if self.roles_path.exists():
             shutil.rmtree(self.roles_path)
 
-    def update(self, roles, playbook, inventory, scope='all'):
+    def update(self, deployment, scope='all'):
         """
         Update deployment directory.
+
+        Args:
+            deployment (Deployment): Initialized deployment object.
+            scope (str): Scope of update. May be:
+
+                        `all`
+                        `roles`
+                        `playbook`
+                        `inventory`
+                        `group_vars`
+                        `ansible_cfg`
 
         The update will pull changes from the roles src repo and
         will update all deployment files.
@@ -151,11 +162,11 @@ class DeploymentDirectory(AnsibleDeployment):
             self.repo.git.subtree('pull', '--prefix', 'roles', '--squash',
                                   self.roles_src.repo, self.roles_src.branch)
         if scope in ('all', 'playbook'):
-            playbook.write()
+            deployment.playbook.write()
         if scope in ('all', 'inventory'):
-            inventory.write()
+            deployment.inventory.write()
         if scope in ('all', 'group_vars'):
-            self._write_role_defaults_to_group_vars(roles)
+            self._write_role_defaults_to_group_vars(deployment.roles)
         if scope in ('all', 'ansible_cfg'):
             self._write_ansible_cfg()
         self._update_changed_files()
