@@ -43,13 +43,10 @@ class InventoryPlugin:
         """
         Update inventory.
 
-        Returns:
-            list: List of file names to add to deployment repo.
-
         Note:
-            This function is called from ansible_deployment and
+            This function is called from ansible_deployment.Inventory and
             is required to update the objects inventory attributes and
-            return a list of plugin specific files to add to the
-            deployment repository.
+            upadate `self.added_files` with a list of plugin specific
+            files to add to the deployment repository.
         """
-        return self.added_files
+        pass

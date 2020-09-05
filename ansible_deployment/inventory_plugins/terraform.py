@@ -35,7 +35,6 @@ class Terraform(InventoryPlugin):
         instances = self._filter_instances(tfstate_data)
         for resource_type in instances:
             self.resource_functions[resource_type](instances[resource_type])
-        return self.added_files
 
     def parse_hcloud_servers(self, instances):
         for instance in instances:
