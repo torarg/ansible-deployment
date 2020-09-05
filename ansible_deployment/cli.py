@@ -17,7 +17,10 @@ def cli(ctx):
         cli_helpers.err_exit("Deployment initialization failed.")
 
     if deployment.deployment_dir.vault.new_key:
-        new_key_message = click.style('New key generated: {}'.format(deployment.deployment_dir.vault.key_file), fg='red', bold=True)
+        new_key_message = click.style('New key generated: {}'.format(
+            deployment.deployment_dir.vault.key_file),
+                                      fg='red',
+                                      bold=True)
         click.echo(new_key_message)
     ctx.ensure_object(dict)
     ctx.obj['DEPLOYMENT'] = deployment
@@ -33,7 +36,7 @@ def init(ctx):
     current working directory.
     """
 
-    deployment = ctx.obj['DEPLOYMENT'] 
+    deployment = ctx.obj['DEPLOYMENT']
 
     ctx.invoke(show)
     if click.confirm('(Re)Initialize Deployment?'):
@@ -49,7 +52,7 @@ def show(ctx, attribute):
 
     Deployment information may be filtered by specifying attribute(s).
     """
-    deployment = ctx.obj['DEPLOYMENT'] 
+    deployment = ctx.obj['DEPLOYMENT']
     output = deployment
     if attribute:
         output = cli_helpers.filter_output_by_attribute(output, attribute)
@@ -66,7 +69,7 @@ def run(ctx, role):
     This will create a commit in the deployment repository
     containing the executed command.
     """
-    deployment = ctx.obj['DEPLOYMENT'] 
+    deployment = ctx.obj['DEPLOYMENT']
     if deployment.deployment_dir.repo.is_dirty():
         cli_helpers.err_exit('Deployment repo has to be clean.')
     deployment.run(role)
@@ -80,10 +83,11 @@ def delete(ctx):
 
     Deletes all created files and directories in deployment directory.
     """
-    deployment = ctx.obj['DEPLOYMENT'] 
+    deployment = ctx.obj['DEPLOYMENT']
     ctx.invoke(show)
     if click.confirm('Delete deployment?'):
         deployment.deployment_dir.delete()
+
 
 @cli.command()
 @click.pass_context
@@ -91,10 +95,12 @@ def lock(ctx):
     """
     Encrypt all deployment files except the roles directory.
     """
-    deployment = ctx.obj['DEPLOYMENT'] 
-    prompt = "Encrypt deployment with {}?".format(deployment.deployment_dir.vault.key_file)
+    deployment = ctx.obj['DEPLOYMENT']
+    prompt = "Encrypt deployment with {}?".format(
+        deployment.deployment_dir.vault.key_file)
     if click.confirm(prompt):
         deployment.deployment_dir.vault.lock()
+
 
 @cli.command()
 @click.pass_context
@@ -102,8 +108,9 @@ def unlock(ctx):
     """
     Decrypt all deployment files except the roles directory.
     """
-    deployment = ctx.obj['DEPLOYMENT'] 
-    prompt = "Decrypt deployment with {}?".format(deployment.deployment_dir.vault.key_file)
+    deployment = ctx.obj['DEPLOYMENT']
+    prompt = "Decrypt deployment with {}?".format(
+        deployment.deployment_dir.vault.key_file)
     if click.confirm(prompt):
         deployment.deployment_dir.vault.unlock()
 
@@ -115,13 +122,17 @@ def ssh(ctx, host):
     """
     Run 'ssh' command to connect to a inventory host.
     """
-    deployment = ctx.obj['DEPLOYMENT'] 
+    deployment = ctx.obj['DEPLOYMENT']
     deployment.ssh(host)
 
 
 @cli.command()
 @click.pass_context
-@click.argument('scope', type=click.Choice(('all','playbook', 'roles','inventory', 'group_vars', 'ansible_cfg')), required=False, default='all')
+@click.argument('scope',
+                type=click.Choice(('all', 'playbook', 'roles', 'inventory',
+                                   'group_vars', 'ansible_cfg')),
+                required=False,
+                default='all')
 def update(ctx, scope):
     """
     Updates all deployment files and directories.
@@ -137,13 +148,14 @@ def update(ctx, scope):
         scope (str): Update scope. Defaults to 'all'.
     """
 
-    deployment = ctx.obj['DEPLOYMENT'] 
+    deployment = ctx.obj['DEPLOYMENT']
     cli_helpers.check_environment(deployment)
     deployment.update(scope)
     files_to_commit = cli_helpers.prompt_for_update_choices(
         deployment.deployment_dir)
-    commit_message="deployment update with scope: {}".format(scope)
-    deployment.deployment_dir.update_git(files=files_to_commit, message=commit_message)
+    commit_message = "deployment update with scope: {}".format(scope)
+    deployment.deployment_dir.update_git(files=files_to_commit,
+                                         message=commit_message)
 
 
 def main():

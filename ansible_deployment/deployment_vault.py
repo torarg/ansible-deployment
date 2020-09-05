@@ -1,6 +1,7 @@
 from pathlib import Path
 from cryptography.fernet import Fernet
 
+
 class DeploymentVault:
     def __init__(self, key_file, vault_files, lock_file):
         self.new_key = False
@@ -9,7 +10,7 @@ class DeploymentVault:
         self.lock_file = Path(lock_file)
         self.locked = self.lock_file.exists()
         self._load_key()
-        
+
     def _load_key(self):
         if self.key_file.exists():
             with open(self.key_file, 'rb') as fobj:

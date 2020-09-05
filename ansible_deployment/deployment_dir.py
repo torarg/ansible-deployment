@@ -36,9 +36,7 @@ class DeploymentDirectory(AnsibleDeployment):
         '[defaults]', 'inventory = hosts.yml', 'host_key_checking = False'
     ]
     directory_layout = ('host_vars', 'group_vars', '.git')
-    deployment_files = [
-        'playbook.yml', 'hosts.yml', 'ansible.cfg'
-    ]
+    deployment_files = ['playbook.yml', 'hosts.yml', 'ansible.cfg']
     git_repo_content = deployment_files + [
         'host_vars', 'group_vars', 'deployment.json'
     ]
