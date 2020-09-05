@@ -8,6 +8,7 @@ class InventoryPlugin:
         hosts (dict): Hosts dict representing a hosts.yml file.
         host_vars (dict): Host vars dict.
         group_vars (dict): Group vars dict.
+        added_files (list): List of files added to deployment.
     """
     def __init__(self, config):
         self.all_hosts = {}
@@ -27,6 +28,7 @@ class InventoryPlugin:
         self.host_vars = {}
         self.group_vars = {}
         self._set_groups()
+        self.added_files = []
 
     def _set_groups(self):
         """
@@ -41,7 +43,13 @@ class InventoryPlugin:
         """
         Update inventory.
 
-        This function is called from ansible_deployment and
-        is required to update the objects inventory attributes.
+        Returns:
+            list: List of file names to add to deployment repo.
+
+        Note:
+            This function is called from ansible_deployment and
+            is required to update the objects inventory attributes and
+            return a list of plugin specific files to add to the
+            deployment repository.
         """
-        pass
+        return self.added_files
