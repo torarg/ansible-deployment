@@ -22,7 +22,7 @@ class DeploymentDirectory(AnsibleDeployment):
 
     Attributes:
         path (Path): Path to deployment directory.
-        roles_src (dict): Roles repo git information.
+        roles_src (RolesRepo): Namedtuple containing roles repo config.
         roles_path (Path): Path to deployment roles directory.
         config_file (Path): Path to deployment config file.
         repo (git.Repo): Deployment git repository.
