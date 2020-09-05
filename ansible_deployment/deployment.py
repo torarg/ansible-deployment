@@ -87,8 +87,11 @@ class Deployment(AnsibleDeployment):
         self.name = self.deployment_dir.path.name
         self.config = config
         self.roles = self._create_role_objects(config.roles)
-        self.inventory = Inventory(self.deployment_dir.path, self.config)
-        self.playbook = Playbook(self.deployment_dir.path / 'playbook.yml',
+        if not self.deployment_dir.vault.locked:
+            self.inventory = Inventory(self.deployment_dir.path, self.config)
+            self.deployment_dir.vault.files += self.inventory.plugin.added_files
+            self.deployment_dir.git_repo_content += self.inventory.plugin.added_files
+            self.playbook = Playbook(self.deployment_dir.path / 'playbook.yml',
                                  'all', self.roles)
 
     def _create_role_objects(self, role_names):

@@ -27,7 +27,7 @@ class Terraform(InventoryPlugin):
             return None
         with open(tfstate_file_path) as tfstate_file_stream:
             tfstate_data = json.load(tfstate_file_stream)
-            self.added_files += self.inventory_src
+            self.added_files += [self.inventory_src]
         return tfstate_data
 
     def update_inventory(self):
