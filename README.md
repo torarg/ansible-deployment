@@ -23,6 +23,36 @@ was my primary use case while writing this application.
 pip install .
 ```
 
+## configuration
+
+ansible-deployment requires a deployment.json configuration file
+to be present in the current working directory.
+
+### example
+```
+$ cd mydeployment/
+$ cat deployment.json
+{
+    "roles": [
+        "openbsd_install_from_rescue",
+        "bootstrap",
+        "wireguard",
+        "dns_server",
+        "webserver",
+        "mailserver",
+        "gitea",
+        "firewall",
+        "data_sync"
+    ],
+    "roles_src": {
+        "repo": "git@github.com:torarg/ansible-roles.git",
+        "branch": "master"
+    },
+    "inventory_plugin": "terraform",
+    "ansible_user": "ansible"
+}
+```
+
 ## usage
 
 ```
