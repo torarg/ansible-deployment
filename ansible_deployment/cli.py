@@ -9,8 +9,17 @@ deployment_config_path = Path.cwd() / 'deployment.json'
 
 @click.group()
 @click.version_option()
-def cli():
-    pass
+@click.pass_context
+def cli(ctx):
+    deployment = Deployment.load(deployment_config_path)
+
+    if not deployment:
+        cli_helpers.err_exit("Deployment initialization failed.")
+
+    if deployment.deployment_dir.vault.new_key:
+        click.echo("New key generated: {}".format(deployment.deployment_dir.vault.key_file))
+    ctx.ensure_object(dict)
+    ctx.obj['DEPLOYMENT'] = deployment
 
 
 @cli.command()
@@ -23,12 +32,7 @@ def init(ctx):
     current working directory.
     """
 
-    ansible_roles_src = {'repo': None, 'branch': None}
-
-    deployment = Deployment.load(deployment_config_path)
-
-    if not deployment:
-        cli_helpers.err_exit("Deployment initialization failed.")
+    deployment = ctx.obj['DEPLOYMENT'] 
 
     ctx.invoke(show)
     if click.confirm('(Re)Initialize Deployment?'):
@@ -36,14 +40,15 @@ def init(ctx):
 
 
 @cli.command()
+@click.pass_context
 @click.argument('attribute', required=False, nargs=-1)
-def show(attribute):
+def show(ctx, attribute):
     """
     Show deployment information. 
 
     Deployment information may be filtered by specifying attribute(s).
     """
-    deployment = Deployment.load(deployment_config_path)
+    deployment = ctx.obj['DEPLOYMENT'] 
     output = deployment
     if attribute:
         output = cli_helpers.filter_output_by_attribute(output, attribute)
@@ -51,15 +56,16 @@ def show(attribute):
 
 
 @cli.command()
+@click.pass_context
 @click.argument('role', required=False, nargs=-1)
-def run(role):
+def run(ctx, role):
     """
     Run deployment with ansible-playbook.
 
     This will create a commit in the deployment repository
     containing the executed command.
     """
-    deployment = Deployment.load(deployment_config_path)
+    deployment = ctx.obj['DEPLOYMENT'] 
     if deployment.deployment_dir.repo.is_dirty():
         cli_helpers.err_exit('Deployment repo has to be clean.')
     deployment.run(role)
@@ -73,45 +79,49 @@ def delete(ctx):
 
     Deletes all created files and directories in deployment directory.
     """
-    deployment = Deployment.load(deployment_config_path)
+    deployment = ctx.obj['DEPLOYMENT'] 
     ctx.invoke(show)
     if click.confirm('Delete deployment?'):
         deployment.deployment_dir.delete()
 
 @cli.command()
-def lock():
+@click.pass_context
+def lock(ctx):
     """
     Encrypt all deployment files except the roles directory.
     """
-    deployment = Deployment.load(deployment_config_path)
+    deployment = ctx.obj['DEPLOYMENT'] 
     prompt = "Encrypt deployment with {}?".format(deployment.deployment_dir.vault.key_file)
     if click.confirm(prompt):
         deployment.deployment_dir.vault.lock()
 
 @cli.command()
-def unlock():
+@click.pass_context
+def unlock(ctx):
     """
     Decrypt all deployment files except the roles directory.
     """
-    deployment = Deployment.load(deployment_config_path)
+    deployment = ctx.obj['DEPLOYMENT'] 
     prompt = "Decrypt deployment with {}?".format(deployment.deployment_dir.vault.key_file)
     if click.confirm(prompt):
         deployment.deployment_dir.vault.unlock()
 
 
 @cli.command()
+@click.pass_context
 @click.argument('host')
-def ssh(host):
+def ssh(ctx, host):
     """
     Run 'ssh' command to connect to a inventory host.
     """
-    deployment = Deployment.load(deployment_config_path)
+    deployment = ctx.obj['DEPLOYMENT'] 
     deployment.ssh(host)
 
 
 @cli.command()
+@click.pass_context
 @click.argument('scope', type=click.Choice(('all','playbook', 'roles','inventory', 'group_vars', 'ansible_cfg')), required=False, default='all')
-def update(scope):
+def update(ctx, scope):
     """
     Updates all deployment files and directories.
 
@@ -126,7 +136,7 @@ def update(scope):
         scope (str): Update scope. Defaults to 'all'.
     """
 
-    deployment = Deployment.load(deployment_config_path)
+    deployment = ctx.obj['DEPLOYMENT'] 
     cli_helpers.check_environment(deployment)
     deployment.update(scope)
     files_to_commit = cli_helpers.prompt_for_update_choices(
