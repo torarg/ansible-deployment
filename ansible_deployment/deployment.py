@@ -92,7 +92,7 @@ class Deployment(AnsibleDeployment):
             self.deployment_dir.vault.files += self.inventory.plugin.added_files
             self.deployment_dir.git_repo_content += self.inventory.plugin.added_files
             self.playbook = Playbook(self.deployment_dir.path / 'playbook.yml',
-                                 'all', self.roles)
+                                     'all', self.roles)
 
     def _create_role_objects(self, role_names):
         """

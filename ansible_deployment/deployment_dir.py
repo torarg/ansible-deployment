@@ -48,7 +48,7 @@ class DeploymentDirectory(AnsibleDeployment):
         self.roles_path = self.path / 'roles'
         self.roles_repo = None
 
-        self.git_repo_content = [] + self.deployment_files 
+        self.git_repo_content = [] + self.deployment_files
         self.git_repo_content += self.directory_layout[:-1]
         self.git_repo_content += [str(self.config_file)]
         self.unstaged_changes = []
@@ -132,7 +132,8 @@ class DeploymentDirectory(AnsibleDeployment):
         """
         self._create_deployment_directories()
         self.update_git('initial commit', force_commit=True)
-        Repo.clone_from(self._roles_src.repo, self.roles_path,
+        Repo.clone_from(self._roles_src.repo,
+                        self.roles_path,
                         branch=self._roles_src.branch)
         self._write_ansible_cfg()
 
