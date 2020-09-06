@@ -1,9 +1,9 @@
 from pathlib import Path
 from collections import namedtuple
-from ansible_deployment import (AnsibleDeployment, Role, Inventory, Playbook,
-                                DeploymentDirectory)
 import json
 import subprocess
+from ansible_deployment import (AnsibleDeployment, Role, Inventory, Playbook,
+                                DeploymentDirectory)
 
 RolesRepo = namedtuple('RolesRepo', 'repo branch')
 """
