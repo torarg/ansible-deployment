@@ -59,7 +59,7 @@ class DeploymentDirectory(AnsibleDeployment):
         if not self.vault.locked:
             self.repo = Repo.init(self.path)
             self._update_changed_files()
-            self.vault.files = self.repo.git.ls_files().split('\n')
+            self.vault.files = self.repo.git.ls_files().split('\n') + ['.git']
             if 'deployment.json' in self.vault.files:
                 self.vault.files.remove('deployment.json')
         if (self.roles_path / '.git').exists():
