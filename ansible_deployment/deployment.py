@@ -44,8 +44,6 @@ class Deployment(AnsibleDeployment):
         playbook (Playbook): Playbook object representing deployment playbook.
     """
 
-    filtered_values = ['playbook', 'inventory']
-
     def _load_config_file(config_file_path):
         """
         Loads deployment configuration from json file.

@@ -7,8 +7,8 @@ class AnsibleDeployment:
 
     The main purpose of this claass is to provide lookup and representation methods.
     """
-    filtered_attributes = []
-    filtered_values = []
+    filtered_attributes = ['config']
+    filtered_values = ['playbook', 'inventory', 'deployment_dir']
 
     def __getitem__(self, attribute):
         """
