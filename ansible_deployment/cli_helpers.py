@@ -47,7 +47,7 @@ def check_environment(deployment):
     elif not deployment.deployment_dir.roles_path.exists():
         err_exit("Deployment directory not initialized.")
     elif deployment.deployment_dir.roles_repo and \
-         deployment.deployment_dir.roles_repo.is_dirty():
+            deployment.deployment_dir.roles_repo.is_dirty():
         err_exit("Roles repo is dirty.")
 
 

@@ -15,7 +15,7 @@ class DeploymentVault(AnsibleDeployment):
         path (Path): Vault root directory.
         locked (bool): True if vault is currently locked.
         new_key (bool): True if a new key was created.
-        key_file (Path): Path to key file. 
+        key_file (Path): Path to key file.
                          Defaults to `self.path / 'deployment.key'`
         key (byte): Key used for encryption.
         files (sequence): Sequence of paths defining vault content.
