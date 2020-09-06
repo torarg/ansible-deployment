@@ -42,7 +42,7 @@ class Deployment(AnsibleDeployment):
         config (DeploymentConfig): Namedtuple containing deployment config.
         roles (list): List of Role objects associated with deployment.
         inventory (Inventory): Inventory object representing deployment inventory.
-        playbook (Playbok): Playbook object representing deployment playbook.
+        playbook (Playbook): Playbook object representing deployment playbook.
     """
 
     filtered_values = ['playbook', 'inventory']
