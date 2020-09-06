@@ -23,6 +23,7 @@ class DeploymentDirectory(AnsibleDeployment):
     Attributes:
         path (Path): Path to deployment directory.
         roles_path (Path): Path to deployment roles directory.
+        roles_repo (Repo): Roles src repository.
         config_file (Path): Path to deployment config file.
         repo (git.Repo): Deployment git repository.
         git_repo_content (list): List of files describing repo content.
@@ -39,10 +40,13 @@ class DeploymentDirectory(AnsibleDeployment):
     vault_files = deployment_files + list(directory_layout)
 
     def __init__(self, path, roles_src, config_file='deployment.json', vault_files=vault_files):
-        self.path = Path(path)
         self._roles_src = roles_src
-        self.roles_path = self.path / 'roles'
+
+        self.path = Path(path)
         self.config_file = self.path / 'deployment.json'
+
+        self.roles_path = self.path / 'roles'
+        self.roles_repo = None
 
         self.git_repo_content = [] + self.deployment_files 
         self.git_repo_content += self.directory_layout[:-1]
@@ -56,6 +60,8 @@ class DeploymentDirectory(AnsibleDeployment):
         if not self.vault.locked:
             self.repo = Repo.init(self.path)
             self._update_changed_files()
+        if (self.roles_path / '.git').exists():
+            self.roles_repo = Repo(self.roles_path)
 
     def _update_changed_files(self):
         """
@@ -125,8 +131,8 @@ class DeploymentDirectory(AnsibleDeployment):
         """
         self._create_deployment_directories()
         self.update_git('initial commit', force_commit=True)
-        self.repo.git.subtree('add', '--prefix', 'roles', '--squash',
-                              self._roles_src.repo, self._roles_src.branch)
+        Repo.clone_from(self._roles_src.repo, self.roles_path,
+                        branch=self._roles_src.branch)
         self._write_ansible_cfg()
 
     def delete(self):
@@ -169,8 +175,7 @@ class DeploymentDirectory(AnsibleDeployment):
         if not self.roles_path.exists():
             return None
         if scope in ('all', 'roles'):
-            self.repo.git.subtree('pull', '--prefix', 'roles', '--squash',
-                                  self._roles_src.repo, self._roles_src.branch)
+            Repo(self.roles_path).remotes.origin.pull()
         if scope in ('all', 'playbook'):
             deployment.playbook.write()
         if scope in ('all', 'inventory'):
