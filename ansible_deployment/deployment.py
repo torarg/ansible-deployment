@@ -168,9 +168,3 @@ class Deployment(AnsibleDeployment):
                 'ssh', '-l', host_info['ansible_user'],
                 host_info['ansible_host']
             ])
-
-    def update(self, scope='all'):
-        """
-        Update `self.deploymentr_directory`.
-        """
-        self.deployment_dir.update(self, scope)

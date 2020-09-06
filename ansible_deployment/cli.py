@@ -150,7 +150,7 @@ def update(ctx, scope):
 
     deployment = ctx.obj['DEPLOYMENT']
     cli_helpers.check_environment(deployment)
-    deployment.update(scope)
+    deployment.deployment_dir.update(deployment, scope)
     files_to_commit = cli_helpers.prompt_for_update_choices(
         deployment.deployment_dir)
     commit_message = "deployment update with scope: {}".format(scope)
