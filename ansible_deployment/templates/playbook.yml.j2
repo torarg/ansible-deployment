@@ -54,6 +54,7 @@
   - name: include role {{ role.name }}
     import_role:
         name: {{ role.name }}
+    when: '"{{ role.name }}" in group_names'
     tags:
       - {{ role.name }}
 
