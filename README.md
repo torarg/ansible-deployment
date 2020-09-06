@@ -2,16 +2,29 @@
 
 ## overview
 
-ansible-deployment is a cli application for generating deployment
-directories from an inventory plugin and a set of roles.
+ansible-deployment is a cli application managing ansible deployments.
 
-The deployment directory includes:
+It features:
+    - generating a deployment directory from:
+        - an ansible roles git repository
+        - an inventory plugin
+        - a config file defining roles and inventory plugin
+    - the deployment directory will include 
+        playbook.yml: a templated playbook including specified roles
+        group_vars/*: containing each role's defaults seperated by group
+        host_vars/* : containing inventory plugin information
+        hosts.yml   : inventory file with host and group assignments
+        .git        : a git repository tracking changes the deployment
 
-- a hosts.yml file containing all hosts and a group for every imported role
-- a group_vars directory containing all role defaults as group vars
-- a host_vars directory containing inventory plugin variables
-- a playbook template which imports and tags used roles
-- a git repository tracking the state of the deployment
+The idea of this tool is to enforce structure on ansible role development
+and usage. All deployment roles' default variables will be written
+as group_vars into the deployment inventory. So ideally ansible roles
+used with ansible-deployment have all their variables that reflect
+deployment specific configuration declared as such.
+
+Each role will add an inventory group with the same name and will have 
+a group called 'ansible-deployment' as their child and all parsed hosts
+will be added to this 'ansible-deployment' group.
 
 Currently the only supported inventory plugin is 'terraform' and so far
 it only supports the use of 'hcloud' resources since managing those
@@ -31,6 +44,10 @@ to be present in the current working directory.
 ### example
 ```
 $ cd mydeployment/
+$ ls -l
+total 16
+-rw-r--r--  1 mw  staff   408  6 Sep 23:28 deployment.json
+-rw-r--r--  1 mw  staff  3472  6 Sep 23:29 terraform.tfstate
 $ cat deployment.json
 {
     "roles": [
@@ -51,6 +68,17 @@ $ cat deployment.json
     "inventory_plugin": "terraform",
     "ansible_user": "ansible"
 }
+$ ansible-deployment init
+$ ls -l
+-rw-r--r--   1 mw  staff    58  7 Sep 00:22 ansible.cfg
+-rw-r--r--   1 mw  staff   408  6 Sep 23:28 deployment.json
+-r--------   1 mw  staff    44  5 Sep 16:11 deployment.key
+drwxr-xr-x  11 mw  staff   352  7 Sep 00:22 group_vars
+drwxr-xr-x   3 mw  staff    96  7 Sep 00:22 host_vars
+-rw-r--r--   1 mw  staff   686  7 Sep 00:22 hosts.yml
+-rw-r--r--   1 mw  staff  2544  7 Sep 00:22 playbook.yml
+drwxr-xr-x  22 mw  staff   704  7 Sep 00:22 roles
+-rw-r--r--   1 mw  staff  3472  6 Sep 23:29 terraform.tfstate
 ```
 
 ## usage
