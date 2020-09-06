@@ -39,7 +39,7 @@ class DeploymentDirectory(AnsibleDeployment):
     deployment_files = ['playbook.yml', 'hosts.yml', 'ansible.cfg']
     vault_files = deployment_files + list(directory_layout)
 
-    def __init__(self, path, roles_src, config_file='deployment.json', vault_files=vault_files):
+    def __init__(self, path, roles_src, config_file='deployment.json'):
         self._roles_src = roles_src
 
         self.path = Path(path)
@@ -54,12 +54,13 @@ class DeploymentDirectory(AnsibleDeployment):
         self.unstaged_changes = []
 
         key_file = self.path / 'deployment.key'
-        vault_lock = self.path / '.lock'
-        self.vault = DeploymentVault(vault_files, self.path)
+        self.vault = DeploymentVault(self.vault_files, self.path)
 
         if not self.vault.locked:
             self.repo = Repo.init(self.path)
             self._update_changed_files()
+            self.vault.files = self.repo.git.ls_files().split('\n')
+            self.vault.files.remove('deployment.json')
         if (self.roles_path / '.git').exists():
             self.roles_repo = Repo(self.roles_path)
 
