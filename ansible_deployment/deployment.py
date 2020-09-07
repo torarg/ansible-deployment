@@ -87,7 +87,7 @@ class Deployment(AnsibleDeployment):
         if not self.deployment_dir.vault.locked:
             self.inventory = Inventory(self.deployment_dir.path, self.config)
             self.deployment_dir.vault.files += self.inventory.plugin.added_files
-            self.deployment_dir.git_repo_content += self.inventory.plugin.added_files
+            self.deployment_dir.deployment_repo.content += self.inventory.plugin.added_files
             self.playbook = Playbook(self.deployment_dir.path / 'playbook.yml',
                                      'all', self.roles)
 
@@ -123,7 +123,7 @@ class Deployment(AnsibleDeployment):
         self.deployment_dir.update(self)
         self.playbook.write()
         self.inventory.write()
-        self.deployment_dir.update_git(message="add deployment files")
+        self.deployment_dir.deployment_repo.update(message="add deployment files")
 
     def save(self):
         """
@@ -147,7 +147,7 @@ class Deployment(AnsibleDeployment):
         command = ['ansible-playbook', 'playbook.yml']
         if tags:
             command += ['--tags', ','.join(tags)]
-        self.deployment_dir.update_git('Deployment run: {}'.format(command),
+        self.deployment_dir.deployment_repo.update('Deployment run: {}'.format(command),
                                        files=[],
                                        force_commit=True)
         subprocess.run(command)
