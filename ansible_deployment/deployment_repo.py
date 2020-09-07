@@ -2,9 +2,10 @@ import gitdb.exc as git_exc
 from collections import namedtuple
 from pathlib import Path
 from git import Repo
+from ansible_deployment.class_skeleton import AnsibleDeployment
 
 
-class DeploymentRepo:
+class DeploymentRepo(AnsibleDeployment):
     """
     Represents a git repository used with ansible_deployment.
 
