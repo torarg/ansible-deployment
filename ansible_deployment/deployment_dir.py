@@ -43,19 +43,22 @@ class DeploymentDirectory(AnsibleDeployment):
         self.config_file = self.path / 'deployment.json'
 
         self.roles_path = self.path / 'roles'
-        self.roles_repo = DeploymentRepo(self.roles_path, remote_config=roles_src)
+        self.roles_repo = DeploymentRepo(self.roles_path,
+                                         remote_config=roles_src)
 
         git_repo_content = [] + self.deployment_files
         git_repo_content += self.directory_layout[:-1]
         git_repo_content += [str(self.config_file)]
-        self.deployment_repo = DeploymentRepo(self.path, files=git_repo_content)
+        self.deployment_repo = DeploymentRepo(self.path,
+                                              files=git_repo_content)
 
         key_file = self.path / 'deployment.key'
         self.vault = DeploymentVault(self.vault_files, self.path)
 
         if not self.vault.locked and self.deployment_repo.repo:
             self.deployment_repo.update_changed_files()
-            self.vault.files = self.deployment_repo.repo.git.ls_files().split('\n') + ['.git']
+            self.vault.files = self.deployment_repo.repo.git.ls_files().split(
+                '\n') + ['.git']
             if 'deployment.json' in self.vault.files:
                 self.vault.files.remove('deployment.json')
 
@@ -91,7 +94,7 @@ class DeploymentDirectory(AnsibleDeployment):
                 commit_message = 'Add new group_vars file from role {}'.format(
                     role.name)
                 self.deployment_repo.update(commit_message,
-                                files=[str(group_vars_file_path)])
+                                            files=[str(group_vars_file_path)])
 
     def _write_ansible_cfg(self):
         """
@@ -161,4 +164,3 @@ class DeploymentDirectory(AnsibleDeployment):
         if scope in ('all', 'ansible_cfg'):
             self._write_ansible_cfg()
         self.deployment_repo.update_changed_files()
-

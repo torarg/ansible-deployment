@@ -19,8 +19,8 @@ def cli(ctx):
     if deployment.deployment_dir.vault.new_key:
         new_key_message = click.style('New key generated: {}'.format(
             deployment.deployment_dir.vault.key_file),
-            fg='red',
-            bold=True)
+                                      fg='red',
+                                      bold=True)
         click.echo(new_key_message)
     ctx.ensure_object(dict)
     ctx.obj['DEPLOYMENT'] = deployment
@@ -99,8 +99,8 @@ def lock(ctx):
     prompt = "Encrypt deployment with {}?".format(
         deployment.deployment_dir.vault.key_file)
     if click.confirm(prompt):
-        deployment.deployment_dir.deployment_repo.update(message='deployment was locked',
-                                             force_commit=True)
+        deployment.deployment_dir.deployment_repo.update(
+            message='deployment was locked', force_commit=True)
         deployment.deployment_dir.vault.lock()
 
 
@@ -116,8 +116,8 @@ def unlock(ctx):
     if click.confirm(prompt):
         deployment.deployment_dir.vault.unlock()
         deployment = Deployment.load(deployment_config_path)
-        deployment.deployment_dir.deployment_repo.update(message='deployment was unlocked',
-                                             force_commit=True)
+        deployment.deployment_dir.deployment_repo.update(
+            message='deployment was unlocked', force_commit=True)
 
 
 @cli.command()
@@ -160,7 +160,7 @@ def update(ctx, scope):
         deployment.deployment_dir)
     commit_message = "deployment update with scope: {}".format(scope)
     deployment.deployment_dir.deployment_repo.update(files=files_to_commit,
-                                         message=commit_message)
+                                                     message=commit_message)
 
 
 def main():

@@ -62,7 +62,9 @@ def echo_file_diff(deployment_dir, file_name):
     if file_name in deployment_dir.deployment_repo.changes['unstaged']:
         click.echo(deployment_dir.deployment_repo.repo.git.diff(file_name))
     elif file_name in deployment_dir.deployment_repo['staged']:
-        click.echo(deployment_dir.deployment_repo.repo.git.diff('--staged', file_name))
+        click.echo(
+            deployment_dir.deployment_repo.repo.git.diff(
+                '--staged', file_name))
 
 
 def prompt_for_update_choices(deployment_dir):

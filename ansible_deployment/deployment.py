@@ -43,7 +43,6 @@ class Deployment(AnsibleDeployment):
         inventory (Inventory): Inventory object representing deployment inventory.
         playbook (Playbook): Playbook object representing deployment playbook.
     """
-
     def _load_config_file(config_file_path):
         """
         Loads deployment configuration from json file.
@@ -57,7 +56,7 @@ class Deployment(AnsibleDeployment):
         with open(config_file_path) as config_file_stream:
             config = json.load(config_file_stream)
         roles_src = RepoConfig(config["roles_src"]['repo'],
-                              config["roles_src"]['branch'])
+                               config["roles_src"]['branch'])
         config['roles_src'] = roles_src
 
         return DeploymentConfig(**config)
@@ -123,7 +122,8 @@ class Deployment(AnsibleDeployment):
         self.deployment_dir.update(self)
         self.playbook.write()
         self.inventory.write()
-        self.deployment_dir.deployment_repo.update(message="add deployment files")
+        self.deployment_dir.deployment_repo.update(
+            message="add deployment files")
 
     def save(self):
         """
@@ -147,9 +147,8 @@ class Deployment(AnsibleDeployment):
         command = ['ansible-playbook', 'playbook.yml']
         if tags:
             command += ['--tags', ','.join(tags)]
-        self.deployment_dir.deployment_repo.update('Deployment run: {}'.format(command),
-                                       files=[],
-                                       force_commit=True)
+        self.deployment_dir.deployment_repo.update(
+            'Deployment run: {}'.format(command), files=[], force_commit=True)
         subprocess.run(command)
 
     def ssh(self, host):

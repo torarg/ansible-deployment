@@ -26,7 +26,7 @@ class DeploymentRepo(AnsibleDeployment):
         self.path = path
 
         self.content = files
-        self.changes = {'all': [],'staged': [], 'unstaged': []}
+        self.changes = {'all': [], 'staged': [], 'unstaged': []}
         self._git_path = self.path / '.git'
         self._encrypted = (self._git_path / 'HEAD.enc').exists()
 
@@ -35,7 +35,6 @@ class DeploymentRepo(AnsibleDeployment):
             self.update_changed_files()
         else:
             self.repo = None
-
 
     def update_changed_files(self):
         """
@@ -91,7 +90,8 @@ class DeploymentRepo(AnsibleDeployment):
         Clones the repository specified in `self.remote_config` into
         `self.path`
         """
-        self.repo = Repo.clone_from(self.remote_config.repo, self.path,
+        self.repo = Repo.clone_from(self.remote_config.repo,
+                                    self.path,
                                     branch=self.remote_config.branch)
 
     def init(self):
