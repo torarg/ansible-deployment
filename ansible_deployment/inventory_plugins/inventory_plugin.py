@@ -10,6 +10,7 @@ class InventoryPlugin:
         group_vars (dict): Group vars dict.
         added_files (list): List of files added to deployment.
     """
+
     def __init__(self, config):
         self.all_hosts = {}
         self.deployment_group = {}

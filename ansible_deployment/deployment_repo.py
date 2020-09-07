@@ -21,6 +21,7 @@ class DeploymentRepo(AnsibleDeployment):
         changes (dict): Dictionary containing repository changes.
                         Valid keys are: 'all', 'staged' and 'unstaged'.
     """
+
     def __init__(self, path, remote_config=None, files=[]):
         self.remote_config = remote_config
         self.path = path
