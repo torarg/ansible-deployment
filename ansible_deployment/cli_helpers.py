@@ -41,13 +41,13 @@ def check_environment(deployment):
     """
     if not deployment:
         err_exit("Failed to load deployment.json")
-    elif deployment.deployment_dir.repo.is_dirty():
+    elif deployment.deployment_dir.deployment_repo.repo.is_dirty():
         err_exit("Repo is dirty. Unstaged changes: {}".format(
-            deployment.deployment_dir.unstaged_changes))
+            deployment.deployment_dir.deployment_repo.changes['unstaged']))
     elif not deployment.deployment_dir.roles_path.exists():
         err_exit("Deployment directory not initialized.")
-    elif deployment.deployment_dir.roles_repo and \
-            deployment.deployment_dir.roles_repo.is_dirty():
+    elif deployment.deployment_dir.roles_repo.repo and \
+            deployment.deployment_dir.roles_repo.repo.is_dirty():
         err_exit("Roles repo is dirty.")
 
 
@@ -59,10 +59,10 @@ def echo_file_diff(deployment_dir, file_name):
         deployment_dir (DeploymentDirectory): Deployment directory.
         file_name (str): File name to display diff for.
     """
-    if file_name in deployment_dir.unstaged_changes:
-        click.echo(deployment_dir.repo.git.diff(file_name))
-    elif file_name in deployment_dir.staged_changes:
-        click.echo(deployment_dir.repo.git.diff('--staged', file_name))
+    if file_name in deployment_dir.deployment_repo.changes['unstaged']:
+        click.echo(deployment_dir.deployment_repo.repo.git.diff(file_name))
+    elif file_name in deployment_dir.deployment_repo['staged']:
+        click.echo(deployment_dir.deployment_repo.repo.git.diff('--staged', file_name))
 
 
 def prompt_for_update_choices(deployment_dir):
@@ -80,9 +80,9 @@ def prompt_for_update_choices(deployment_dir):
     prompt_choice = click.Choice(('a', 'd', 'k'))
     prompt_actions = {
         'a': files_to_commit.append,
-        'd': deployment_dir.repo.git.checkout
+        'd': deployment_dir.deployment_repo.repo.git.checkout
     }
-    for file_name in deployment_dir.changes:
+    for file_name in deployment_dir.deployment_repo.changes['all']:
         echo_file_diff(deployment_dir, file_name)
         update_choice = click.prompt(prompt_message,
                                      default='k',

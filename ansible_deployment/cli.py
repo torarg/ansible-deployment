@@ -70,7 +70,7 @@ def run(ctx, role):
     containing the executed command.
     """
     deployment = ctx.obj['DEPLOYMENT']
-    if deployment.deployment_dir.repo.is_dirty():
+    if deployment.deployment_dir.deployment_repo.repo.is_dirty():
         cli_helpers.err_exit('Deployment repo has to be clean.')
     deployment.run(role)
 
@@ -99,7 +99,7 @@ def lock(ctx):
     prompt = "Encrypt deployment with {}?".format(
         deployment.deployment_dir.vault.key_file)
     if click.confirm(prompt):
-        deployment.deployment_dir.update_git(message='deployment was locked',
+        deployment.deployment_dir.deployment_repo.update(message='deployment was locked',
                                              force_commit=True)
         deployment.deployment_dir.vault.lock()
 
@@ -116,7 +116,7 @@ def unlock(ctx):
     if click.confirm(prompt):
         deployment.deployment_dir.vault.unlock()
         deployment = Deployment.load(deployment_config_path)
-        deployment.deployment_dir.update_git(message='deployment was unlocked',
+        deployment.deployment_dir.deployment_repo.update(message='deployment was unlocked',
                                              force_commit=True)
 
 
@@ -159,7 +159,7 @@ def update(ctx, scope):
     files_to_commit = cli_helpers.prompt_for_update_choices(
         deployment.deployment_dir)
     commit_message = "deployment update with scope: {}".format(scope)
-    deployment.deployment_dir.update_git(files=files_to_commit,
+    deployment.deployment_dir.deployment_repo.update(files=files_to_commit,
                                          message=commit_message)
 
 

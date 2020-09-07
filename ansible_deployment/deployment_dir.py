@@ -6,6 +6,7 @@ from cryptography.fernet import Fernet
 from ansible_deployment.class_skeleton import AnsibleDeployment
 from ansible_deployment.role import Role
 from ansible_deployment.deployment_vault import DeploymentVault
+from ansible_deployment.deployment_repo import DeploymentRepo
 import yaml
 import shutil
 
@@ -16,21 +17,17 @@ class DeploymentDirectory(AnsibleDeployment):
 
     Args:
         path (path): Path to deployment directory.
-        roles_src (RolesRepo): Namedtuple containing roles repo config.
+        roles_src (RepoConfig): Namedtuple containing roles repo config.
         config_file (path): Path to deployment config file.
         vault_files (sequence): Sequence of files to put in vault.
 
     Attributes:
         path (Path): Path to deployment directory.
         roles_path (Path): Path to deployment roles directory.
-        roles_repo (Repo): Roles src repository.
+        roles_repo (DeploymentRepo): Roles src repository.
+        deployment_repo (DeploymentRepo): Deployment git repository.
         config_file (Path): Path to deployment config file.
-        repo (git.Repo): Deployment git repository.
-        git_repo_content (list): List of files describing repo content.
         vault (DeploymentVault): Vault object for file encryption.
-        unstaged_changes (list): List of unstaged files.
-        staged_changes (list): List of staged files.
-        changes (list): List of all changed files.
     """
     ansible_cfg = [
         '[defaults]', 'inventory = hosts.yml', 'host_key_checking = False'
@@ -46,44 +43,21 @@ class DeploymentDirectory(AnsibleDeployment):
         self.config_file = self.path / 'deployment.json'
 
         self.roles_path = self.path / 'roles'
-        self.roles_repo = None
+        self.roles_repo = DeploymentRepo(self.roles_path, remote_config=roles_src)
 
-        self.git_repo_content = [] + self.deployment_files
-        self.git_repo_content += self.directory_layout[:-1]
-        self.git_repo_content += [str(self.config_file)]
-        self.unstaged_changes = []
+        git_repo_content = [] + self.deployment_files
+        git_repo_content += self.directory_layout[:-1]
+        git_repo_content += [str(self.config_file)]
+        self.deployment_repo = DeploymentRepo(self.path, files=git_repo_content)
 
         key_file = self.path / 'deployment.key'
         self.vault = DeploymentVault(self.vault_files, self.path)
 
-        if not self.vault.locked:
-            self.repo = Repo.init(self.path)
-            self._update_changed_files()
-            self.vault.files = self.repo.git.ls_files().split('\n') + ['.git']
+        if not self.vault.locked and self.deployment_repo.repo:
+            self.deployment_repo.update_changed_files()
+            self.vault.files = self.deployment_repo.repo.git.ls_files().split('\n') + ['.git']
             if 'deployment.json' in self.vault.files:
                 self.vault.files.remove('deployment.json')
-        if (self.roles_path / '.git').exists():
-            self.roles_repo = Repo(self.roles_path)
-
-    def _update_changed_files(self):
-        """
-        Set attributes representing file changes to current repository state.
-
-        Updates the following attributes:
-            `unstaged_changes`
-            `staged_changes`
-            `changes`
-        """
-        self.unstaged_changes = [
-            diff.a_path for diff in self.repo.index.diff(None)
-        ]
-        try:
-            self.staged_changes = [
-                diff.a_path for diff in self.repo.index.diff('HEAD')
-            ]
-        except git_exc.BadName:
-            self.staged_changes = []
-        self.changes = self.staged_changes + self.unstaged_changes
 
     def _create_deployment_directories(self):
         """
@@ -116,7 +90,7 @@ class DeploymentDirectory(AnsibleDeployment):
             if is_new:
                 commit_message = 'Add new group_vars file from role {}'.format(
                     role.name)
-                self.update_git(commit_message,
+                self.deployment_repo.update(commit_message,
                                 files=[str(group_vars_file_path)])
 
     def _write_ansible_cfg(self):
@@ -132,10 +106,9 @@ class DeploymentDirectory(AnsibleDeployment):
         Create deployment directory.
         """
         self._create_deployment_directories()
-        self.update_git('initial commit', force_commit=True)
-        Repo.clone_from(self._roles_src.repo,
-                        self.roles_path,
-                        branch=self._roles_src.branch)
+        self.deployment_repo.init()
+        self.deployment_repo.update('initial commit', force_commit=True)
+        self.roles_repo.clone()
         self._write_ansible_cfg()
 
     def delete(self):
@@ -178,7 +151,7 @@ class DeploymentDirectory(AnsibleDeployment):
         if not self.roles_path.exists():
             return None
         if scope in ('all', 'roles'):
-            Repo(self.roles_path).remotes.origin.pull()
+            self.roles_repo.pull()
         if scope in ('all', 'playbook'):
             deployment.playbook.write()
         if scope in ('all', 'inventory'):
@@ -187,28 +160,5 @@ class DeploymentDirectory(AnsibleDeployment):
             self._write_role_defaults_to_group_vars(deployment.roles)
         if scope in ('all', 'ansible_cfg'):
             self._write_ansible_cfg()
-        self._update_changed_files()
+        self.deployment_repo.update_changed_files()
 
-    def update_git(self,
-                   message="Automatic ansible-deployment update.",
-                   files=None,
-                   force_commit=False):
-        """
-        Updates the deployment git repository.
-
-        Args:
-            message (str): Commit message.
-            files (sequence): Files to commit.
-            force_commit (bool): Whether or not to force an empty commit.
-
-        The update will add the specified files and commit them.
-        """
-        if files is None:
-            files = self.git_repo_content
-        for git_file in files:
-            if Path(git_file).exists():
-                self.repo.index.add(git_file)
-        self._update_changed_files()
-        if len(self.staged_changes) > 0 or force_commit:
-            self.repo.index.commit("ansible-deployment: {}".format(
-                message.capitalize()))

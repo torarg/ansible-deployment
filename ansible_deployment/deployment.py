@@ -5,9 +5,9 @@ import subprocess
 from ansible_deployment import (AnsibleDeployment, Role, Inventory, Playbook,
                                 DeploymentDirectory)
 
-RolesRepo = namedtuple('RolesRepo', 'repo branch')
+RepoConfig = namedtuple('RepoConfig', 'repo branch')
 """
-Represents the roles git repository configuration.
+Represents a remote git repository configuration.
 
 Args:
     repo (str): A clonable git repository path or url.
@@ -21,7 +21,7 @@ Represents the deployment configuration.
 
 Args:
     roles (sequence): A sequence of role names.
-    roles_src (RolesRepo): Namedtuple containing roles repo information.
+    roles_src (RepoConfig): Namedtuple containing roles repo information.
     inventory_plugin (str): Name of the inventory plugin to use.
     ansible_user (str): Name of the default ansible user.
 """
@@ -56,7 +56,7 @@ class Deployment(AnsibleDeployment):
         """
         with open(config_file_path) as config_file_stream:
             config = json.load(config_file_stream)
-        roles_src = RolesRepo(config["roles_src"]['repo'],
+        roles_src = RepoConfig(config["roles_src"]['repo'],
                               config["roles_src"]['branch'])
         config['roles_src'] = roles_src
 
@@ -87,7 +87,7 @@ class Deployment(AnsibleDeployment):
         if not self.deployment_dir.vault.locked:
             self.inventory = Inventory(self.deployment_dir.path, self.config)
             self.deployment_dir.vault.files += self.inventory.plugin.added_files
-            self.deployment_dir.git_repo_content += self.inventory.plugin.added_files
+            self.deployment_dir.deployment_repo.content += self.inventory.plugin.added_files
             self.playbook = Playbook(self.deployment_dir.path / 'playbook.yml',
                                      'all', self.roles)
 
@@ -123,7 +123,7 @@ class Deployment(AnsibleDeployment):
         self.deployment_dir.update(self)
         self.playbook.write()
         self.inventory.write()
-        self.deployment_dir.update_git(message="add deployment files")
+        self.deployment_dir.deployment_repo.update(message="add deployment files")
 
     def save(self):
         """
@@ -147,7 +147,7 @@ class Deployment(AnsibleDeployment):
         command = ['ansible-playbook', 'playbook.yml']
         if tags:
             command += ['--tags', ','.join(tags)]
-        self.deployment_dir.update_git('Deployment run: {}'.format(command),
+        self.deployment_dir.deployment_repo.update('Deployment run: {}'.format(command),
                                        files=[],
                                        force_commit=True)
         subprocess.run(command)
