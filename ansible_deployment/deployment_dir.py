@@ -17,7 +17,7 @@ class DeploymentDirectory(AnsibleDeployment):
 
     Args:
         path (path): Path to deployment directory.
-        roles_src (RolesRepo): Namedtuple containing roles repo config.
+        roles_src (RepoConfig): Namedtuple containing roles repo config.
         config_file (path): Path to deployment config file.
         vault_files (sequence): Sequence of files to put in vault.
 

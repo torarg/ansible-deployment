@@ -5,9 +5,9 @@ import subprocess
 from ansible_deployment import (AnsibleDeployment, Role, Inventory, Playbook,
                                 DeploymentDirectory)
 
-RolesRepo = namedtuple('RolesRepo', 'repo branch')
+RepoConfig = namedtuple('RepoConfig', 'repo branch')
 """
-Represents the roles git repository configuration.
+Represents a remote git repository configuration.
 
 Args:
     repo (str): A clonable git repository path or url.
@@ -21,7 +21,7 @@ Represents the deployment configuration.
 
 Args:
     roles (sequence): A sequence of role names.
-    roles_src (RolesRepo): Namedtuple containing roles repo information.
+    roles_src (RepoConfig): Namedtuple containing roles repo information.
     inventory_plugin (str): Name of the inventory plugin to use.
     ansible_user (str): Name of the default ansible user.
 """
@@ -56,7 +56,7 @@ class Deployment(AnsibleDeployment):
         """
         with open(config_file_path) as config_file_stream:
             config = json.load(config_file_stream)
-        roles_src = RolesRepo(config["roles_src"]['repo'],
+        roles_src = RepoConfig(config["roles_src"]['repo'],
                               config["roles_src"]['branch'])
         config['roles_src'] = roles_src
 
