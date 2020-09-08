@@ -11,6 +11,7 @@ It features:
     - an inventory plugin
     - a config file defining roles and inventory plugin
 - the deployment directory will include 
+
     playbook.yml: a templated playbook including specified roles
     group_vars/*: containing each role's defaults seperated by group
     host_vars/* : containing inventory plugin information
