@@ -1,3 +1,7 @@
+"""
+Helper functions for cli module.
+"""
+
 import click
 
 
@@ -78,7 +82,8 @@ def prompt_for_update_choices(deployment_dir):
         list: List of file names with update strategy 'apply'.
     """
     files_to_commit = []
-    prompt_message = 'Please select update strategy ([a]pply, [d]iscard, [k]eep unstaged)'
+    prompt_message = 'Please select update strategy '
+    prompt_message += '([a]pply, [d]iscard, [k]eep unstaged)'
     prompt_choice = click.Choice(('a', 'd', 'k'))
     prompt_actions = {
         'a': files_to_commit.append,

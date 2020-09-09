@@ -1,10 +1,17 @@
+"""
+This module contains the DeploymentDirectory class.
+
+It may also be used for DeploymentDirectory related helper functions
+or classes in the future.
+"""
+
+import shutil
 from pathlib import Path
+import yaml
 from ansible_deployment.class_skeleton import AnsibleDeployment
 from ansible_deployment.role import Role
 from ansible_deployment.deployment_vault import DeploymentVault
 from ansible_deployment.deployment_repo import DeploymentRepo
-import yaml
-import shutil
 
 
 class DeploymentDirectory(AnsibleDeployment):
@@ -32,7 +39,7 @@ class DeploymentDirectory(AnsibleDeployment):
     deployment_files = ['playbook.yml', 'hosts.yml', 'ansible.cfg']
     vault_files = deployment_files + list(directory_layout)
 
-    def __init__(self, path, roles_src, config_file='deployment.json'):
+    def __init__(self, path, roles_src):
         self._roles_src = roles_src
 
         self.path = Path(path)
@@ -48,7 +55,6 @@ class DeploymentDirectory(AnsibleDeployment):
         self.deployment_repo = DeploymentRepo(self.path,
                                               files=git_repo_content)
 
-        key_file = self.path / 'deployment.key'
         self.vault = DeploymentVault(self.vault_files, self.path)
 
         if not self.vault.locked and self.deployment_repo.repo:
@@ -145,10 +151,10 @@ class DeploymentDirectory(AnsibleDeployment):
         The update will pull changes from the roles src repo and
         will update all deployment files.
 
-        The update will NOT commit any changes to the main deployment directory.
+        The update will NOT commit any deployment specific changes.
         """
         if not self.roles_path.exists():
-            return None
+            scope = None
         if scope in ('all', 'roles'):
             self.roles_repo.pull()
         if scope in ('all', 'playbook'):

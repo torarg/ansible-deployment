@@ -1,3 +1,7 @@
+"""
+This module contains the Deployment class and related data structures.
+"""
+
 from pathlib import Path
 from collections import namedtuple
 import json
@@ -40,9 +44,10 @@ class Deployment(AnsibleDeployment):
         name (str): Deployment name.
         config (DeploymentConfig): Namedtuple containing deployment config.
         roles (list): List of Role objects associated with deployment.
-        inventory (Inventory): Inventory object representing deployment inventory.
+        inventory (Inventory): Inventory object.
         playbook (Playbook): Playbook object representing deployment playbook.
     """
+    @staticmethod
     def _load_config_file(config_file_path):
         """
         Loads deployment configuration from json file.
@@ -61,6 +66,7 @@ class Deployment(AnsibleDeployment):
 
         return DeploymentConfig(**config)
 
+    @staticmethod
     def load(config_file):
         """
         Initializes deployment object from config file.
@@ -85,8 +91,9 @@ class Deployment(AnsibleDeployment):
         self.roles = self._create_role_objects(config.roles)
         if not self.deployment_dir.vault.locked:
             self.inventory = Inventory(self.deployment_dir.path, self.config)
-            self.deployment_dir.vault.files += self.inventory.plugin.added_files
-            self.deployment_dir.deployment_repo.content += self.inventory.plugin.added_files
+            added_files = self.inventory.plugin.added_files
+            self.deployment_dir.vault.files += added_files
+            self.deployment_dir.deployment_repo.content += added_files
             self.playbook = Playbook(self.deployment_dir.path / 'playbook.yml',
                                      'all', self.roles)
 
@@ -149,7 +156,7 @@ class Deployment(AnsibleDeployment):
             command += ['--tags', ','.join(tags)]
         self.deployment_dir.deployment_repo.update(
             'Deployment run: {}'.format(command), files=[], force_commit=True)
-        subprocess.run(command)
+        subprocess.run(command, check=True)
 
     def ssh(self, host):
         """
@@ -163,4 +170,5 @@ class Deployment(AnsibleDeployment):
             subprocess.run([
                 'ssh', '-l', host_info['ansible_user'],
                 host_info['ansible_host']
-            ])
+            ],
+                           check=True)

@@ -1,6 +1,9 @@
-import click
+"""
+This module represents the ansible-deployment cli.
+"""
+
 from pathlib import Path
-from pprint import pformat
+import click
 from ansible_deployment import Deployment, cli_helpers
 
 deployment_path = Path.cwd()
@@ -11,6 +14,12 @@ deployment_config_path = Path.cwd() / 'deployment.json'
 @click.version_option()
 @click.pass_context
 def cli(ctx):
+    """
+    Click command group.
+
+    This function is called prior to any cli command and
+    initializes the deployment object for further usage.
+    """
     deployment = Deployment.load(deployment_config_path)
 
     if not deployment:
@@ -19,8 +28,8 @@ def cli(ctx):
     if deployment.deployment_dir.vault.new_key:
         new_key_message = click.style('New key generated: {}'.format(
             deployment.deployment_dir.vault.key_file),
-            fg='red',
-            bold=True)
+                                      fg='red',
+                                      bold=True)
         click.echo(new_key_message)
     ctx.ensure_object(dict)
     ctx.obj['DEPLOYMENT'] = deployment
@@ -56,7 +65,7 @@ def show(ctx, attribute):
     output = deployment
     if attribute:
         output = cli_helpers.filter_output_by_attribute(output, attribute)
-    click.echo(pformat(output))
+    click.echo(output)
 
 
 @cli.command()
@@ -164,6 +173,9 @@ def update(ctx, scope):
 
 
 def main():
+    """
+    This function is only used to set ``auto_envvars_prefix``
+    """
     cli(auto_envvar_prefix='AD')
 
 

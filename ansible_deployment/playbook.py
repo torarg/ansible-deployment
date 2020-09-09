@@ -1,3 +1,7 @@
+"""
+This module contains the Playbook class.
+"""
+
 from jinja2 import Environment, PackageLoader, select_autoescape
 from ansible_deployment.class_skeleton import AnsibleDeployment
 
