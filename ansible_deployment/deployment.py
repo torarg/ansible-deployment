@@ -117,7 +117,8 @@ class Deployment(AnsibleDeployment):
         """
         Initializes the deployment directory.
 
-        Initialization consists of
+        Note:
+            Initialization consists of
             `deployment_dir` object initialization,
             `roles` object initialization,
             `deployment_dir` update of roles, playbook and inventory,
