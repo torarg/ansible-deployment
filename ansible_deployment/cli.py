@@ -1,5 +1,5 @@
 import click
-from pathlib import Path, PosixPath
+from pathlib import Path
 from pprint import pformat
 from ansible_deployment import Deployment, cli_helpers
 
