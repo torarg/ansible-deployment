@@ -148,7 +148,7 @@ class DeploymentVault(AnsibleDeployment):
 
         The deployment git repository in ``self.path / '.git'``
         will be moved to ``self.path / '.git.enc'`` and if
-        ``self.path / '.git.shadow'`` exists, it's config will be moved 
+        ``self.path / '.git.shadow'`` exists, it's config will be moved
         to ``self.path / '.git'``.
         A new repositoriy will be intialized and all files in ``self.files``
         including the original deployment repository will be
