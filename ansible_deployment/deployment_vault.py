@@ -203,7 +203,13 @@ class DeploymentVault(AnsibleDeployment):
 
     def lock(self):
         """
-        Lock vault and encrypt all files.
+        Encrypts all files stored in the vault and activates shadow repo.
+
+        The git repository in ``self.path`` will be encrypted and replaced
+        with a shadow repository containing all encrypted vault files as
+        a single commit. If an old instance of the shadow repository
+        had a custuom config this will be restored in the new shadow
+        repository.
         """
         if not self.locked:
             self._encrypt_files(self.files)
@@ -212,7 +218,10 @@ class DeploymentVault(AnsibleDeployment):
 
     def unlock(self):
         """
-        Unlock vault and decrypt all files.
+        Decrypts all vault files and restores the deployment repository.
+
+        The shadow repository's configuration file willl be saved
+        to ``self.path / '.git.shadow/config``.
         """
         if self.locked:
             self._decrypt_files(self.files)
