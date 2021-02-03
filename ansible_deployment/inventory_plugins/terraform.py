@@ -44,7 +44,10 @@ class Terraform(InventoryPlugin):
         instances = {}
         for resource in resources:
             if resource['type'] in self.resource_functions:
-                instances[resource['type']] = resource['instances']
+                if resource['type'] not in instances:
+                    instances[resource['type']] = resource['instances']
+                else:
+                    instances[resource['type']] += resource['instances']
 
         return instances
 
