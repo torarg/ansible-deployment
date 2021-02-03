@@ -1,0 +1,2 @@
+# 0.4 (2020/02/03)
+- Fixed a bug in inventory creation from terraform state files containing multiple instances of resources
