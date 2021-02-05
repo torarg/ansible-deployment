@@ -40,8 +40,7 @@ class InventoryPlugin:
         Set initial inventory groups in self.hosts.
         """
         for group in self.groups:
-            group_data = {'children': {}}
-            group_data['children']['ansible_deployment'] = None
+            group_data = {'hosts': {}}
             self.hosts['all']['children'][group] = group_data
 
     def update_inventory(self):

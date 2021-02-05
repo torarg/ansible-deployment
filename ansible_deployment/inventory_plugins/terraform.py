@@ -92,3 +92,5 @@ class Terraform(InventoryPlugin):
             self.all_hosts[host['name']] = None
             self.deployment_group[host['name']] = None
             self.host_vars[host['name']] = host
+            for group in self.groups:
+                self.hosts['all']['children'][group]['hosts'][host['name']] = None
