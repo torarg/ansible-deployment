@@ -161,6 +161,7 @@ def update(ctx, scope):
     deployment.deployment_dir.update(deployment, scope)
     files_to_commit = cli_helpers.prompt_for_update_choices(
         deployment.deployment_dir)
+    files_to_commit += deployment.deployment_dir.deployment_repo.changes['new']
     commit_message = "deployment update with scope: {}".format(scope)
     deployment.deployment_dir.deployment_repo.update(files=files_to_commit,
                                                      message=commit_message)
