@@ -90,6 +90,7 @@ def prompt_for_update_choices(deployment_dir):
         'd': deployment_dir.deployment_repo.repo.git.checkout
     }
     for file_name in deployment_dir.deployment_repo.changes['all']:
+        click.clear()
         echo_file_diff(deployment_dir, file_name)
         update_choice = click.prompt(prompt_message,
                                      default='k',
