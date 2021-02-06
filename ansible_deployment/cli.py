@@ -14,7 +14,10 @@ deployment_config_path = Path.cwd() / 'deployment.json'
 @click.version_option()
 @click.pass_context
 def cli(ctx):
-    deployment = Deployment.load(deployment_config_path)
+    try:
+        deployment = Deployment.load(deployment_config_path)
+    except Exception as err:
+        raise click.ClickException(err)
 
     if not deployment:
         cli_helpers.err_exit("Deployment initialization failed.")
@@ -73,8 +76,7 @@ def run(ctx, role):
     containing the executed command.
     """
     deployment = ctx.obj['DEPLOYMENT']
-    if deployment.deployment_dir.deployment_repo.repo.is_dirty():
-        cli_helpers.err_exit('Deployment repo has to be clean.')
+    cli_helpers.check_environment(deployment)
     deployment.run(role)
 
 
@@ -99,6 +101,7 @@ def lock(ctx):
     Encrypt all deployment files except the roles directory.
     """
     deployment = ctx.obj['DEPLOYMENT']
+    cli_helpers.check_environment(deployment)
     prompt = "Encrypt deployment with {}?".format(
         deployment.deployment_dir.vault.key_file)
     if click.confirm(prompt):
