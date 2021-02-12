@@ -3,6 +3,7 @@ This module represents the ansible-deployment cli.
 """
 
 from pathlib import Path
+from pprint import pformat
 import click
 from ansible_deployment import Deployment, cli_helpers
 
@@ -62,7 +63,7 @@ def show(ctx, attribute):
     output = deployment
     if attribute:
         output = cli_helpers.filter_output_by_attribute(output, attribute)
-    click.echo(output)
+    click.echo(pformat(output))
 
 
 @cli.command()
