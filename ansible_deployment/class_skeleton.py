@@ -59,9 +59,7 @@ class AnsibleDeployment:
             if attribute in self.filtered_values:
                 representation[attribute] = self.__dict__[attribute]['filtered_representation']
             elif attribute == 'roles':
-                representation[attribute] = []
-                for role in self.__dict__[attribute]:
-                    representation[attribute].append(role['name'])
+                representation[attribute] = [ role['name'] for role in self.__dict__['roles'] ]
             else:
                 representation[attribute] = self.__dict__[attribute]
         return pformat(representation, indent=4)
