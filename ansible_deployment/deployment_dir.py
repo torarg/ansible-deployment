@@ -45,7 +45,10 @@ class DeploymentDirectory(AnsibleDeployment):
         self.path = Path(path)
         self.config_file = self.path / 'deployment.json'
 
-        self.filtered_representation = str(self.path)
+        self.filtered_representation = {
+            "path": str(self.path),
+            "roles_src": str(roles_src)
+        }
 
         self.roles_path = self.path / 'roles'
         self.roles_repo = DeploymentRepo(self.roles_path,
