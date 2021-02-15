@@ -33,7 +33,8 @@ class DeploymentDirectory(AnsibleDeployment):
         vault (DeploymentVault): Vault object for file encryption.
     """
     ansible_cfg = [
-        '[defaults]', 'inventory = hosts.yml', 'host_key_checking = False'
+        '[defaults]', 'inventory = hosts.yml', 'host_key_checking = False',
+        'interpreter_python = auto_silent'
     ]
     directory_layout = ('host_vars', 'group_vars', '.git')
     deployment_files = ['playbook.yml', 'hosts.yml', 'ansible.cfg']
