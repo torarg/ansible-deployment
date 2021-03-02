@@ -42,23 +42,49 @@ class Vault(InventoryPlugin):
             raise Exception(error)
 
 
+        vault_path = f"{vault_base_path}/hosts"
+        try:
+            query_result = vault_client.secrets.kv.read_secret_version(path=vault_path)['data']['data']
+        except hvac.exceptions.InvalidPath:
+            query_result = dict()
+        self.hosts = query_result
+
         for group in self.groups + ['all']:
-            vault_path = f"{vault_base_path}/{group}"
+            vault_path = f"{vault_base_path}/group_vars/{group}"
             try:
                 query_result = vault_client.secrets.kv.read_secret_version(path=vault_path)['data']['data']
             except hvac.exceptions.InvalidPath:
                 query_result = dict()
             self.group_vars[group] = query_result
 
+        if 'all' in self.hosts and 'hosts' in self.hosts['all']:
+            for host in [*self.hosts['all']['hosts']]:
+                vault_path = f"{vault_base_path}/host_vars/{host}"
+                try:
+                    query_result = vault_client.secrets.kv.read_secret_version(path=vault_path)['data']['data']
+                except hvac.exceptions.InvalidPath:
+                    query_result = dict()
+                self.host_vars[host] = query_result
+                self.all_hosts[host] = query_result
 
-    def update_vault(self, group_vars):
+
+    def update_vault(self, hosts, host_vars, group_vars):
         vault_base_path = f"ansible-deployment/{self.deployment_name}"
         vault_client, error = self._init_vault_client()
         
         if error != None:
             raise Exception(error)
+
+        response = vault_client.secrets.kv.v2.create_or_update_secret(
+            path=f"{vault_base_path}/hosts",
+            secret=hosts)
         
         for group in group_vars:
             response = vault_client.secrets.kv.v2.create_or_update_secret(
-                path=f"{vault_base_path}/{group}",
+                path=f"{vault_base_path}/group_vars/{group}",
                 secret=group_vars[group])
+
+        for host in host_vars:
+            response = vault_client.secrets.kv.v2.create_or_update_secret(
+                path=f"{vault_base_path}/host_vars/{host}",
+                secret=host_vars[host])
