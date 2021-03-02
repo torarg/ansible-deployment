@@ -60,7 +60,7 @@ class Terraform(InventoryPlugin):
         """
         tfstate_file_path = Path(self.inventory_src)
         if not tfstate_file_path.exists():
-            return None
+            raise FileNotFoundError(f"'{tfstate_file_path}' does not exist.")
         with open(tfstate_file_path) as tfstate_file_stream:
             tfstate_data = json.load(tfstate_file_stream)
             self.added_files += [self.inventory_src]
