@@ -13,6 +13,7 @@ class InventoryPlugin:
         hosts (dict): Hosts dict representing a hosts.yml file.
         host_vars (dict): Host vars dict.
         group_vars (dict): Group vars dict.
+        vars (dict): Combined dictionary for host and group vars.
         added_files (list): List of files added to deployment.
     """
     def __init__(self, config):
@@ -35,6 +36,10 @@ class InventoryPlugin:
         self.group_vars = {}
         self._set_groups()
         self.added_files = []
+        self.vars = {
+            'host_vars': self.host_vars,
+            'group_vars': self.group_vars
+        }
 
     def _set_groups(self):
         """
