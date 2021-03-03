@@ -5,7 +5,7 @@ This module contains the Inventory class.
 from pathlib import Path
 import yaml
 from ansible_deployment import AnsibleDeployment
-from ansible_deployment.inventory_plugins import Terraform, Vault, InventoryPlugin
+from ansible_deployment.inventory_plugins import Terraform, Vault, Local, InventoryPlugin
 
 
 class Inventory(AnsibleDeployment):
@@ -25,7 +25,8 @@ class Inventory(AnsibleDeployment):
     """
     plugins = {
         'terraform': Terraform,
-        'vault': Vault
+        'vault': Vault,
+        'local': Local
     }
     filtered_attributes = ['vars']
 
