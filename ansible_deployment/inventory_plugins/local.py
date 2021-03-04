@@ -1,7 +1,7 @@
 import yaml
 from pathlib import Path
-from ansible_deployment.inventory_plugins.inventory_plugin import (
-    InventoryPlugin)
+from ansible_deployment.inventory_plugins.inventory_plugin import InventoryPlugin
+
 
 class Local(InventoryPlugin):
     """
@@ -16,15 +16,14 @@ class Local(InventoryPlugin):
             vars_type (str): Variable type. May be 'host_vars' or 'group_vars'.
         """
         vars_dir_path = Path(f"./{vars_type}")
-        ignore_patterns = ('.swp', )
-        vars_files = list(vars_dir_path.glob('*'))
+        ignore_patterns = (".swp",)
+        vars_files = list(vars_dir_path.glob("*"))
         for vars_file in vars_files:
             if any(map(vars_file.name.__contains__, ignore_patterns)):
                 continue
             vars_name = vars_file.stem
             with open(vars_file) as vars_file_stream:
-                self.vars[vars_type][vars_name] = yaml.safe_load(
-                    vars_file_stream)
+                self.vars[vars_type][vars_name] = yaml.safe_load(vars_file_stream)
 
     def _load_hosts(self):
         hosts_file_path = Path("./hosts.yml")
@@ -34,5 +33,5 @@ class Local(InventoryPlugin):
 
     def update_inventory(self):
         self._load_hosts()
-        self._load_vars('host_vars')
-        self._load_vars('group_vars')
+        self._load_vars("host_vars")
+        self._load_vars("group_vars")

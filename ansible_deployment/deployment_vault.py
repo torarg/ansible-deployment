@@ -29,17 +29,19 @@ class DeploymentVault(AnsibleDeployment):
     Note:
         If `key_file` is not present at initialization, it will be created.
     """
-    encryption_suffix = '.enc'
+
+    encryption_suffix = ".enc"
 
     def __init__(self, vault_files, path):
         self.new_key = False
         self.locked = False
         self.path = Path(path)
-        self.key_file = self.path / 'deployment.key'
+        self.key_file = self.path / "deployment.key"
         self._load_key()
         self.files = vault_files
         self.locked_files = list(
-            self.path.glob('**/*{}'.format(self.encryption_suffix)))
+            self.path.glob("**/*{}".format(self.encryption_suffix))
+        )
         if len(self.locked_files) > 0:
             self.locked = True
             self.files = self.locked_files
@@ -53,7 +55,7 @@ class DeploymentVault(AnsibleDeployment):
             `self.key_file` does not exist.
         """
         if self.key_file.exists():
-            with open(self.key_file, 'rb') as fobj:
+            with open(self.key_file, "rb") as fobj:
                 self.key = fobj.read()
         else:
             self.key = self._generate_key()
@@ -64,7 +66,7 @@ class DeploymentVault(AnsibleDeployment):
         """
         Write `self.key` to `self.key_file`.
         """
-        with open(self.key_file, 'wb') as fobj:
+        with open(self.key_file, "wb") as fobj:
             fobj.write(self.key)
         self.key_file.chmod(0o400)
 
@@ -86,11 +88,11 @@ class DeploymentVault(AnsibleDeployment):
             file_path (Path): Path object for target file.
         """
         cipher_suite = Fernet(self.key)
-        with open(file_path, 'rb') as fobj:
+        with open(file_path, "rb") as fobj:
             plain_data = fobj.read()
         if int(oct(file_path.stat().st_mode)[-3]) < 6:
             file_path.chmod(0o640)
-        with open(file_path, 'wb') as fobj:
+        with open(file_path, "wb") as fobj:
             fobj.write(cipher_suite.encrypt(plain_data))
         file_path.replace(str(file_path) + self.encryption_suffix)
 
@@ -108,7 +110,7 @@ class DeploymentVault(AnsibleDeployment):
             elif file_path.is_file():
                 self._encrypt_file(file_path)
             elif file_path.is_dir():
-                files_in_subdir = list(file_path.glob('*'))
+                files_in_subdir = list(file_path.glob("*"))
                 self._encrypt_files(files_in_subdir)
 
     def _decrypt_files(self, files):
@@ -125,7 +127,7 @@ class DeploymentVault(AnsibleDeployment):
             elif file_path.is_file():
                 self._decrypt_file(file_path)
             elif file_path.is_dir():
-                files_in_subdir = list(file_path.glob('*'))
+                files_in_subdir = list(file_path.glob("*"))
                 self._decrypt_files(files_in_subdir)
 
     def _decrypt_file(self, file_path):
@@ -136,11 +138,11 @@ class DeploymentVault(AnsibleDeployment):
             file_path (Path): Path object for target file.
         """
         cipher_suite = Fernet(self.key)
-        with open(file_path, 'rb') as fobj:
+        with open(file_path, "rb") as fobj:
             encrypted_data = fobj.read()
-        with open(file_path, 'wb') as fobj:
+        with open(file_path, "wb") as fobj:
             fobj.write(cipher_suite.decrypt(encrypted_data))
-        file_path.replace(str(file_path)[:-len(self.encryption_suffix)])
+        file_path.replace(str(file_path)[: -len(self.encryption_suffix)])
 
     def _setup_shadow_repo(self):
         """
@@ -158,25 +160,28 @@ class DeploymentVault(AnsibleDeployment):
         a pushable deployment state while the deployment
         is locked.
         """
-        active_git_path = self.path / '.git'
-        shadow_git_path = self.path / '.git.shadow'
-        shadow_git_config = shadow_git_path / 'config'
-        encrypted_git_path = self.path / '.git.enc'
+        active_git_path = self.path / ".git"
+        shadow_git_path = self.path / ".git.shadow"
+        shadow_git_config = shadow_git_path / "config"
+        encrypted_git_path = self.path / ".git.enc"
 
         active_git_path.replace(encrypted_git_path)
 
         shadow_repo_files = list(
-            self.path.glob('**/*{}'.format(self.encryption_suffix)))
+            self.path.glob("**/*{}".format(self.encryption_suffix))
+        )
         shadow_repo = DeploymentRepo(self.path, files=shadow_repo_files)
         shadow_repo.init()
 
         if shadow_git_config.exists():
-            shadow_git_config.replace(active_git_path / 'config')
+            shadow_git_config.replace(active_git_path / "config")
             shutil.rmtree(shadow_git_path)
 
-        shadow_repo.update(message="Shadow repository activated.",
-                           force_commit=True,
-                           files=shadow_repo_files)
+        shadow_repo.update(
+            message="Shadow repository activated.",
+            force_commit=True,
+            files=shadow_repo_files,
+        )
 
     def _restore_deployment_repo(self):
         """
@@ -186,15 +191,14 @@ class DeploymentVault(AnsibleDeployment):
         a backup of the shadow repository's 'config' file
         to ``self.path / '.git.shadow' / config``.
         """
-        active_git_path = self.path / '.git'
-        active_git_config = active_git_path / 'config'
-        shadow_git_path = self.path / '.git.shadow'
-        shadow_git_config = shadow_git_path / 'config'
-        encrypted_git_path = self.path / '.git.enc'
+        active_git_path = self.path / ".git"
+        active_git_config = active_git_path / "config"
+        shadow_git_path = self.path / ".git.shadow"
+        shadow_git_config = shadow_git_path / "config"
+        encrypted_git_path = self.path / ".git.enc"
 
         shadow_repo = DeploymentRepo(self.path, files=[])
-        shadow_repo.update(message="Shadow repository deactivated.",
-                           force_commit=True)
+        shadow_repo.update(message="Shadow repository deactivated.", force_commit=True)
 
         shadow_git_path.mkdir()
         active_git_config.replace(shadow_git_config)
