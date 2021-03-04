@@ -44,10 +44,12 @@ class Inventory(AnsibleDeployment):
         self.host_vars = {}
         self.group_vars = {}
         self.plugin = InventoryPlugin(config)
-        self.loaded_plugins = []
+        self.loaded_plugins = {}
+        self.config = config
         
+        self.local_inventory = None
         self._load_plugins(config)
-        self._run_loaded_plugins()
+        self.run_reader_plugins()
 
         self.filtered_representation = {}
 
@@ -62,15 +64,10 @@ class Inventory(AnsibleDeployment):
             if plugin_name in self.plugins:
                 plugin = self.plugins[plugin_name](config)
                 #self._update_plugin_inventory(plugin)
-                self.loaded_plugins.append(plugin)
+                self.loaded_plugins[plugin_name] = plugin
+                if plugin_name == "local":
+                    self.local_inventory = plugin
 
-    def _run_loaded_plugins(self):
-        for plugin in self.loaded_plugins:
-            if plugin.plugin_type == "reader":
-                plugin.update_inventory()
-                self._update_plugin_inventory(plugin)
-            elif plugin.plugin_type == "writer":
-                plugin.update_inventory(self.hosts, self.host_vars, self.group_vars)
 
     def _update_plugin_inventory(self, plugin):
         self.plugin.groups = self.groups + list(set(plugin.groups) - set(self.groups))
@@ -95,6 +92,17 @@ class Inventory(AnsibleDeployment):
         self.groups = self.plugin.groups
         self.host_vars = self.plugin.host_vars
         self.group_vars = self.plugin.group_vars
+
+    def run_reader_plugins(self):
+        for plugin_name, plugin in self.loaded_plugins.items():
+            if plugin.plugin_type == "reader":
+                plugin.update_inventory()
+                self._update_plugin_inventory(plugin)
+
+    def run_writer_plugins(self):
+        for plugin_name, plugin in self.loaded_plugins.items():
+            if plugin.plugin_type == "writer":
+                plugin.update_inventory(self.local_inventory.hosts, self.local_inventory.host_vars, self.local_inventory.group_vars)
 
     def write(self):
         """
