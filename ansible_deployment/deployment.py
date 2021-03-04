@@ -19,15 +19,22 @@ Args:
 """
 
 DeploymentConfig = namedtuple('DeploymentConfig',
-                              'name roles roles_src inventory_plugin ansible_user')
+                              'name roles roles_src inventory_sources inventory_writers ansible_user')
 """
 Represents the deployment configuration.
+
+Inventory sources are queried in the order specified and produce a
+merged inventory in which the last specified inventory source may
+overwrite earlier queried values.
+
+Inventory writers persist the current inventory at another location.
 
 Args:
     name (String): Deployment name
     roles (sequence): A sequence of role names.
     roles_src (RepoConfig): Namedtuple containing roles repo information.
-    inventory_plugin (str): Name of the inventory plugin to use.
+    inventory_sources (sequence): Sequence of inventory plugin names.
+    inventory_writers (sequence): Sequence of inventory plugin names.
     ansible_user (str): Name of the default ansible user.
 """
 
