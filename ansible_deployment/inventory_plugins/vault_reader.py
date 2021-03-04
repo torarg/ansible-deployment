@@ -12,8 +12,6 @@ class VaultReader(Vault):
     def update_inventory(self):
         vault_base_path = f"ansible-deployment/{self.deployment_name}"
         vault_client, error = self.init_vault_client()
-        self.hosts = {}
-        self.host_vars = {}
         
         if error != None:
             raise Exception(error)
