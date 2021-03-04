@@ -5,7 +5,12 @@ This module contains the Inventory class.
 from pathlib import Path
 import yaml
 from ansible_deployment import AnsibleDeployment
-from ansible_deployment.inventory_plugins import Terraform, Vault, Local, InventoryPlugin
+from ansible_deployment.inventory_plugins import (
+    Terraform,
+    VaultReader,
+    VaultWriter,
+    Local,
+    InventoryPlugin)
 
 
 class Inventory(AnsibleDeployment):
@@ -25,9 +30,11 @@ class Inventory(AnsibleDeployment):
     """
     plugins = {
         'terraform': Terraform,
-        'vault': Vault,
-        'local': Local
+        'vault_reader': VaultReader,
+        'local': Local,
+        'vault_writer': VaultWriter
     }
+
     filtered_attributes = ['vars']
 
     def __init__(self, inventory_path, config):
@@ -38,15 +45,9 @@ class Inventory(AnsibleDeployment):
         self.group_vars = {}
         self.plugin = InventoryPlugin(config)
         self.loaded_plugins = []
-        for plugin_name in config.inventory_plugin:
-            if plugin_name in self.plugins:
-                plugin = self.plugins[plugin_name](config)
-                self._update_plugin_inventory(plugin)
-                self.loaded_plugins.append(plugin)
-
-        for plugin in self.loaded_plugins:
-            plugin.update_inventory()
-            self._update_plugin_inventory(plugin)
+        
+        self._load_plugins(config)
+        self._run_loaded_plugins()
 
         self.filtered_representation = {}
 
@@ -55,6 +56,21 @@ class Inventory(AnsibleDeployment):
             self.filtered_representation[host]['ansible_host'] = self.host_vars[host]['ansible_host']
             self.filtered_representation[host]['ansible_user'] = self.host_vars[host]['ansible_user']
             self.filtered_representation[host]['ansible_host'] = self.host_vars[host]['ansible_host']
+
+    def _load_plugins(self, config):
+        for plugin_name in config.inventory_plugin:
+            if plugin_name in self.plugins:
+                plugin = self.plugins[plugin_name](config)
+                #self._update_plugin_inventory(plugin)
+                self.loaded_plugins.append(plugin)
+
+    def _run_loaded_plugins(self):
+        for plugin in self.loaded_plugins:
+            if plugin.plugin_type == "reader":
+                plugin.update_inventory()
+                self._update_plugin_inventory(plugin)
+            elif plugin.plugin_type == "writer":
+                plugin.update_inventory(self.hosts, self.host_vars, self.group_vars)
 
     def _update_plugin_inventory(self, plugin):
         self.plugin.groups = self.groups + list(set(plugin.groups) - set(self.groups))
@@ -93,10 +109,6 @@ class Inventory(AnsibleDeployment):
             with open(self.path / 'group_vars' / group,
                       'w') as groupvars_file_stream:
                 yaml.dump(self.group_vars[group], groupvars_file_stream)
-
-        for plugin in self.loaded_plugins:
-            if isinstance(plugin, Vault):
-                plugin.update_vault(self.hosts, self.host_vars, self.group_vars)
 
         with open(self.path / 'hosts.yml', 'w') as inventory_file_stream:
             yaml.dump(self.hosts, inventory_file_stream)

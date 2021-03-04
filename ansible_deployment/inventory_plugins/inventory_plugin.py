@@ -16,6 +16,8 @@ class InventoryPlugin:
         vars (dict): Combined dictionary for host and group vars.
         added_files (list): List of files added to deployment.
     """
+    plugin_type = "reader"
+
     def __init__(self, config):
         self.deployment_name = config.name
         self.all_hosts = {}
