@@ -31,8 +31,7 @@ class Inventory(AnsibleDeployment):
 
     inventory_sources = {
         'terraform': Terraform,
-        'vault': VaultReader,
-        'local': Local
+        'vault': VaultReader
     }
 
     inventory_writers = {
@@ -48,11 +47,13 @@ class Inventory(AnsibleDeployment):
         self.host_vars = {}
         self.group_vars = {}
         self.plugin = InventoryPlugin(config)
-        self.loaded_sources = []
-        self.loaded_writers = []
         self.config = config
         
-        self.local_inventory = None
+        self.local_inventory = Local(config)
+        self.loaded_sources = [self.local_inventory]
+
+        self.loaded_writers = []
+
         self._load_plugins(config)
         self.run_reader_plugins()
 
@@ -68,10 +69,7 @@ class Inventory(AnsibleDeployment):
         for plugin_name in config.inventory_sources:
             if plugin_name in self.inventory_sources:
                 plugin = self.inventory_sources[plugin_name](config)
-                #self._update_plugin_inventory(plugin)
                 self.loaded_sources.append(plugin)
-                if plugin_name == "local":
-                    self.local_inventory = plugin
 
         for plugin_name in config.inventory_writers:
             if plugin_name in self.inventory_writers:
