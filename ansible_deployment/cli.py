@@ -35,7 +35,8 @@ def cli(ctx):
 
 @cli.command()
 @click.pass_context
-def init(ctx):
+@click.option('--non-interactive', is_flag=True, help="Don't ask before initializing deployment.")
+def init(ctx, non_interactive):
     """
     Initialize deployment directory.
 
@@ -45,10 +46,14 @@ def init(ctx):
 
     deployment = ctx.obj['DEPLOYMENT']
 
-    ctx.invoke(show)
-    if click.confirm('(Re)Initialize Deployment?'):
+    if non_interactive:
         deployment.initialize_deployment_directory()
         deployment.inventory.run_writer_plugins()
+    else:
+        ctx.invoke(show)
+        if click.confirm('(Re)Initialize Deployment?'):
+            deployment.initialize_deployment_directory()
+            deployment.inventory.run_writer_plugins()
 
 
 @cli.command()
@@ -87,16 +92,20 @@ def run(ctx, role):
 
 @cli.command()
 @click.pass_context
-def delete(ctx):
+@click.option('--non-interactive', is_flag=True, help="Don't ask before deleting deployment.")
+def delete(ctx, non_interactive):
     """
     Delete deployment.
 
     Deletes all created files and directories in deployment directory.
     """
     deployment = ctx.obj['DEPLOYMENT']
-    ctx.invoke(show)
-    if click.confirm('Delete deployment?'):
+    if non_interactive:
         deployment.deployment_dir.delete()
+    else:
+        ctx.invoke(show)
+        if click.confirm('Delete deployment?'):
+            deployment.deployment_dir.delete()
 
 
 @cli.command()
@@ -149,7 +158,8 @@ def ssh(ctx, host):
                                    'group_vars', 'ansible_cfg')),
                 required=False,
                 default='all')
-def update(ctx, scope):
+@click.option('--non-interactive', is_flag=True, help="Apply all updates without asking.")
+def update(ctx, scope, non_interactive):
     """
     Updates all deployment files and directories.
 
@@ -167,11 +177,15 @@ def update(ctx, scope):
     deployment = ctx.obj['DEPLOYMENT']
     cli_helpers.check_environment(deployment)
     deployment.deployment_dir.update(deployment, scope)
-    files_to_commit = cli_helpers.prompt_for_update_choices(
-        deployment.deployment_dir)
+    if non_interactive:
+        files_to_commit = deployment.deployment_dir.deployment_repo.changes['all']
+    else:
+        files_to_commit = cli_helpers.prompt_for_update_choices(
+            deployment.deployment_dir)
     files_to_commit += deployment.deployment_dir.deployment_repo.changes['new']
     commit_message = "deployment update with scope: {}".format(scope)
-    click.echo(f"New files: {deployment.deployment_dir.deployment_repo.changes['new']}")
+    if deployment.deployment_dir.deployment_repo.changes['new']:
+        click.echo(f"New files: {deployment.deployment_dir.deployment_repo.changes['new']}")
     deployment.deployment_dir.deployment_repo.update(files=files_to_commit,
                                                      message=commit_message)
     deployment.inventory.run_writer_plugins()
