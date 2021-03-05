@@ -4,6 +4,7 @@ This module contains the AnsibleDeployment skeleton class.
 
 from pprint import pformat
 
+
 class AnsibleDeployment:
     """
     Represents the skeleton for all ansible_deployment classes.
@@ -11,8 +12,9 @@ class AnsibleDeployment:
     The main purpose of this class is to provide 'magic methods'
     for object lookup and representation.
     """
-    filtered_attributes = ['config', 'playbook']
-    filtered_values = ['playbook', 'inventory', 'deployment_dir']
+
+    filtered_attributes = ["config", "playbook"]
+    filtered_values = ["playbook", "inventory", "deployment_dir"]
 
     def __init__(self):
         self.filtered_representation = "filtered"
@@ -57,9 +59,13 @@ class AnsibleDeployment:
             if attribute in self.filtered_attributes:
                 continue
             if attribute in self.filtered_values:
-                representation[attribute] = self.__dict__[attribute]['filtered_representation']
-            elif attribute == 'roles':
-                representation[attribute] = [ role['name'] for role in self.__dict__['roles'] ]
+                representation[attribute] = self.__dict__[attribute][
+                    "filtered_representation"
+                ]
+            elif attribute == "roles":
+                representation[attribute] = [
+                    role["name"] for role in self.__dict__["roles"]
+                ]
             else:
                 representation[attribute] = self.__dict__[attribute]
         return pformat(representation, indent=4)

@@ -1,4 +1,8 @@
 # 0.5.0 (upcoming)
+- add local inventory source plugin
+- add vault inventory source plugin
+- add vault inventory writer plugin
+- split up inventory plugins into inventory_sources and inventory_writers
 - change inventory file structure to explicitly list all hosts in groups
 - fix inventory update to add new vars files to deployment repo
 - clear screen before showing diff during update
