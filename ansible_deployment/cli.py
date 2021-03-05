@@ -223,7 +223,12 @@ def persist(ctx):
     """
     deployment = ctx.obj["DEPLOYMENT"]
     if deployment.inventory.loaded_writers:
+        inventory_writers = [writer.name for writer in deployment.inventory.loaded_writers]
+        commit_message = f"Running inventory writers: {inventory_writers}"
         deployment.inventory.run_writer_plugins()
+        deployment.deployment_dir.deployment_repo.update(
+            files=[], message=commit_message, force_commit=True
+        )
     else:
         raise click.ClickException("No configured inventory writers")
 
