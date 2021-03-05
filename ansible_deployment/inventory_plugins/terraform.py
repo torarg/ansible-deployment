@@ -23,6 +23,8 @@ class Terraform(InventoryPlugin):
         added_files (list): List of files added to deployment.
     """
 
+    name = "terraform"
+
     def __init__(self, groups, inventory_src="terraform.tfstate"):
         InventoryPlugin.__init__(self, groups)
         self.name = "terraform"

@@ -11,6 +11,8 @@ class Local(InventoryPlugin):
     Local InventoryPlugin class.
     """
 
+    name = "local"
+
     def _load_vars(self, vars_type):
         """
         Loads inventory variables from inventory path.

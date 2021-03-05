@@ -9,6 +9,7 @@ class VaultWriter(Vault):
     VaultWriter InventoryPlugin class.
     """
 
+    name = "vault"
     plugin_type = "writer"
 
     def update_inventory(self, hosts, host_vars, group_vars):
