@@ -1,3 +1,6 @@
+"""
+Local inventory source plugin.
+"""
 import yaml
 from pathlib import Path
 from ansible_deployment.inventory_plugins.inventory_plugin import InventoryPlugin

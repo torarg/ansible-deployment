@@ -111,11 +111,17 @@ class Inventory(AnsibleDeployment):
         self.group_vars = self.plugin.group_vars
 
     def run_reader_plugins(self):
+        """
+        Run loaded inventory sources.
+        """
         for plugin in self.loaded_sources:
             plugin.update_inventory()
             self._update_plugin_inventory(plugin)
 
     def run_writer_plugins(self):
+        """
+        Run loaded inventory writers.
+        """
         for plugin in self.loaded_writers:
             self.local_inventory.update_inventory()
             plugin.update_inventory(
