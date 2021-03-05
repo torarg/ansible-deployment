@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="ansible-deployment", # Replace with your own username
-    version="0.5",
+    version="0.5.1",
     author="Michael Wilson",
     author_email="mw@1wilson.org",
     description="CLI application to manage ansible deployments.",
@@ -25,6 +25,6 @@ setuptools.setup(
         'console_scripts': ['ansible-deployment=ansible_deployment.cli:main']
     },
     install_requires=['jinja2', 'PyYAML', 'click', 'ansible', 'GitPython',
-                      'cryptography'],
+                      'cryptography', 'hvac'],
     include_package_data=True
 )
