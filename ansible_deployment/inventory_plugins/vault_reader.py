@@ -11,7 +11,7 @@ class VaultReader(Vault):
         vault_base_path = f"ansible-deployment/{self.deployment_name}"
         vault_client, error = self.init_vault_client()
 
-        if error != None:
+        if error is not None:
             raise Exception(error)
 
         vault_path = f"{vault_base_path}/hosts"

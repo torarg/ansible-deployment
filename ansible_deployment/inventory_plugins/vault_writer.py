@@ -12,7 +12,7 @@ class VaultWriter(Vault):
         vault_base_path = f"ansible-deployment/{self.deployment_name}"
         vault_client, error = self.init_vault_client()
 
-        if error != None:
+        if error is not None:
             raise Exception(error)
 
         response = vault_client.secrets.kv.v2.create_or_update_secret(
