@@ -13,5 +13,5 @@ ansible_deployment.inventory_plugins
 .. autoclass:: ansible_deployment.inventory_plugins.VaultReader
    :members:
 
-.. autoclass:: ansible_deployment.inventory_plugins.VaulWriter
+.. autoclass:: ansible_deployment.inventory_plugins.VaultWriter
    :members:
