@@ -46,6 +46,8 @@ def check_environment(deployment):
     """
     if not deployment:
         err_exit("Failed to load deployment.json")
+    elif deployment.deployment_dir.deployment_repo is None:
+        err_exit("Deployment is not initialized")
     elif deployment.deployment_dir.deployment_repo.repo.is_dirty():
         err_exit(
             "Repo is dirty. Unstaged changes: {}".format(
