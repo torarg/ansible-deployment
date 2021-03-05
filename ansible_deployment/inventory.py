@@ -6,13 +6,10 @@ from pathlib import Path
 import yaml
 from ansible_deployment import AnsibleDeployment
 from ansible_deployment.inventory_plugins import (
-    Terraform,
-    VaultReader,
-    VaultWriter,
-    Local,
     InventoryPlugin,
+    inventory_sources,
+    inventory_writers
 )
-
 
 class Inventory(AnsibleDeployment):
     """
@@ -35,9 +32,15 @@ class Inventory(AnsibleDeployment):
         loaded_sources (list): Loaded inventory sources.
     """
 
-    inventory_sources = {"terraform": Terraform, "vault": VaultReader, "local": Local}
+    inventory_sources = {
+        "terraform": inventory_sources.Terraform,
+        "vault": inventory_sources.Vault,
+        "local": inventory_sources.Local
+    }
 
-    inventory_writers = {"vault": VaultWriter}
+    inventory_writers = {
+        "vault": inventory_writers.Vault
+    }
 
     filtered_attributes = ["vars"]
 
@@ -50,7 +53,7 @@ class Inventory(AnsibleDeployment):
         self.plugin = InventoryPlugin(config)
         self.config = config
 
-        self.local_inventory = Local(config)
+        self.local_inventory = inventory_sources.Local(config)
         self.loaded_sources = [self.local_inventory]
 
         self.loaded_writers = []

@@ -1,10 +1,11 @@
 """
 Vault inventory writer plugin.
 """
-from ansible_deployment.inventory_plugins.vault import Vault
+import ansible_deployment.inventory_plugins.helpers.vault as vault_helpers
+from ansible_deployment.inventory_plugins.inventory_plugin import InventoryPlugin
 
 
-class VaultWriter(Vault):
+class VaultWriter(InventoryPlugin):
     """
     VaultWriter InventoryPlugin class.
     """
@@ -14,7 +15,7 @@ class VaultWriter(Vault):
 
     def update_inventory(self, hosts, host_vars, group_vars):
         vault_base_path = f"ansible-deployment/{self.deployment_name}"
-        vault_client, error = self.init_vault_client()
+        vault_client, error = vault_helpers.init_vault_client()
 
         if error is not None:
             raise Exception(error)
