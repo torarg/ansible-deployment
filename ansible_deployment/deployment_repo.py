@@ -47,7 +47,7 @@ class DeploymentRepo(AnsibleDeployment):
         for untracked_file in self.repo.untracked_files:
             if untracked_file in self.changes["new"]:
                 continue
-            elif "host_vars/" in untracked_file:
+            if "host_vars/" in untracked_file:
                 self.changes["new"].append(untracked_file)
             elif "group_vars/" in untracked_file:
                 self.changes["new"].append(untracked_file)
