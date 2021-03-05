@@ -45,7 +45,6 @@ class DeploymentRepo(AnsibleDeployment):
         Update `self.changes` dict to represent state of git repo.
         """
         for untracked_file in self.repo.untracked_files:
-            watched_directories = ("host_vars/", "group_vars/")
             if untracked_file in self.changes["new"]:
                 continue
             elif "host_vars/" in untracked_file:
