@@ -24,16 +24,17 @@ class DeploymentRepo(AnsibleDeployment):
         changes (dict): Dictionary containing repository changes.
                         Valid keys are: 'all', 'staged' and 'unstaged'.
     """
+
     def __init__(self, path, remote_config=None, files=None):
         self.remote_config = remote_config
         self.path = path
 
         self.content = files
-        self.changes = {'all': [], 'staged': [], 'unstaged': []}
-        self._git_path = self.path / '.git'
-        self._encrypted = (self._git_path / 'HEAD.enc').exists()
+        self.changes = {"all": [], "staged": [], "unstaged": [], "new": []}
+        self._git_path = self.path / ".git"
+        self._encrypted = (self._git_path / "HEAD.enc").exists()
 
-        if (self._git_path / 'HEAD').exists() and not self._encrypted:
+        if (self._git_path / "HEAD").exists() and not self._encrypted:
             self.repo = Repo(self.path)
             self.update_changed_files()
         else:
@@ -43,21 +44,29 @@ class DeploymentRepo(AnsibleDeployment):
         """
         Update `self.changes` dict to represent state of git repo.
         """
-        self.changes['unstaged'] = [
-            diff.a_path for diff in self.repo.index.diff(None)
-        ]
+        for untracked_file in self.repo.untracked_files:
+            if untracked_file in self.changes["new"]:
+                continue
+            if "host_vars/" in untracked_file:
+                self.changes["new"].append(untracked_file)
+            elif "group_vars/" in untracked_file:
+                self.changes["new"].append(untracked_file)
+
+        self.changes["unstaged"] = [diff.a_path for diff in self.repo.index.diff(None)]
         try:
-            self.changes['staged'] = [
-                diff.a_path for diff in self.repo.index.diff('HEAD')
+            self.changes["staged"] = [
+                diff.a_path for diff in self.repo.index.diff("HEAD")
             ]
         except git_exc.BadName:
-            self.changes['staged'] = []
-        self.changes['all'] = self.changes['staged'] + self.changes['unstaged']
+            self.changes["staged"] = []
+        self.changes["all"] = self.changes["staged"] + self.changes["unstaged"]
 
-    def update(self,
-               message="Automatic ansible-deployment update.",
-               files=None,
-               force_commit=False):
+    def update(
+        self,
+        message="Automatic ansible-deployment update.",
+        files=None,
+        force_commit=False,
+    ):
         """
         Updates the git repository.
 
@@ -74,9 +83,10 @@ class DeploymentRepo(AnsibleDeployment):
             if Path(git_file).exists():
                 self.repo.index.add(str(git_file))
         self.update_changed_files()
-        if len(self.changes['staged']) > 0 or force_commit:
-            self.repo.index.commit("ansible-deployment: {}".format(
-                message.capitalize()))
+        if len(self.changes["staged"]) > 0 or force_commit:
+            self.repo.index.commit(
+                "ansible-deployment: {}".format(message.capitalize())
+            )
 
     def pull(self):
         """
@@ -91,9 +101,9 @@ class DeploymentRepo(AnsibleDeployment):
         Clones the repository specified in `self.remote_config` into
         `self.path`
         """
-        self.repo = Repo.clone_from(self.remote_config.repo,
-                                    self.path,
-                                    branch=self.remote_config.branch)
+        self.repo = Repo.clone_from(
+            self.remote_config.repo, self.path, branch=self.remote_config.branch
+        )
 
     def init(self):
         """

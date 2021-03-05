@@ -32,37 +32,45 @@ class DeploymentDirectory(AnsibleDeployment):
         config_file (Path): Path to deployment config file.
         vault (DeploymentVault): Vault object for file encryption.
     """
+
     ansible_cfg = [
-        '[defaults]', 'inventory = hosts.yml', 'host_key_checking = False'
+        "[defaults]",
+        "inventory = hosts.yml",
+        "host_key_checking = False",
+        "interpreter_python = auto_silent",
     ]
-    directory_layout = ('host_vars', 'group_vars', '.git')
-    deployment_files = ['playbook.yml', 'hosts.yml', 'ansible.cfg']
+    directory_layout = ("host_vars", "group_vars", ".git")
+    deployment_files = ["playbook.yml", "hosts.yml", "ansible.cfg"]
     vault_files = deployment_files + list(directory_layout)
 
     def __init__(self, path, roles_src):
         self._roles_src = roles_src
 
         self.path = Path(path)
-        self.config_file = self.path / 'deployment.json'
+        self.config_file = self.path / "deployment.json"
 
-        self.roles_path = self.path / 'roles'
-        self.roles_repo = DeploymentRepo(self.roles_path,
-                                         remote_config=roles_src)
+        self.filtered_representation = {
+            "path": str(self.path),
+            "roles_src": str(roles_src),
+        }
+
+        self.roles_path = self.path / "roles"
+        self.roles_repo = DeploymentRepo(self.roles_path, remote_config=roles_src)
 
         git_repo_content = [] + self.deployment_files
         git_repo_content += self.directory_layout[:-1]
         git_repo_content += [str(self.config_file)]
-        self.deployment_repo = DeploymentRepo(self.path,
-                                              files=git_repo_content)
+        self.deployment_repo = DeploymentRepo(self.path, files=git_repo_content)
 
         self.vault = DeploymentVault(self.vault_files, self.path)
 
         if not self.vault.locked and self.deployment_repo.repo:
             self.deployment_repo.update_changed_files()
-            self.vault.files = self.deployment_repo.repo.git.ls_files().split(
-                '\n') + ['.git']
-            if 'deployment.json' in self.vault.files:
-                self.vault.files.remove('deployment.json')
+            self.vault.files = self.deployment_repo.repo.git.ls_files().split("\n") + [
+                ".git"
+            ]
+            if "deployment.json" in self.vault.files:
+                self.vault.files.remove("deployment.json")
 
     def _create_deployment_directories(self):
         """
@@ -80,31 +88,24 @@ class DeploymentDirectory(AnsibleDeployment):
         Args:
             roles (sequence): A sequence of Role objects.
         """
-        group_vars_path = self.path / 'group_vars'
+        group_vars_path = self.path / "group_vars"
         for role in roles:
             role = Role(role.path)
             group_vars_file_path = group_vars_path / role.name
-            is_new = True
             if (group_vars_file_path).exists():
-                is_new = False
                 group_vars_file_path.unlink()
 
             for defaults_file in role.defaults.values():
-                with open(group_vars_file_path, 'a') as group_vars_file_stream:
-                    yaml.dump(defaults_file['data'], group_vars_file_stream)
-            if is_new:
-                commit_message = 'Add new group_vars file from role {}'.format(
-                    role.name)
-                self.deployment_repo.update(commit_message,
-                                            files=[str(group_vars_file_path)])
+                with open(group_vars_file_path, "a") as group_vars_file_stream:
+                    yaml.dump(defaults_file["data"], group_vars_file_stream)
 
     def _write_ansible_cfg(self):
         """
         Write ansible config file to deployment directory.
         """
-        ansible_cfg_path = self.path / 'ansible.cfg'
-        with open(ansible_cfg_path, 'w') as ansible_cfg_stream:
-            ansible_cfg_stream.writelines('\n'.join(self.ansible_cfg))
+        ansible_cfg_path = self.path / "ansible.cfg"
+        with open(ansible_cfg_path, "w") as ansible_cfg_stream:
+            ansible_cfg_stream.writelines("\n".join(self.ansible_cfg))
 
     def create(self):
         """
@@ -112,7 +113,7 @@ class DeploymentDirectory(AnsibleDeployment):
         """
         self._create_deployment_directories()
         self.deployment_repo.init()
-        self.deployment_repo.update('initial commit', force_commit=True)
+        self.deployment_repo.update("initial commit", force_commit=True)
         self.roles_repo.clone()
         self._write_ansible_cfg()
 
@@ -120,7 +121,7 @@ class DeploymentDirectory(AnsibleDeployment):
         """
         Delete deployment directory.
         """
-        shadow_git = self.path / '.git.shadow'
+        shadow_git = self.path / ".git.shadow"
         if shadow_git.exists():
             shutil.rmtree(shadow_git)
         for directory_name in self.directory_layout:
@@ -136,7 +137,7 @@ class DeploymentDirectory(AnsibleDeployment):
         if self.roles_path.exists():
             shutil.rmtree(self.roles_path)
 
-    def update(self, deployment, scope='all'):
+    def update(self, deployment, scope="all"):
         """
         Update deployment directory.
 
@@ -158,14 +159,13 @@ class DeploymentDirectory(AnsibleDeployment):
         """
         if not self.roles_path.exists():
             scope = None
-        if scope in ('all', 'roles'):
+        if scope in ("all", "roles"):
             self.roles_repo.pull()
-        if scope in ('all', 'playbook'):
+        if scope in ("all", "playbook"):
             deployment.playbook.write()
-        if scope in ('all', 'inventory'):
-            deployment.inventory.write()
-        if scope in ('all', 'group_vars'):
+        if scope in ("all", "inventory"):
             self._write_role_defaults_to_group_vars(deployment.roles)
-        if scope in ('all', 'ansible_cfg'):
+            deployment.inventory.write()
+        if scope in ("all", "ansible_cfg"):
             self._write_ansible_cfg()
         self.deployment_repo.update_changed_files()

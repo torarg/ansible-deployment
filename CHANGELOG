@@ -1,2 +1,13 @@
+# 0.5.0 (2020/03/05)
+- move to semantic versioning
+- add local inventory source plugin
+- add vault inventory source plugin
+- add vault inventory writer plugin
+- split up inventory plugins into inventory_sources and inventory_writers
+- change inventory file structure to explicitly list all hosts in groups
+- fix inventory update to add new vars files to deployment repo
+- clear screen before showing diff during update
+- display newly added files during update
+
 # 0.4 (2020/02/03)
 - Fixed a bug in inventory creation from terraform state files containing multiple instances of resources
