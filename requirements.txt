@@ -1,4 +1,5 @@
 PyYAML
+hvac
 jinja2
 click
 ansible
