@@ -94,8 +94,8 @@ Currently ansible deployment supports the following ``inventory_writers``.
 ### vault
 The ``vault`` inventory writer requires a configured vault environment
 consisting of the following environment variables:
-    - VAULT_ADDR
-    - VAULT_TOKEN
+- ``VAULT_ADDR``
+- ``VAULT_TOKEN``
 
 The current deployment inventory will be written in the vault path
 ``secret/ansible-deployment/DEPLOYMENT_NAME``.
@@ -115,10 +115,10 @@ pip install .
 ansible-deployment requires a deployment.json configuration file
 to be present in the current working directory.
 
-### example
+### examples
 
 
-## stateful deployment with dynamic terraform inventory
+#### stateful deployment with dynamic terraform inventory
 This example sources it's inventory first from terraform and then applies
 locally commited changes on top of it. The resulting inventory is persisted
 in vault.
@@ -168,7 +168,7 @@ drwxr-xr-x  22 mw  staff   704  7 Sep 00:27 roles
 -rw-r--r--   1 mw  staff  3472  6 Sep 23:29 terraform.tfstate
 ```
 
-## stateless vault inventory
+#### stateless vault inventory
 This example sources it's inventory completely from vault.
 
 ```
