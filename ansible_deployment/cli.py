@@ -14,7 +14,8 @@ deployment_config_path = Path.cwd() / "deployment.json"
 @click.group()
 @click.version_option()
 @click.pass_context
-def cli(ctx):
+@click.option("--debug", is_flag=True, help="Enable debug output.")
+def cli(ctx, debug):
     """
     All available commands are listed below.
 
@@ -25,14 +26,19 @@ def cli(ctx):
     try:
         deployment = Deployment.load(deployment_config_path)
     except Exception as err:
-        raise click.ClickException(err)
+        if debug:
+            raise
+        else:
+            raise click.ClickException(err)
 
     if not deployment:
         cli_helpers.err_exit("Deployment initialization failed.")
 
     if deployment.deployment_dir.vault.new_key:
         new_key_message = click.style(
-            "Deployment key written to: {}".format(deployment.deployment_dir.vault.key_file),
+            "Deployment key written to: {}".format(
+                deployment.deployment_dir.vault.key_file
+            ),
             fg="red",
             bold=True,
         )
@@ -224,7 +230,9 @@ def persist(ctx):
     deployment = ctx.obj["DEPLOYMENT"]
     cli_helpers.check_environment(deployment)
     if deployment.inventory.loaded_writers:
-        inventory_writers = [writer.name for writer in deployment.inventory.loaded_writers]
+        inventory_writers = [
+            writer.name for writer in deployment.inventory.loaded_writers
+        ]
         commit_message = f"Running inventory writers: {inventory_writers}"
         deployment.inventory.run_writer_plugins()
         deployment.deployment_dir.deployment_repo.update(

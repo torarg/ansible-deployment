@@ -35,7 +35,7 @@ class VaultReader(InventoryPlugin):
             query_result = vault_client.secrets.kv.read_secret_version(path=vault_path)[
                 "data"
             ]["data"]["data"]
-            query_result = base64.decodebytes(query_result.encode('ascii'))
+            query_result = base64.decodebytes(query_result.encode("ascii"))
         except vault_exceptions.InvalidPath:
             query_result = None
         self.deployment_key = query_result
