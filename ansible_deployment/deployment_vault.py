@@ -32,11 +32,11 @@ class DeploymentVault(AnsibleDeployment):
 
     encryption_suffix = ".enc"
 
-    def __init__(self, vault_files, path):
+    def __init__(self, vault_files, path, key_name='deployment.key'):
         self.new_key = False
         self.locked = False
         self.path = Path(path)
-        self.key_file = self.path / "deployment.key"
+        self.key_file = self.path / key_name
         self._load_key()
         self.files = vault_files
         self.locked_files = list(
@@ -106,6 +106,8 @@ class DeploymentVault(AnsibleDeployment):
         for file_name in files:
             file_path = Path(file_name)
             if not file_path.exists():
+                pass
+            elif file_path.name == self.key_file.name:
                 pass
             elif file_path.is_file():
                 self._encrypt_file(file_path)
