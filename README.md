@@ -74,8 +74,8 @@ Currently only 'hcloud' resources are supported.
 ### vault
 The ``vault`` inventory source requires a configured vault environment
 consisting of the following environment variables:
-    - VAULT_ADDR
-    - VAULT_TOKEN
+- ``VAULT_ADDR``
+- ``VAULT_TOKEN``
 
 All hosts, host_vars and group vars specified in the path
 ``secret/ansible-deployment/DEPLOYMENT_NAME`` will be added to the inventory
