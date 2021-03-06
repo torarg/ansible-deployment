@@ -65,18 +65,19 @@ class Terraform(InventoryPlugin):
             raise FileNotFoundError(f"'{tfstate_file_path}' does not exist.")
         with open(tfstate_file_path) as tfstate_file_stream:
             tfstate_data = json.load(tfstate_file_stream)
-            self.added_files += [self.inventory_src]
-        return tfstate_data
+        return (tfstate_data, tfstate_file_path)
 
     def update_inventory(self):
         """
         Update inventory attributes with tfstate file data.
         """
 
-        tfstate_data = self._load_tf_state_file()
+        tfstate_data, tfstate_file_path = self._load_tf_state_file()
         instances = self._filter_instances(tfstate_data)
         for resource_type in instances:
             self.resource_functions[resource_type](instances[resource_type])
+
+        self.added_files = [str(tfstate_file_path)]
 
     def parse_hcloud_servers(self, instances):
         """
