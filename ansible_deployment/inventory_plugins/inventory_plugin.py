@@ -22,6 +22,7 @@ class InventoryPlugin:
 
     def __init__(self, config):
         self.deployment_name = config.name
+        self.deployment_key = None
         self.all_hosts = {}
         self.deployment_group = {}
         self.groups = config.roles

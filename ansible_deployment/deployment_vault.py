@@ -68,7 +68,7 @@ class DeploymentVault(AnsibleDeployment):
         """
         with open(self.key_file, "wb") as fobj:
             fobj.write(self.key)
-        self.key_file.chmod(0o400)
+        self.key_file.chmod(0o600)
 
     @staticmethod
     def _generate_key():

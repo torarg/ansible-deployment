@@ -32,7 +32,7 @@ def cli(ctx):
 
     if deployment.deployment_dir.vault.new_key:
         new_key_message = click.style(
-            "New key generated: {}".format(deployment.deployment_dir.vault.key_file),
+            "Deployment key written to: {}".format(deployment.deployment_dir.vault.key_file),
             fg="red",
             bold=True,
         )
@@ -222,6 +222,7 @@ def persist(ctx):
     Run configured ``ìnventory_writers``.
     """
     deployment = ctx.obj["DEPLOYMENT"]
+    cli_helpers.check_environment(deployment)
     if deployment.inventory.loaded_writers:
         inventory_writers = [writer.name for writer in deployment.inventory.loaded_writers]
         commit_message = f"Running inventory writers: {inventory_writers}"

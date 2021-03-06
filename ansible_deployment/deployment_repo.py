@@ -51,6 +51,8 @@ class DeploymentRepo(AnsibleDeployment):
                 self.changes["new"].append(untracked_file)
             elif "group_vars/" in untracked_file:
                 self.changes["new"].append(untracked_file)
+            elif untracked_file in self.content:
+                self.changes["new"].append(untracked_file)
 
         self.changes["unstaged"] = [diff.a_path for diff in self.repo.index.diff(None)]
         try:

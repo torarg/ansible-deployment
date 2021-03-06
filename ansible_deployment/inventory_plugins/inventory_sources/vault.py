@@ -1,6 +1,7 @@
 """
 Vault inventory reader plugin.
 """
+import base64
 import ansible_deployment.inventory_plugins.helpers.vault as vault_helpers
 from ansible_deployment.inventory_plugins.inventory_plugin import InventoryPlugin
 from hvac import exceptions as vault_exceptions
@@ -28,6 +29,16 @@ class VaultReader(InventoryPlugin):
         except vault_exceptions.InvalidPath:
             query_result = dict()
         self.hosts = query_result
+
+        vault_path = f"{vault_base_path}/deployment_key"
+        try:
+            query_result = vault_client.secrets.kv.read_secret_version(path=vault_path)[
+                "data"
+            ]["data"]["data"]
+            query_result = base64.decodebytes(query_result.encode('ascii'))
+        except vault_exceptions.InvalidPath:
+            query_result = None
+        self.deployment_key = query_result
 
         for group in self.groups + ["all"]:
             vault_path = f"{vault_base_path}/group_vars/{group}"
