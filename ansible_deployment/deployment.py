@@ -25,7 +25,7 @@ Args:
 
 DeploymentConfig = namedtuple(
     "DeploymentConfig",
-    "name roles roles_src inventory_sources inventory_writers ansible_user",
+    "name roles roles_src inventory_sources inventory_writers",
 )
 """
 Represents the deployment configuration.
@@ -42,7 +42,6 @@ Args:
     roles_src (RepoConfig): Namedtuple containing roles repo information.
     inventory_sources (sequence): Sequence of inventory plugin names.
     inventory_writers (sequence): Sequence of inventory plugin names.
-    ansible_user (str): Name of the default ansible user.
 """
 
 
@@ -194,7 +193,8 @@ class Deployment(AnsibleDeployment):
         """
         if host in self.inventory.hosts["all"]["hosts"]:
             host_info = self.inventory.host_vars[host]
+            ansible_user = self.inventory.group_vars["all"]["ansible_user"]
             subprocess.run(
-                ["ssh", "-l", host_info["ansible_user"], host_info["ansible_host"]],
+                ["ssh", "-l", ansible_user, host_info["ansible_host"]],
                 check=True,
             )
