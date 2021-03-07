@@ -16,14 +16,14 @@ def init_vault_client():
     error = None
     vault_address = os.environ.get("VAULT_ADDR")
     if vault_address is None:
-        error = "vault: VAULT_ADDR not set"
+        error = "Environment variable VAULT_ADDR not set"
 
     client = hvac.Client(url=vault_address)
 
     try:
         if not client.is_authenticated():
-            error = "vault: Authentication error"
+            error = "Vault authentication error"
     except ConnectionError:
-        error = "vault: Connection error"
+        error = "Vault connection error"
 
     return (client, error)
