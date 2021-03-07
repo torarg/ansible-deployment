@@ -167,9 +167,7 @@ $ cat deployment.json
     ],
     "inventory_writers": [
         "vault"
-    ],
-
-    "ansible_user": "ansible"
+    ]
 }
 $ ansible-deployment init
 $ ls -l
@@ -213,9 +211,7 @@ $ cat deployment.json
         "vault"
     ],
     "inventory_writers": [
-    ],
-
-    "ansible_user": "ansible"
+    ]
 }
 $ ansible-deployment init
 $ ls -l
