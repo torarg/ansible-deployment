@@ -86,6 +86,8 @@ class DeploymentRepo(AnsibleDeployment):
         for git_file in files:
             if Path(git_file).exists():
                 self.repo.index.add(str(git_file))
+            else:
+                self.repo.index.remove(str(git_file))
         self.update_changed_files()
         if len(self.changes["staged"]) > 0 or force_commit:
             self.repo.index.commit(

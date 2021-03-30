@@ -89,6 +89,8 @@ class DeploymentDirectory(AnsibleDeployment):
         Copy roles to deployment directory.
         """
         roles = load_config_file(self.config_file).roles
+        shutil.rmtree(self.roles_path)
+        self.roles_path.mkdir()
         for role_name in roles:
             role = Role(self.roles_repo_path / role_name)
             role.copy_to(self.roles_path)
