@@ -120,15 +120,4 @@ class Role(AnsibleDeployment):
         destination = Path(destination_path) / self.name
         if destination.exists():
             shutil.rmtree(destination)
-
-    def symlink_to(self, destination_path):
-        """
-        Symlinks the source role directory to a given destination.
-
-        Args:
-            destination_path (str): destination path
-        """
-        destination = Path(destination_path) / self.name
-        if destination.exists():
-            destination.unlink()
-        destination.symlink_to(self.path)
+        shutil.copytree(self.path, destination)

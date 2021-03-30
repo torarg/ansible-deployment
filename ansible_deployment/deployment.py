@@ -13,36 +13,8 @@ from ansible_deployment import (
     Playbook,
     DeploymentDirectory,
 )
+from ansible_deployment.config import load_config_file
 
-RepoConfig = namedtuple("RepoConfig", "repo branch")
-"""
-Represents a remote git repository configuration.
-
-Args:
-    repo (str): A clonable git repository path or url.
-    branch (str): Git branch to checkout.
-"""
-
-DeploymentConfig = namedtuple(
-    "DeploymentConfig",
-    "name roles roles_src inventory_sources inventory_writers",
-)
-"""
-Represents the deployment configuration.
-
-Inventory sources are queried in the order specified and produce a
-merged inventory in which the last specified inventory source may
-overwrite earlier queried values.
-
-Inventory writers persist the current inventory at another location.
-
-Args:
-    name (String): Deployment name
-    roles (sequence): A sequence of role names.
-    roles_src (RepoConfig): Namedtuple containing roles repo information.
-    inventory_sources (sequence): Sequence of inventory plugin names.
-    inventory_writers (sequence): Sequence of inventory plugin names.
-"""
 
 
 class Deployment(AnsibleDeployment):
@@ -63,26 +35,6 @@ class Deployment(AnsibleDeployment):
     """
 
     @staticmethod
-    def _load_config_file(config_file_path):
-        """
-        Loads deployment configuration from json file.
-
-        Args:
-            config_file_path (path): Path to config file.
-
-        Returns:
-            DeploymentConfig: Namedtuple containing deployment config.
-        """
-        with open(config_file_path) as config_file_stream:
-            config = json.load(config_file_stream)
-        roles_src = RepoConfig(
-            config["roles_src"]["repo"], config["roles_src"]["branch"]
-        )
-        config["roles_src"] = roles_src
-
-        return DeploymentConfig(**config)
-
-    @staticmethod
     def load(config_file):
         """
         Initializes deployment object from config file.
@@ -96,7 +48,7 @@ class Deployment(AnsibleDeployment):
         deployment = None
         config_file_path = Path(config_file)
         deployment_path = config_file_path.parent
-        config = Deployment._load_config_file(config_file_path)
+        config = load_config_file(config_file_path)
         deployment = Deployment(deployment_path, config)
         return deployment
 
@@ -131,7 +83,7 @@ class Deployment(AnsibleDeployment):
         """
         parsed_roles = []
         for role_name in role_names:
-            role_path = self.deployment_dir.roles_path / role_name
+            role_path = self.deployment_dir.path / '.roles.git' / role_name
             parsed_roles.append(Role(role_path))
         return parsed_roles
 
@@ -149,11 +101,11 @@ class Deployment(AnsibleDeployment):
         role_names = (role.name for role in self.roles)
         self.deployment_dir.create()
         self.roles = self._create_role_objects(role_names)
-        self.deployment_dir.update(self)
+        self.deployment_dir.write_role_defaults_to_group_vars(self.roles)
         self.inventory = Inventory(
             self.deployment_dir.path, self.config, self.deployment_dir.vault.key
         )
-        # self.playbook.write()
+        self.playbook.write()
         self.inventory.write()
         self.deployment_dir.deployment_repo.update(message="add deployment files")
 

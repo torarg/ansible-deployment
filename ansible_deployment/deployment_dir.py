@@ -12,6 +12,7 @@ from ansible_deployment.class_skeleton import AnsibleDeployment
 from ansible_deployment.role import Role
 from ansible_deployment.deployment_vault import DeploymentVault
 from ansible_deployment.deployment_repo import DeploymentRepo
+from ansible_deployment.config import load_config_file
 
 
 class DeploymentDirectory(AnsibleDeployment):
@@ -39,7 +40,7 @@ class DeploymentDirectory(AnsibleDeployment):
         "host_key_checking = False",
         "interpreter_python = auto_silent",
     ]
-    directory_layout = ("host_vars", "group_vars", ".git")
+    directory_layout = ("host_vars", "group_vars", "roles", ".roles.git", ".git")
     deployment_files = ["playbook.yml", "hosts.yml", "ansible.cfg"]
     vault_files = deployment_files + list(directory_layout)
 
@@ -55,10 +56,11 @@ class DeploymentDirectory(AnsibleDeployment):
         }
 
         self.roles_path = self.path / "roles"
-        self.roles_repo = DeploymentRepo(self.roles_path, remote_config=roles_src)
+        self.roles_repo_path = self.path / ".roles.git"
+        self.roles_repo = DeploymentRepo(self.roles_repo_path, remote_config=roles_src)
 
         git_repo_content = [] + self.deployment_files
-        git_repo_content += self.directory_layout[:-1]
+        git_repo_content += self.directory_layout[:-2]
         git_repo_content += [str(self.config_file)]
         git_repo_content += [deployment_key_file]
         self.deployment_repo = DeploymentRepo(self.path, files=git_repo_content)
@@ -82,7 +84,18 @@ class DeploymentDirectory(AnsibleDeployment):
             if not directory_path.exists():
                 directory_path.mkdir()
 
-    def _write_role_defaults_to_group_vars(self, roles):
+    def _copy_roles_to_deployment(self):
+        """
+        Copy roles to deployment directory.
+        """
+        roles = load_config_file(self.config_file).roles
+        shutil.rmtree(self.roles_path)
+        self.roles_path.mkdir()
+        for role_name in roles:
+            role = Role(self.roles_repo_path / role_name)
+            role.copy_to(self.roles_path)
+
+    def write_role_defaults_to_group_vars(self, roles):
         """
         Writes role defaults from a list of roles to group_vars.
 
@@ -113,8 +126,9 @@ class DeploymentDirectory(AnsibleDeployment):
         """
         self._create_deployment_directories()
         self.deployment_repo.init()
-        self.deployment_repo.update("initial commit", force_commit=True)
         self.roles_repo.clone()
+        self._copy_roles_to_deployment()
+        self.deployment_repo.update("initial commit", force_commit=True)
         self._write_ansible_cfg()
 
     def delete(self):
@@ -161,10 +175,11 @@ class DeploymentDirectory(AnsibleDeployment):
             scope = None
         if scope in ("all", "roles"):
             self.roles_repo.pull()
+            self._copy_roles_to_deployment()
+            self.write_role_defaults_to_group_vars(deployment.roles)
         if scope in ("all", "playbook"):
             deployment.playbook.write()
         if scope in ("all", "inventory"):
-            self._write_role_defaults_to_group_vars(deployment.roles)
             deployment.inventory.write()
         if scope in ("all", "ansible_cfg"):
             self._write_ansible_cfg()
