@@ -1,4 +1,4 @@
-# 0.7.0 (upcoming)
+# 0.7.0 (2021/03/31)
 - improve documentation
 - add roles/ directory to deployment repo
 - upstream roles repo is now stored in .roles.git inside deployment directory
