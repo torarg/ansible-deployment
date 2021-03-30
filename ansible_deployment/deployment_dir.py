@@ -93,7 +93,7 @@ class DeploymentDirectory(AnsibleDeployment):
             role = Role(self.roles_repo_path / role_name)
             role.copy_to(self.roles_path)
 
-    def _write_role_defaults_to_group_vars(self, roles):
+    def write_role_defaults_to_group_vars(self, roles):
         """
         Writes role defaults from a list of roles to group_vars.
 
@@ -124,8 +124,9 @@ class DeploymentDirectory(AnsibleDeployment):
         """
         self._create_deployment_directories()
         self.deployment_repo.init()
-        self.deployment_repo.update("initial commit", force_commit=True)
         self.roles_repo.clone()
+        self._copy_roles_to_deployment()
+        self.deployment_repo.update("initial commit", force_commit=True)
         self._write_ansible_cfg()
 
     def delete(self):
@@ -173,7 +174,7 @@ class DeploymentDirectory(AnsibleDeployment):
         if scope in ("all", "roles"):
             self.roles_repo.pull()
             self._copy_roles_to_deployment()
-            self._write_role_defaults_to_group_vars(deployment.roles)
+            self.write_role_defaults_to_group_vars(deployment.roles)
         if scope in ("all", "playbook"):
             deployment.playbook.write()
         if scope in ("all", "inventory"):

@@ -83,7 +83,7 @@ class Deployment(AnsibleDeployment):
         """
         parsed_roles = []
         for role_name in role_names:
-            role_path = self.deployment_dir.roles_path / role_name
+            role_path = self.deployment_dir.path / '.roles.git' / role_name
             parsed_roles.append(Role(role_path))
         return parsed_roles
 
@@ -101,11 +101,11 @@ class Deployment(AnsibleDeployment):
         role_names = (role.name for role in self.roles)
         self.deployment_dir.create()
         self.roles = self._create_role_objects(role_names)
-        self.deployment_dir.update(self)
+        self.deployment_dir.write_role_defaults_to_group_vars(self.roles)
         self.inventory = Inventory(
             self.deployment_dir.path, self.config, self.deployment_dir.vault.key
         )
-        # self.playbook.write()
+        self.playbook.write()
         self.inventory.write()
         self.deployment_dir.deployment_repo.update(message="add deployment files")
 
