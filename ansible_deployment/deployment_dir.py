@@ -128,7 +128,6 @@ class DeploymentDirectory(AnsibleDeployment):
         self.deployment_repo.init()
         self.roles_repo.clone()
         self._copy_roles_to_deployment()
-        self.deployment_repo.update("initial commit", force_commit=True)
         self._write_ansible_cfg()
 
     def delete(self):
