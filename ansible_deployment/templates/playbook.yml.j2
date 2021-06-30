@@ -16,6 +16,7 @@
     - name: test ssh connection with {{ ansible_user }}
       shell: |
         ssh -p{{ ansible_ssh_port|default(22) }} \
+          -i {{ ansible_ssh_private_key_file }} \
           -oStrictHostkeyChecking=no \
           -oBatchMode=yes \
           {{ ansible_user }}@{{ ansible_ssh_host }} echo test
