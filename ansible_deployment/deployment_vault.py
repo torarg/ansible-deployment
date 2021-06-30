@@ -221,6 +221,8 @@ class DeploymentVault(AnsibleDeployment):
             self._encrypt_files(self.files)
             self._setup_shadow_repo()
             self.locked = True
+        else:
+            raise EnvironmentError("Deployment already locked")
 
     def unlock(self):
         """
@@ -233,3 +235,5 @@ class DeploymentVault(AnsibleDeployment):
             self._decrypt_files(self.files)
             self._restore_deployment_repo()
             self.locked = False
+        else:
+            raise EnvironmentError("Deployment already unlocked")
