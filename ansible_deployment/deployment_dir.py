@@ -6,8 +6,9 @@ or classes in the future.
 """
 
 import shutil
-from pathlib import Path
 import yaml
+import subprocess
+from pathlib import Path
 from ansible_deployment.class_skeleton import AnsibleDeployment
 from ansible_deployment.role import Role
 from ansible_deployment.deployment_vault import DeploymentVault
@@ -40,7 +41,7 @@ class DeploymentDirectory(AnsibleDeployment):
         "host_key_checking = False",
         "interpreter_python = auto_silent",
     ]
-    directory_layout = ("host_vars", "group_vars", "roles", ".roles.git", ".git")
+    directory_layout = ("host_vars", "group_vars", "roles", ".roles.git", ".git", ".ssh")
     deployment_files = ["playbook.yml", "hosts.yml", "ansible.cfg"]
     vault_files = deployment_files + list(directory_layout)
 
@@ -49,6 +50,8 @@ class DeploymentDirectory(AnsibleDeployment):
 
         self.path = Path(path)
         self.config_file = self.path / "deployment.json"
+        self.ssh_private_key = self.path / ".ssh" / "id_rsa"
+        self.ssh_public_key = self.path / ".ssh" / "id_rsa.pub"
 
         self.filtered_representation = {
             "path": str(self.path),
@@ -120,11 +123,20 @@ class DeploymentDirectory(AnsibleDeployment):
         with open(ansible_cfg_path, "w") as ansible_cfg_stream:
             ansible_cfg_stream.writelines("\n".join(self.ansible_cfg))
 
+    def _generate_ssh_key(self):
+        """
+        Generates ssh key pair inside deployment directory.
+        """
+        if not self.ssh_private_key.exists():
+            subprocess.run(["ssh-keygen", "-f", str(self.ssh_private_key), "-N", "''"])
+
+
     def create(self):
         """
         Create deployment directory.
         """
         self._create_deployment_directories()
+        self._generate_ssh_key()
         self.deployment_repo.init()
         self.roles_repo.clone()
         self._copy_roles_to_deployment()
