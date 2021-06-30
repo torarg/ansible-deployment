@@ -1,5 +1,6 @@
 # 0.8.0 (upcoming)
 - replace '-' with '_' in group names derived from role names
+- improve error handling
 
 # 0.7.0 (2021/03/31)
 - improve documentation
