@@ -1,4 +1,5 @@
 # 0.8.0 (upcoming)
+- improve variable merging
 - generate ssh key during deployment initialization
 - replace '-' with '_' in group names derived from role names
 - improve error handling
