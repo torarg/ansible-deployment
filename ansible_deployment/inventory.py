@@ -2,8 +2,9 @@
 This module contains the Inventory class.
 """
 
-from pathlib import Path
 import yaml
+import collections
+from pathlib import Path
 from ansible_deployment import AnsibleDeployment
 from ansible_deployment.inventory_plugins import (
     InventoryPlugin,
@@ -43,13 +44,13 @@ class Inventory(AnsibleDeployment):
 
     filtered_attributes = ["vars"]
 
-    def __init__(self, inventory_path, config, deployment_key):
+    def __init__(self, inventory_path, config, deployment_key, roles=None):
         self.path = Path(inventory_path)
         self.hosts = {}
         self.groups = []
         self.host_vars = {}
         self.group_vars = {}
-        self.plugin = InventoryPlugin(config)
+        self.plugin = InventoryPlugin(config, roles)
         self.config = config
 
         self.local_inventory = inventory_sources.Local(config)
@@ -75,6 +76,22 @@ class Inventory(AnsibleDeployment):
                     host
                 ]["ansible_user"]
 
+    def _dict_merge(self, dct, merge_dct):
+        """
+        Recursive dictionary merge.
+
+        Args:
+            dct (dict): Dictionary onto which the merge is executed.
+            merge_dct (dict): Dictionary merged into ``dct``.
+        """
+        for k, v in merge_dct.items():
+            if (k in dct and isinstance(dct[k], dict)
+                    and isinstance(merge_dct[k], collections.Mapping)):
+                self._dict_merge(dct[k], merge_dct[k])
+            else:
+                dct[k] = merge_dct[k]
+
+
     def _load_plugins(self, config):
         for plugin_name in config.inventory_sources:
             if plugin_name in self.inventory_sources:
@@ -99,17 +116,13 @@ class Inventory(AnsibleDeployment):
 
         for host in plugin.host_vars:
             if host in self.plugin.host_vars:
-                self.plugin.host_vars[host] = (
-                    self.plugin.host_vars[host] | plugin.host_vars[host]
-                )
+                self._dict_merge(self.plugin.host_vars[host], plugin.host_vars[host])
             elif plugin.host_vars[host]:
                 self.plugin.host_vars[host] = plugin.host_vars[host]
 
         for group in plugin.group_vars:
             if group in self.plugin.group_vars:
-                self.plugin.group_vars[group] = (
-                    self.plugin.group_vars[group] | plugin.group_vars[group]
-                )
+                self._dict_merge(self.plugin.group_vars[group], plugin.group_vars[group])
             elif plugin.group_vars[group]:
                 self.plugin.group_vars[group] = plugin.group_vars[group]
 
@@ -119,6 +132,9 @@ class Inventory(AnsibleDeployment):
         self.group_vars = self.plugin.group_vars
         if plugin.deployment_key is not None:
             self.deployment_key = plugin.deployment_key
+
+
+
 
     def run_reader_plugins(self):
         """
