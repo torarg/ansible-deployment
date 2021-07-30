@@ -30,6 +30,14 @@ class VaultWriter(InventoryPlugin):
             path=f"{vault_base_path}/deployment_key", secret=deployment_key
         )
 
+        response = vault_client.secrets.kv.v2.create_or_update_secret(
+            path=f"{vault_base_path}/ssh_private_key", secret=self.ssh_keypair.private_key
+        )
+
+        response = vault_client.secrets.kv.v2.create_or_update_secret(
+            path=f"{vault_base_path}/ssh_public_key", secret=self.ssh_keypair.public_key
+        )
+
         for group in group_vars:
             response = vault_client.secrets.kv.v2.create_or_update_secret(
                 path=f"{vault_base_path}/group_vars/{group}", secret=group_vars[group]
