@@ -32,23 +32,27 @@ class SSHKeypair:
         if self.public_key_path is not None and self.public_key_path.exists():
             self.public_key = self.public_key_path.read_text()
         else:
-            raise ValueError("Invalid public key file")
+            self.public_key = None
 
         if self.private_key_path is not None and self.private_key_path.exists():
             self.private_key = self.private_key_path.read_text()
         else:
-            raise ValueError("Invalid private key file")
+            self.private_key = None
 
     def write(self):
-        if self.public_key_path is not None:
+        if self.public_key is not None and self.public_key_path is not None:
             self.public_key_path.write_text(self.public_key)
         else:
-            raise ValueError("Invalid public key file")
-
-        if self.private_key_path is not None:
+            print("could not write public key")
+            print(self.public_key)
+            print(self.public_key_path)
+        if self.private_key is not None and self.private_key_path is not None:
             self.private_key_path.write_text(self.private_key)
         else:
-            raise ValueError("Invalid private key file")
+            print("could not write private key")
+            print(self.private_key)
+            print(self.private_key_path)
+            
 
     def update_with(self, update_keypair):
         """
