@@ -1,4 +1,6 @@
 # 0.8.0 (upcoming)
+- add template functionality for inventory writers
+- add ssh key support for vault plugins
 - improve variable merging
 - generate ssh key during deployment initialization
 - replace '-' with '_' in group names derived from role names
