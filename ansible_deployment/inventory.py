@@ -138,10 +138,6 @@ class Inventory(AnsibleDeployment):
         if plugin.deployment_key is not None:
             self.deployment_key = plugin.deployment_key
 
-
-
-
-
     def run_reader_plugins(self):
         """
         Run loaded inventory sources.
