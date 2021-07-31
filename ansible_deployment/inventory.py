@@ -147,7 +147,7 @@ class Inventory(AnsibleDeployment):
             self.plugin.added_files += plugin.added_files
             self._update_plugin_inventory(plugin)
 
-    def run_writer_plugins(self):
+    def run_writer_plugins(self, template_mode=False):
         """
         Run loaded inventory writers.
         """
@@ -158,6 +158,7 @@ class Inventory(AnsibleDeployment):
                 self.local_inventory.host_vars,
                 self.local_inventory.group_vars,
                 self.deployment_key,
+                template_mode
             )
 
     def write(self):
