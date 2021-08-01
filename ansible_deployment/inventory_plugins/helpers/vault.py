@@ -15,10 +15,14 @@ def init_vault_client():
     client = None
     error = None
     vault_address = os.environ.get("VAULT_ADDR")
+    custom_ca = os.environ.get("VAULT_CA")
+    verify = True
     if vault_address is None:
         error = "Environment variable VAULT_ADDR not set"
 
-    client = hvac.Client(url=vault_address)
+    if custom_ca is not None:
+        verify = custom_ca
+    client = hvac.Client(url=vault_address, verify=verify)
 
     try:
         if not client.is_authenticated():
