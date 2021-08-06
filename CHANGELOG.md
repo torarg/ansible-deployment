@@ -1,4 +1,6 @@
 # 0.8.0 (upcoming)
+- multistage docker build
+- add custom ca support for vault plugins
 - add template functionality for inventory writers
 - add ssh key support for vault plugins
 - improve variable merging
