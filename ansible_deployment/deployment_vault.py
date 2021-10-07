@@ -172,6 +172,7 @@ class DeploymentVault(AnsibleDeployment):
         shadow_repo_files = list(
             self.path.glob("**/*{}".format(self.encryption_suffix))
         )
+        shadow_repo_files.append("deployment.json")
         shadow_repo = DeploymentRepo(self.path, files=shadow_repo_files)
         shadow_repo.init()
 
