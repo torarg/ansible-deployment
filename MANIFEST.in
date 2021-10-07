@@ -1,2 +1,2 @@
 include README.md
-include ansible_deployment/templates/*.j2
+include ansible_deployment/templates/playbook.yml.j2
