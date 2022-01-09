@@ -1,5 +1,5 @@
 # first stage: build all dependencies and install them inside venv
-FROM python:3.9.6-alpine as wheel-build
+FROM python:3.10.1-alpine3.15 as wheel-build
 
 
 RUN adduser -D app && apk update && apk upgrade && apk add git build-base \
@@ -31,15 +31,15 @@ RUN adduser -D app && apk update && apk upgrade && apk add git build-base \
 USER app
 WORKDIR /home/app
 
-COPY ./ansible_deployment.egg-info/requires.txt ./requires.txt
+COPY ./requirements.txt ./requirements.txt
 
 ENV VIRTUAL_ENV=/home/app/venv
-RUN python -m venv $VIRTUAL_ENV && pip wheel -w wheels/ -r requires.txt --use-feature=in-tree-build 
+RUN python -m venv $VIRTUAL_ENV && pip wheel -w wheels/ -r requirements.txt --use-feature=in-tree-build 
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
-RUN pip install -r requires.txt
+RUN pip install -r requirements.txt
 
 # second stage: install ansible-deployment
-FROM python:3.9.6-alpine as venv-build
+FROM python:3.10.1-alpine3.15
 
 
 RUN adduser -D app && apk update && apk upgrade && apk add git vault libcap openssh-client openssh-keygen && \
@@ -48,15 +48,12 @@ WORKDIR /home/app
 
 USER app
 
-COPY ./ansible_deployment/ ./ansible_deployment
-COPY ./setup.py ./
-COPY ./README.md ./
-COPY ./MANIFEST.in ./
+COPY dist/*.tar.gz .
 COPY --from=wheel-build /home/app/venv /home/app/venv
 
 ENV VIRTUAL_ENV=/home/app/venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-RUN pip install --no-index . --use-feature=in-tree-build
+RUN pip install --no-deps ansible-deployment-0.8.0.tar.gz --use-feature=in-tree-build
 
 ENTRYPOINT ["ansible-deployment"]
