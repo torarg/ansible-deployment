@@ -50,5 +50,5 @@ class VaultWriter(InventoryPlugin):
             raise Exception(error)
 
         return vault_client.secrets.kv.v2.create_or_update_secret(
-            path=vault_path, secret=secret_value
+            path=vault_path, secret={'data': secret_value}
         )

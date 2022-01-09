@@ -43,11 +43,11 @@ class VaultReader(InventoryPlugin):
                 if secret == 'deployment_key':
                     template_secret = vault_client.secrets.kv.read_secret_version(path=vault_template_path)[
                         "data"
-                    ]["data"]["data"]
+                    ]["data"]["data"]["data"]
                 else:
                     template_secret = vault_client.secrets.kv.read_secret_version(path=vault_template_path)[
                         "data"
-                    ]["data"]
+                    ]["data"]["data"]
             except vault_exceptions.InvalidPath:
                 template_secret = None
                 
@@ -55,11 +55,11 @@ class VaultReader(InventoryPlugin):
             if secret == 'deployment_key':
                 deployment_secret = vault_client.secrets.kv.read_secret_version(path=vault_path)[
                     "data"
-                ]["data"]["data"]
+                ]["data"]["data"]["data"]
             else:
                 deployment_secret = vault_client.secrets.kv.read_secret_version(path=vault_path)[
                     "data"
-                ]["data"]
+                ]["data"]["data"]
         except vault_exceptions.InvalidPath:
             deployment_secret = None
 
