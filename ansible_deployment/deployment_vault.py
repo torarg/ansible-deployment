@@ -3,6 +3,7 @@ Module containing the DeploymentVault class.
 """
 
 import shutil
+import tarfile
 from pathlib import Path
 from cryptography.fernet import Fernet
 from ansible_deployment.class_skeleton import AnsibleDeployment
@@ -36,6 +37,7 @@ class DeploymentVault(AnsibleDeployment):
         self.new_key = False
         self.locked = False
         self.path = Path(path)
+        self.tar_path = self.path / "deployment.tar.gz"
         self.key_file = self.path / key_name
         self._load_key()
         self.files = vault_files
@@ -96,24 +98,23 @@ class DeploymentVault(AnsibleDeployment):
             fobj.write(cipher_suite.encrypt(plain_data))
         file_path.replace(str(file_path) + self.encryption_suffix)
 
-    def _encrypt_files(self, files):
+    def _encrypt_files(self, files, whitelist=[]):
         """
         Encrypt a sequence of files.
 
         Args:
             files (sequence): Sequence of Path objects.
+            whitelist (sequence): Sequence of file names to exclude from encryption.
         """
+        whitelist = list(whitelist)
+        tar = tarfile.open(self.tar_path, 'w:gz')
         for file_name in files:
             file_path = Path(file_name)
-            if not file_path.exists():
-                pass
-            elif file_path.name == self.key_file.name:
-                pass
-            elif file_path.is_file():
-                self._encrypt_file(file_path)
-            elif file_path.is_dir():
-                files_in_subdir = list(file_path.glob("*"))
-                self._encrypt_files(files_in_subdir)
+            whitelist.append(self.key_file.name)
+            if file_path.exists() and file_path.name not in whitelist:
+                tar.add(file_path)
+        tar.close()
+        self._encrypt_file(self.tar_path)
 
     def _decrypt_files(self, files):
         """
@@ -162,13 +163,6 @@ class DeploymentVault(AnsibleDeployment):
         a pushable deployment state while the deployment
         is locked.
         """
-        active_git_path = self.path / ".git"
-        shadow_git_path = self.path / ".git.shadow"
-        shadow_git_config = shadow_git_path / "config"
-        encrypted_git_path = self.path / ".git.enc"
-
-        active_git_path.replace(encrypted_git_path)
-
         shadow_repo_files = list(
             self.path.glob("**/*{}".format(self.encryption_suffix))
         )
@@ -176,39 +170,27 @@ class DeploymentVault(AnsibleDeployment):
         shadow_repo = DeploymentRepo(self.path, files=shadow_repo_files)
         shadow_repo.init()
 
-        if shadow_git_config.exists():
-            shadow_git_config.replace(active_git_path / "config")
-            shutil.rmtree(shadow_git_path)
-
         shadow_repo.update(
             message="Shadow repository activated.",
             force_commit=True,
             files=shadow_repo_files,
         )
 
-    def _restore_deployment_repo(self):
+
+    def _restore_deployment_dir(self):
         """
-        Restore deployment repository after decryption.
-
-        Restores the original deployment repository and creates
-        a backup of the shadow repository's 'config' file
-        to ``self.path / '.git.shadow' / config``.
+        Restores deployment dir from tar archive.
         """
-        active_git_path = self.path / ".git"
-        active_git_config = active_git_path / "config"
-        shadow_git_path = self.path / ".git.shadow"
-        shadow_git_config = shadow_git_path / "config"
-        encrypted_git_path = self.path / ".git.enc"
+        if not self.tar_path.exists():
+            raise FileNotFoundError(self.tar_path)
 
-        shadow_repo = DeploymentRepo(self.path, files=[])
-        shadow_repo.update(message="Shadow repository deactivated.", force_commit=True)
+        with tarfile.open(self.tar_path) as tar:
+            tar.extractall(self.path)
 
-        shadow_git_path.mkdir()
-        active_git_config.replace(shadow_git_config)
-        shutil.rmtree(active_git_path)
-        encrypted_git_path.replace(active_git_path)
+        self.tar_path.unlink()
 
-    def lock(self):
+
+    def lock(self, whitelist=[]):
         """
         Encrypts all files stored in the vault and activates shadow repo.
 
@@ -219,7 +201,7 @@ class DeploymentVault(AnsibleDeployment):
         repository.
         """
         if not self.locked:
-            self._encrypt_files(self.files)
+            self._encrypt_files(self.files, whitelist)
             self._setup_shadow_repo()
             self.locked = True
         else:
@@ -233,8 +215,9 @@ class DeploymentVault(AnsibleDeployment):
         to ``self.path / '.git.shadow/config``.
         """
         if self.locked:
-            self._decrypt_files(self.files)
-            self._restore_deployment_repo()
+            enc_tar = Path(str(self.tar_path) + self.encryption_suffix)
+            self._decrypt_file(enc_tar)
+            self._restore_deployment_dir()
             self.locked = False
         else:
             raise EnvironmentError("Deployment already unlocked")
