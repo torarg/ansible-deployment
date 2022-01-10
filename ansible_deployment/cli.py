@@ -128,10 +128,8 @@ def delete(ctx, non_interactive):
 
 
 @cli.command()
-@click.option('--whitelist', multiple=True,
-              help='Whitelist file name from encryption.')
 @click.pass_context
-def lock(ctx, whitelist=[]):
+def lock(ctx):
     """
     Encrypt all deployment files except the roles directory.
     """
@@ -146,7 +144,7 @@ def lock(ctx, whitelist=[]):
         deployment.deployment_dir.deployment_repo.update(
             message="lock deployment", force_commit=True
         )
-        deployment.deployment_dir.vault.lock(whitelist)
+        deployment.deployment_dir.vault.lock()
         deployment.deployment_dir.delete()
 
 

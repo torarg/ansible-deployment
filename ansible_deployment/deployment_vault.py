@@ -98,20 +98,17 @@ class DeploymentVault(AnsibleDeployment):
             fobj.write(cipher_suite.encrypt(plain_data))
         file_path.replace(str(file_path) + self.encryption_suffix)
 
-    def _encrypt_files(self, files, whitelist=[]):
+    def _encrypt_files(self, files):
         """
         Encrypt a sequence of files.
 
         Args:
             files (sequence): Sequence of Path objects.
-            whitelist (sequence): Sequence of file names to exclude from encryption.
         """
-        whitelist = list(whitelist)
         tar = tarfile.open(self.tar_path, 'w:gz')
         for file_name in files:
             file_path = Path(file_name)
-            whitelist.append(self.key_file.name)
-            if file_path.exists() and file_path.name not in whitelist:
+            if file_path.exists() and file_path.name != self.key_file.name:
                 tar.add(file_path)
         tar.close()
         self._encrypt_file(self.tar_path)
@@ -190,7 +187,7 @@ class DeploymentVault(AnsibleDeployment):
         self.tar_path.unlink()
 
 
-    def lock(self, whitelist=[]):
+    def lock(self):
         """
         Encrypts all files stored in the vault and activates shadow repo.
 
@@ -201,7 +198,7 @@ class DeploymentVault(AnsibleDeployment):
         repository.
         """
         if not self.locked:
-            self._encrypt_files(self.files, whitelist)
+            self._encrypt_files(self.files)
             self._setup_shadow_repo()
             self.locked = True
         else:
