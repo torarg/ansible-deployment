@@ -54,3 +54,5 @@ ENV VIRTUAL_ENV=/home/app/venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 RUN pip install --no-deps ansible-deployment-0.8.0.tar.gz --use-feature=in-tree-build
+
+ENTRYPOINT ["ansible-deployment"]
