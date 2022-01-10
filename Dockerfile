@@ -1,31 +1,7 @@
 # first stage: build all dependencies and install them inside venv
 FROM python:3.10.1-alpine3.15 as wheel-build
 
-RUN adduser -D app && apk update && apk upgrade && apk add git build-base \
-  cairo \
-  cairo-dev \
-  cargo \
-  freetype-dev \
-  gcc \
-  gdk-pixbuf-dev \
-  gettext \
-  jpeg-dev \
-  lcms2-dev \
-  libffi-dev \
-  musl-dev \
-  openjpeg-dev \
-  openssl-dev \
-  pango-dev \
-  poppler-utils \
-  postgresql-client \
-  postgresql-dev \
-  py-cffi \
-  python3-dev \
-  rust \
-  tcl-dev \
-  tiff-dev \
-  tk-dev \
-  zlib-dev
+RUN adduser -D app && apk update && apk upgrade && apk add gcc musl-dev libffi-dev
 
 USER app
 WORKDIR /home/app
