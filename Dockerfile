@@ -17,7 +17,7 @@ RUN pip install -r requirements.txt
 FROM python:3.10.1-alpine3.15
 
 
-RUN adduser -D app && apk update && apk upgrade && apk add ansible git vault libcap openssh-client openssh-keygen && \
+RUN adduser -D app && apk update && apk upgrade && apk add py3-passlib ansible git vault libcap openssh-client openssh-keygen && \
     setcap cap_ipc_lock= /usr/sbin/vault
 
 USER app
