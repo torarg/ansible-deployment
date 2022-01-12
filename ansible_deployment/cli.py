@@ -141,9 +141,6 @@ def lock(ctx):
         deployment.deployment_dir.vault.key_file
     )
     if click.confirm(prompt):
-        deployment.deployment_dir.deployment_repo.update(
-            message="lock deployment", force_commit=True
-        )
         deployment.deployment_dir.vault.lock()
         deployment.deployment_dir.delete(keep_git=True)
         deployment.deployment_dir.vault.setup_shadow_repo()
@@ -164,10 +161,6 @@ def unlock(ctx):
     if click.confirm(prompt):
         deployment.deployment_dir.vault.unlock()
         deployment = Deployment.load(deployment_config_path)
-        deployment.deployment_dir.deployment_repo.update(
-            message="unlock deployment", force_commit=True
-        )
-
 
 
 @cli.command()
@@ -283,10 +276,6 @@ def persist(ctx, template_mode=False):
                 raise
             else:
                 raise click.ClickException(err)
-
-        deployment.deployment_dir.deployment_repo.update(
-            files=[], message=commit_message, force_commit=True
-        )
     else:
         raise click.ClickException("No configured inventory writers")
 
