@@ -164,6 +164,8 @@ class DeploymentVault(AnsibleDeployment):
         git_config_path = git_path / "config"
         exclude_files = ('deployment.key', '.terraform')
 
+        DeploymentRepo(self.path).write_changelog()
+
         with open(git_config_path) as f:
             git_config_data = f.read()
         shutil.rmtree(git_path)
