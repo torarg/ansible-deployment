@@ -5,7 +5,7 @@ This module represents the ansible-deployment cli.
 from pathlib import Path
 from pprint import pformat
 import click
-from ansible_deployment import Deployment, cli_helpers
+from ansible_deployment import Deployment, cli_helpers, unlock_deployment
 
 deployment_path = Path.cwd()
 deployment_config_path = Path.cwd() / "deployment.json"
@@ -82,11 +82,11 @@ def show(ctx, attribute):
 
     Deployment information may be filtered by specifying attribute(s).
     """
-    deployment = ctx.obj["DEPLOYMENT"]
-    output = deployment
-    if attribute:
-        output = cli_helpers.filter_output_by_attribute(output, attribute)
-    click.echo(pformat(output))
+    with unlock_deployment(ctx.obj["DEPLOYMENT"]) as deployment:
+        output = deployment
+        if attribute:
+            output = cli_helpers.filter_output_by_attribute(output, attribute)
+        click.echo(pformat(output))
 
 
 @cli.command()
@@ -152,9 +152,9 @@ def ssh(ctx, host):
     """
     Run 'ssh' command to connect to a inventory host.
     """
-    deployment = ctx.obj["DEPLOYMENT"]
     try:
-        deployment.ssh(host)
+        with unlock_deployment(ctx.obj["DEPLOYMENT"]) as deployment:
+            deployment.ssh(host)
     except Exception as err:
         if ctx.obj["DEBUG"]:
             raise
@@ -192,48 +192,48 @@ def update(ctx, scope, non_interactive):
         scope (str): Update scope. Defaults to 'all'.
     """
 
-    deployment = ctx.obj["DEPLOYMENT"]
-    cli_helpers.check_environment(deployment)
-    try:
-        old_roles_repo_head = (
-            deployment.deployment_dir.roles_repo.repo.head.commit.hexsha
-        )
-        deployment.deployment_dir.update(deployment, scope)
-    except AttributeError:
-        deployment.deployment_dir.roles_repo.clone()
-        old_roles_repo_head = (
-            deployment.deployment_dir.roles_repo.repo.head.commit.hexsha
-        )
-        deployment.deployment_dir.update(deployment, scope)
-    except Exception as err:
-        if ctx.obj["DEBUG"]:
-            raise
+    with unlock_deployment(ctx.obj["DEPLOYMENT"]) as deployment:
+        cli_helpers.check_environment(deployment)
+        try:
+            old_roles_repo_head = (
+                deployment.deployment_dir.roles_repo.repo.head.commit.hexsha
+            )
+            deployment.deployment_dir.update(deployment, scope)
+        except AttributeError:
+            deployment.deployment_dir.roles_repo.clone()
+            old_roles_repo_head = (
+                deployment.deployment_dir.roles_repo.repo.head.commit.hexsha
+            )
+            deployment.deployment_dir.update(deployment, scope)
+        except Exception as err:
+            if ctx.obj["DEBUG"]:
+                raise
+            else:
+                raise click.ClickException(err)
+        if non_interactive:
+            files_to_commit = deployment.deployment_dir.deployment_repo.changes["all"]
         else:
-            raise click.ClickException(err)
-    if non_interactive:
-        files_to_commit = deployment.deployment_dir.deployment_repo.changes["all"]
-    else:
-        files_to_commit = cli_helpers.prompt_for_update_choices(
-            deployment.deployment_dir
+            files_to_commit = cli_helpers.prompt_for_update_choices(
+                deployment.deployment_dir
+            )
+        files_to_commit += deployment.deployment_dir.deployment_repo.changes["new"]
+        commit_message = "deployment update with scope: {}".format(scope)
+        if deployment.deployment_dir.deployment_repo.changes["new"]:
+            click.echo(
+                f"New files: {deployment.deployment_dir.deployment_repo.changes['new']}"
+            )
+        if (
+            deployment.deployment_dir.roles_repo.repo.head.commit.hexsha
+            != old_roles_repo_head
+        ):
+            click.echo("Updated roles repository.")
+            click.echo(f"Old HEAD: {old_roles_repo_head}")
+            click.echo(
+                f"New HEAD: {deployment.deployment_dir.roles_repo.repo.head.commit.hexsha}"
+            )
+        deployment.deployment_dir.deployment_repo.update(
+            files=files_to_commit, message=commit_message
         )
-    files_to_commit += deployment.deployment_dir.deployment_repo.changes["new"]
-    commit_message = "deployment update with scope: {}".format(scope)
-    if deployment.deployment_dir.deployment_repo.changes["new"]:
-        click.echo(
-            f"New files: {deployment.deployment_dir.deployment_repo.changes['new']}"
-        )
-    if (
-        deployment.deployment_dir.roles_repo.repo.head.commit.hexsha
-        != old_roles_repo_head
-    ):
-        click.echo("Updated roles repository.")
-        click.echo(f"Old HEAD: {old_roles_repo_head}")
-        click.echo(
-            f"New HEAD: {deployment.deployment_dir.roles_repo.repo.head.commit.hexsha}"
-        )
-    deployment.deployment_dir.deployment_repo.update(
-        files=files_to_commit, message=commit_message
-    )
 
 
 @cli.command()
@@ -244,22 +244,22 @@ def persist(ctx, template_mode=False):
     """
     Run configured ``ìnventory_writers``.
     """
-    deployment = ctx.obj["DEPLOYMENT"]
-    cli_helpers.check_environment(deployment)
-    if deployment.inventory.loaded_writers:
-        inventory_writers = [
-            writer.name for writer in deployment.inventory.loaded_writers
-        ]
-        commit_message = f"Running inventory writers: {inventory_writers}"
-        try:
-            deployment.inventory.run_writer_plugins(template_mode)
-        except Exception as err:
-            if ctx.obj["DEBUG"]:
-                raise
-            else:
-                raise click.ClickException(err)
-    else:
-        raise click.ClickException("No configured inventory writers")
+    with unlock_deployment(ctx.obj["DEPLOYMENT"]) as deployment:
+        cli_helpers.check_environment(deployment)
+        if deployment.inventory.loaded_writers:
+            inventory_writers = [
+                writer.name for writer in deployment.inventory.loaded_writers
+            ]
+            commit_message = f"Running inventory writers: {inventory_writers}"
+            try:
+                deployment.inventory.run_writer_plugins(template_mode)
+            except Exception as err:
+                if ctx.obj["DEBUG"]:
+                    raise
+                else:
+                    raise click.ClickException(err)
+        else:
+            raise click.ClickException("No configured inventory writers")
 
 
 def main():
