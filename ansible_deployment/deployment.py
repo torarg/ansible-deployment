@@ -2,6 +2,7 @@
 This module contains the Deployment class and related data structures.
 """
 
+from contextlib import contextmanager
 from pathlib import Path
 from collections import namedtuple
 import json
@@ -16,6 +17,20 @@ from ansible_deployment import (
 from ansible_deployment.config import load_config_file
 
 
+@contextmanager
+def unlock_deployment(deployment):
+    was_locked = False
+    if deployment.deployment_dir.vault.locked:
+        deployment.deployment_dir.vault.unlock()
+        was_locked = True
+    unlocked_deployment = Deployment(deployment.deployment_dir.path, deployment.config)
+    try:
+        yield unlocked_deployment
+    finally:
+        if was_locked:
+            unlocked_deployment.deployment_dir.vault.lock()
+            unlocked_deployment.deployment_dir.delete(keep_git=True)
+            unlocked_deployment.deployment_dir.vault.setup_shadow_repo()
 
 class Deployment(AnsibleDeployment):
     """
@@ -70,6 +85,7 @@ class Deployment(AnsibleDeployment):
             self.playbook = Playbook(
                 self.deployment_dir.path / "playbook.yml", "all", self.roles
             )
+
 
     def _create_role_objects(self, role_names):
         """
