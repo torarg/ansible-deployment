@@ -38,6 +38,7 @@ class DeploymentVault(AnsibleDeployment):
         self.locked = False
         self.path = Path(path)
         self.tar_path = self.path / "deployment.tar.gz"
+        self.encrypted_tar_path = Path(str(self.tar_path) + self.encryption_suffix)
         self.key_file = self.path / key_name
         self._load_key()
         self.files = vault_files
@@ -161,28 +162,34 @@ class DeploymentVault(AnsibleDeployment):
         is locked.
         """
         git_path = self.path / ".git"
+        shadow_git_path = self.path / '.git.shadow'
         git_config_path = git_path / "config"
-        exclude_files = ('deployment.key', '.terraform')
+        exclude_files = ('deployment.key', '.terraform', 'deployment.tar.gz.enc')
 
         DeploymentRepo(self.path).write_changelog()
 
         with open(git_config_path) as f:
             git_config_data = f.read()
+
         shutil.rmtree(git_path)
+        if shadow_git_path.exists():
+            shutil.move(shadow_git_path, git_path)
+
         deployment_files = list(
-            self.path.glob("*")
+            self.path.glob("[!.]*")
         )
         shadow_repo_files = []
         for file in deployment_files:
             if file.name not in exclude_files:
                 shadow_repo_files.append(file)
         shadow_repo = DeploymentRepo(self.path, files=shadow_repo_files)
+        shadow_repo.blobs['deployment_data'] = self.encrypted_tar_path
         shadow_repo.init()
 
         shadow_repo.update(
             message="Shadow repository activated.",
-            force_commit=True,
-            files=shadow_repo_files,
+            force_commit=False,
+            files=shadow_repo_files
         )
 
         with open(git_config_path, 'w') as f:
@@ -194,15 +201,14 @@ class DeploymentVault(AnsibleDeployment):
         Restores deployment dir from tar archive.
         """
         git_path = self.path / '.git'
+        shadow_git_path = self.path / '.git.shadow'
         git_config_path = git_path / "config"
 
         with open(git_config_path) as f:
             git_config_data = f.read()
 
         if git_path.exists():
-            shutil.rmtree(git_path)
-        if not self.tar_path.exists():
-            raise FileNotFoundError(self.tar_path)
+            shutil.move(git_path, shadow_git_path)
 
         with tarfile.open(self.tar_path) as tar:
             tar.extractall(self.path)
@@ -237,8 +243,7 @@ class DeploymentVault(AnsibleDeployment):
         to ``self.path / '.git.shadow/config``.
         """
         if self.locked:
-            enc_tar = Path(str(self.tar_path) + self.encryption_suffix)
-            self._decrypt_file(enc_tar)
+            self._decrypt_file(self.encrypted_tar_path)
             self._restore_deployment_dir()
             self.locked = False
         else:

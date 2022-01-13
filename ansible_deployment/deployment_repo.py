@@ -17,6 +17,7 @@ class DeploymentRepo(AnsibleDeployment):
         path (Path): Local path to git repository.
         remote_config (RepoConfig): Repository origin information.
         files (list): List of files included in repository.
+        blobs (dict): Name (key) and Path (value) of object blobs.
 
     Attributes:
         path (Path): Local path to git repository.
@@ -26,11 +27,12 @@ class DeploymentRepo(AnsibleDeployment):
                         Valid keys are: 'all', 'staged' and 'unstaged'.
     """
 
-    def __init__(self, path, remote_config=None, files=None):
+    def __init__(self, path, remote_config=None, files=None, blobs={}):
         self.remote_config = remote_config
         self.path = path
 
         self.content = files
+        self.blobs = blobs
         self.changes = {"all": [], "staged": [], "unstaged": [], "new": []}
         self._git_path = self.path / ".git"
         self._encrypted = (self._git_path / "HEAD.enc").exists()
@@ -63,15 +65,29 @@ class DeploymentRepo(AnsibleDeployment):
                 diff.a_path for diff in self.repo.index.diff("HEAD")
             ]
         except git_exc.BadName:
-            self.changes["staged"] = []
+            self.changes["staged"] = ["deployment.json"]
         self.changes["all"] = self.changes["staged"] + self.changes["unstaged"]
+
+    def _cleanup_blobs(self):
+        current_tags = self.repo.git.tag().split("\n")
+        for blob_name in self.blobs:
+            if blob_name in current_tags:
+                self.repo.git.tag('-d', blob_name)
+        self.repo.git.gc()
+        self.repo.git.prune()
+
+    def _store_blobs(self):
+        for blob_name in self.blobs:
+            blob_path = self.blobs[blob_name]
+            blob_hash = self.repo.git.hash_object('-w', blob_path)
+            message = "ansible-deployment blob object"
+            self.repo.git.tag(blob_hash, a=blob_name, m=message)
 
     def update(
         self,
         message="Automatic ansible-deployment update.",
         files=None,
         force_commit=False,
-        assume_unchanged=[]
     ):
         """
         Updates the git repository.
@@ -94,14 +110,13 @@ class DeploymentRepo(AnsibleDeployment):
                 except GitCommandError as e:
                     print(e)
 
-        for file_path in assume_unchanged:
-            self.repo.git.update_index("--assume-unchanged", file_path)
-
         self.update_changed_files()
+        commit_message = "ansible-deployment: {}".format(message.capitalize())
         if len(self.changes["staged"]) > 0 or force_commit:
-            self.repo.index.commit(
-                "ansible-deployment: {}".format(message.capitalize())
-            )
+            self.repo.index.commit(commit_message)
+
+        self._cleanup_blobs()
+        self._store_blobs()
 
     def pull(self):
         """
