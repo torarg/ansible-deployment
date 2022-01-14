@@ -44,7 +44,7 @@ class Inventory(AnsibleDeployment):
 
     filtered_attributes = ["vars"]
 
-    def __init__(self, inventory_path, config, deployment_key, roles=None):
+    def __init__(self, inventory_path, config, deployment_key=None, roles=None):
         self.path = Path(inventory_path)
         self.hosts = {}
         self.groups = []
