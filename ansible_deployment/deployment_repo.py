@@ -127,6 +127,18 @@ class DeploymentRepo(AnsibleDeployment):
         if not self.repo.head.is_detached:
             self.repo.remotes.origin.pull()
 
+    def push(self):
+        """
+        Push changes to origin.
+        """
+        self.repo.remotes.origin.fetch()
+        if self.remote_config is not None:
+            self.repo.git.checkout(self.remote_config.branch)
+        if not self.repo.head.is_detached:
+            self.repo.remotes.origin.push()
+            if self.blobs:
+                self.repo.git.push("-f", "--tags")
+
     def clone(self):
         """
         Clone remote reopository.
