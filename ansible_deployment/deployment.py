@@ -19,11 +19,11 @@ from ansible_deployment.config import load_config_file
 
 @contextmanager
 def unlock_deployment(deployment):
-    was_locked = False
-    if deployment.deployment_dir.vault.locked:
+    was_locked = deployment.deployment_dir.vault.locked
+    unlocked_deployment = deployment
+    if was_locked:
         deployment.deployment_dir.vault.unlock()
-        was_locked = True
-    unlocked_deployment = Deployment(deployment.deployment_dir.path, deployment.config)
+        unlocked_deployment = Deployment(deployment.deployment_dir.path, deployment.config)
     try:
         yield unlocked_deployment
     finally:
@@ -31,6 +31,23 @@ def unlock_deployment(deployment):
             unlocked_deployment.deployment_dir.vault.lock()
             unlocked_deployment.deployment_dir.delete(keep_git=True)
             unlocked_deployment.deployment_dir.vault.setup_shadow_repo()
+
+@contextmanager
+def lock_deployment(deployment):
+    was_locked = deployment.deployment_dir.vault.locked
+    if was_locked:
+        locked_deployment = deployment
+    else:
+        deployment.deployment_dir.vault.lock()
+        deployment.deployment_dir.delete(keep_git=True)
+        deployment.deployment_dir.vault.setup_shadow_repo()
+        locked_deployment = Deployment(deployment.deployment_dir.path, deployment.config)
+    try:
+        yield locked_deployment
+    finally:
+        if not was_locked:
+            locked_deployment.deployment_dir.vault.unlock()
+
 
 class Deployment(AnsibleDeployment):
     """

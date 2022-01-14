@@ -5,7 +5,7 @@ This module represents the ansible-deployment cli.
 from pathlib import Path
 from pprint import pformat
 import click
-from ansible_deployment import Deployment, cli_helpers, unlock_deployment
+from ansible_deployment import Deployment, cli_helpers, unlock_deployment, lock_deployment
 
 deployment_path = Path.cwd()
 deployment_config_path = Path.cwd() / "deployment.json"
@@ -238,21 +238,21 @@ def update(ctx, scope, non_interactive):
 
 @cli.command()
 @click.option('--template-mode', is_flag=True,
-              help='Persisting without ssh and deployment keys.')
+              help='Run inventory writers without ssh and deployment keys.')
 @click.pass_context
-def persist(ctx, template_mode=False):
+def push(ctx, template_mode=False):
     """
-    Run configured ``ìnventory_writers``.
+    Run configured ``ìnventory_writers`` and push encrypted git repo.
     """
-    with unlock_deployment(ctx.obj["DEPLOYMENT"]) as deployment:
-        cli_helpers.check_environment(deployment)
-        if deployment.inventory.loaded_writers:
+    deployment = ctx.obj["DEPLOYMENT"]
+    with unlock_deployment(deployment) as unlocked_deployment:
+        cli_helpers.check_environment(unlocked_deployment)
+        if unlocked_deployment.inventory.loaded_writers:
             inventory_writers = [
-                writer.name for writer in deployment.inventory.loaded_writers
+                writer.name for writer in unlocked_deployment.inventory.loaded_writers
             ]
-            commit_message = f"Running inventory writers: {inventory_writers}"
             try:
-                deployment.inventory.run_writer_plugins(template_mode)
+                unlocked_deployment.inventory.run_writer_plugins(template_mode)
             except Exception as err:
                 if ctx.obj["DEBUG"]:
                     raise
@@ -260,6 +260,10 @@ def persist(ctx, template_mode=False):
                     raise click.ClickException(err)
         else:
             raise click.ClickException("No configured inventory writers")
+
+    deployment = Deployment(deployment.deployment_dir.path, deployment.config)
+    with lock_deployment(deployment) as locked_deployment:
+        locked_deployment.deployment_dir.deployment_repo.push()
 
 
 def main():
