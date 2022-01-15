@@ -126,12 +126,11 @@ class DeploymentRepo(AnsibleDeployment):
             with open(blob_path, "w") as blob_file:
                 blob_file.write(blob_data)
 
-    def pull(self, blobs=None):
+    def pull(self, blobs={}):
         """
         Pull changes from origin.
         """
-        if self.blobs is not None:
-            self.blobs = blobs
+        self.blobs = blobs
         self.repo.remotes.origin.fetch()
         if self.remote_config is not None:
             self.repo.git.checkout(self.remote_config.branch)
