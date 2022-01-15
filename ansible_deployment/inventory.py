@@ -12,6 +12,9 @@ from ansible_deployment.inventory_plugins import (
     inventory_writers,
 )
 
+class DeploymentKeyError(Exception):
+    pass
+
 
 class Inventory(AnsibleDeployment):
     """
@@ -151,6 +154,8 @@ class Inventory(AnsibleDeployment):
         """
         Run loaded inventory writers.
         """
+        if self.deployment_key is None:
+            raise DeploymentKeyError("Deployment key is missing")
         for plugin in self.loaded_writers:
             self.local_inventory.update_inventory()
             plugin.update_inventory(
