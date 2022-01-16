@@ -148,7 +148,7 @@ class Deployment(AnsibleDeployment):
         with open(self.deployment_dir.config_file, "w") as config_file_stream:
             json.dump(json_dump, config_file_stream, indent=4)
 
-    def run(self, tags=None):
+    def run(self, tags=None, limit=None, extra_vars=None):
         """
         Run deployment with ansible-playbook.
 
@@ -161,9 +161,11 @@ class Deployment(AnsibleDeployment):
         command = ["ansible-playbook", "playbook.yml"]
         if tags:
             command += ["--tags", ",".join(tags)]
-        self.deployment_dir.deployment_repo.update(
-            "Deployment run: {}".format(command), files=[], force_commit=True
-        )
+        if limit:
+            command += ["-l", limit ]
+        if extra_vars:
+            for extra_var in extra_vars:
+                command += ["-e", extra_var]
         subprocess.run(command, check=True)
 
 

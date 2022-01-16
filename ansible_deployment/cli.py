@@ -91,8 +91,14 @@ def show(ctx, attribute):
 
 @cli.command()
 @click.pass_context
+@click.option(
+    "-l", "--limit", help="Limit playbook execution."
+)
+@click.option(
+    "-e", "--extra-var", help="Set extra var for playbook execution.", multiple=True
+)
 @click.argument("role", required=False, nargs=-1)
-def run(ctx, role):
+def run(ctx, role, limit, extra_var):
     """
     Run deployment with ansible-playbook.
 
@@ -103,7 +109,7 @@ def run(ctx, role):
     try:
         with unlock_deployment(deployment) as unlocked_deployment:
             cli_helpers.check_environment(unlocked_deployment)
-            unlocked_deployment.run(role)
+            unlocked_deployment.run(role, limit=limit, extra_vars=extra_var)
     except Exception as err:
         raise click.ClickException(err)
 
