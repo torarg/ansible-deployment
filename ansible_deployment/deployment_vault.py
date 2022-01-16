@@ -11,6 +11,10 @@ from ansible_deployment.class_skeleton import AnsibleDeployment
 from ansible_deployment.deployment_repo import DeploymentRepo
 
 
+class DeploymentVaultError(Exception):
+    pass
+
+
 class DeploymentVault(AnsibleDeployment):
     """
     Represents a deployment vault used for file encryption.
@@ -247,9 +251,14 @@ class DeploymentVault(AnsibleDeployment):
             self.locked = True
             self.lock_file_path.touch()
         else:
-            raise EnvironmentError("Deployment already locked")
+            raise DeploymentVaultError("Deployment already locked")
 
-    def unlock(self):
+    def _verify_hash(self, file_path, expected_sha256sum):
+        """Verify sha256 sum of file against an expected value."""
+        sha256sum = self._sha256sum(file_path)
+        return expected_sha256sum == sha256sum
+
+    def unlock(self, force_unlock=False):
         """
         Decrypts all vault files and restores the deployment repository.
 
@@ -257,10 +266,15 @@ class DeploymentVault(AnsibleDeployment):
         to ``self.path / '.git.shadow/config``.
         """
         if self.locked:
+            with open(self.encrypted_tar_sha256sum_path) as f:
+                expected_hash = f.read()
+            valid_hash = self._verify_hash(self.encrypted_tar_path, expected_hash)
+            if not valid_hash and not force_unlock:
+                raise DeploymentVaultError("Verification of encrypted deployment failed")
             self._decrypt_file(self.encrypted_tar_path)
             self._restore_deployment_dir()
             self.locked = False
             self.lock_file_path.unlink()
             self.encrypted_tar_sha256sum_path.unlink()
         else:
-            raise EnvironmentError("Deployment already unlocked")
+            raise DeploymentVaultError("Deployment already unlocked")
