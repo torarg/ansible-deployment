@@ -2,6 +2,7 @@
 Module containing the DeploymentVault class.
 """
 
+import hashlib
 import shutil
 import tarfile
 from pathlib import Path
@@ -43,6 +44,8 @@ class DeploymentVault(AnsibleDeployment):
         self.lock_file_path = self.path / self.lock_file_name
         self.tar_path = self.path / self.tar_file_name
         self.encrypted_tar_path = Path(str(self.tar_path) + self.encryption_suffix)
+        self.encrypted_tar_sha256sum_path = Path(str(self.encrypted_tar_path) + ".SHA256")
+        self.encrypted_tar_sha256sum = None
         self.key_file = self.path / self.key_file_name
         self._load_key(key)
         self.files = vault_files
@@ -106,6 +109,18 @@ class DeploymentVault(AnsibleDeployment):
             fobj.write(cipher_suite.encrypt(plain_data))
         file_path.replace(str(file_path) + self.encryption_suffix)
 
+    def _sha256sum(self, file_path):
+        """
+        Create sha256 sum of file and write it to ``file_path.SHA256``.
+        """
+        h  = hashlib.sha256()
+        b  = bytearray(128*1024)
+        mv = memoryview(b)
+        with open(file_path, 'rb', buffering=0) as f:
+            for n in iter(lambda : f.readinto(mv), 0):
+                h.update(mv[:n])
+        return h.hexdigest()
+
     def _encrypt_files(self, files):
         """
         Encrypt a sequence of files.
@@ -120,6 +135,7 @@ class DeploymentVault(AnsibleDeployment):
                 tar.add(file_path)
         tar.close()
         self._encrypt_file(self.tar_path)
+        self.encrypted_tar_sha256sum = self._sha256sum(self.encrypted_tar_path)
 
     def _decrypt_files(self, files):
         """
@@ -173,7 +189,8 @@ class DeploymentVault(AnsibleDeployment):
         exclude_files = ('deployment.key', '.terraform', 'deployment.tar.gz.enc', '.ssh')
         include_files = ('.LOCKED', '.drone.yml', '.gitlab-ci', '.gitignore')
 
-        DeploymentRepo(self.path).write_changelog()
+        with open(self.encrypted_tar_sha256sum_path, 'w') as f:
+            f.write(self.encrypted_tar_sha256sum)
 
         shutil.rmtree(git_path)
         if shadow_git_path.exists():
@@ -244,5 +261,6 @@ class DeploymentVault(AnsibleDeployment):
             self._restore_deployment_dir()
             self.locked = False
             self.lock_file_path.unlink()
+            self.encrypted_tar_sha256sum_path.unlink()
         else:
             raise EnvironmentError("Deployment already unlocked")
