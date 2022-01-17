@@ -193,7 +193,6 @@ class DeploymentVault(AnsibleDeployment):
         exclude_files = ('deployment.key', '.terraform', 'deployment.tar.gz.enc', '.ssh')
         include_files = ('.LOCKED', '.drone.yml', '.gitlab-ci', '.gitignore')
 
-        self.lock_file_path.touch()
         if self.encrypted_tar_sha256sum:
             with open(self.encrypted_tar_sha256sum_path, 'w') as f:
                 f.write(self.encrypted_tar_sha256sum)
@@ -251,6 +250,7 @@ class DeploymentVault(AnsibleDeployment):
         if not self.locked:
             self._encrypt_files(self.files)
             self.locked = True
+            self.lock_file_path.touch()
         else:
             raise DeploymentVaultError("Deployment already locked")
 
