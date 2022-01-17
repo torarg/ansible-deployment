@@ -1,4 +1,5 @@
 # 0.8.0 (upcoming)
+- add shasum verification for encrypted deployment
 - support commands on locked deployment
 - add push and pull commands
 - improve deployment encryption
