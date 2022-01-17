@@ -82,7 +82,7 @@ def show(ctx, attribute):
 
     Deployment information may be filtered by specifying attribute(s).
     """
-    with unlock_deployment(ctx.obj["DEPLOYMENT"]) as deployment:
+    with unlock_deployment(ctx.obj["DEPLOYMENT"], 'r') as deployment:
         output = deployment
         if attribute:
             output = cli_helpers.filter_output_by_attribute(output, attribute)
@@ -107,7 +107,7 @@ def run(ctx, role, limit, extra_var):
     """
     deployment = ctx.obj["DEPLOYMENT"]
     try:
-        with unlock_deployment(deployment) as unlocked_deployment:
+        with unlock_deployment(deployment, 'r') as unlocked_deployment:
             cli_helpers.check_environment(unlocked_deployment)
             unlocked_deployment.run(role, limit=limit, extra_vars=extra_var)
     except Exception as err:
@@ -181,7 +181,7 @@ def ssh(ctx, host):
     Run 'ssh' command to connect to a inventory host.
     """
     try:
-        with unlock_deployment(ctx.obj["DEPLOYMENT"]) as deployment:
+        with unlock_deployment(ctx.obj["DEPLOYMENT"], 'r') as deployment:
             deployment.ssh(host)
     except Exception as err:
         if ctx.obj["DEBUG"]:
@@ -273,7 +273,7 @@ def push(ctx, template_mode=False):
     Run configured ``ìnventory_writers`` and push encrypted git repo.
     """
     deployment = ctx.obj["DEPLOYMENT"]
-    with unlock_deployment(deployment) as unlocked_deployment:
+    with unlock_deployment(deployment, 'r') as unlocked_deployment:
         cli_helpers.check_environment(unlocked_deployment)
         if unlocked_deployment.inventory.loaded_writers:
             try:

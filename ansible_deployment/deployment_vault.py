@@ -56,7 +56,7 @@ class DeploymentVault(AnsibleDeployment):
         self.locked_files = list(
             self.path.glob("**/*{}".format(self.encryption_suffix))
         )
-        if len(self.locked_files) > 0 or self.lock_file_path.exists():
+        if self.lock_file_path.exists():
             self.locked = True
             self.files = self.locked_files
 
@@ -166,11 +166,11 @@ class DeploymentVault(AnsibleDeployment):
             file_path (Path): Path object for target file.
         """
         cipher_suite = Fernet(self.key)
+        unencrypted_file_path = str(file_path)[: -len(self.encryption_suffix)]
         with open(file_path, "rb") as fobj:
             encrypted_data = fobj.read()
-        with open(file_path, "wb") as fobj:
+        with open(unencrypted_file_path, "wb") as fobj:
             fobj.write(cipher_suite.decrypt(encrypted_data))
-        file_path.replace(str(file_path)[: -len(self.encryption_suffix)])
 
     def setup_shadow_repo(self):
         """
@@ -193,8 +193,9 @@ class DeploymentVault(AnsibleDeployment):
         exclude_files = ('deployment.key', '.terraform', 'deployment.tar.gz.enc', '.ssh')
         include_files = ('.LOCKED', '.drone.yml', '.gitlab-ci', '.gitignore')
 
-        with open(self.encrypted_tar_sha256sum_path, 'w') as f:
-            f.write(self.encrypted_tar_sha256sum)
+        if self.encrypted_tar_sha256sum:
+            with open(self.encrypted_tar_sha256sum_path, 'w') as f:
+                f.write(self.encrypted_tar_sha256sum)
 
         shutil.rmtree(git_path)
         if shadow_git_path.exists():
@@ -275,6 +276,5 @@ class DeploymentVault(AnsibleDeployment):
             self._restore_deployment_dir()
             self.locked = False
             self.lock_file_path.unlink()
-            self.encrypted_tar_sha256sum_path.unlink()
         else:
             raise DeploymentVaultError("Deployment already unlocked")

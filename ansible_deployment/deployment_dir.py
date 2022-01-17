@@ -142,12 +142,10 @@ class DeploymentDirectory(AnsibleDeployment):
         self._copy_roles_to_deployment()
         self._write_ansible_cfg()
 
-    def delete(self, keep_git=False):
+    def delete(self, keep_git=False, file_whitelist=[], dir_whitelist=[]):
         """
         Delete deployment directory.
         """
-        dir_whitelist = []
-        file_whitelist = []
         if keep_git:
             dir_whitelist.append(".git")
         for directory_name in self.directory_layout:
