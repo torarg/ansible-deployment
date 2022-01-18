@@ -95,6 +95,7 @@ class Deployment(AnsibleDeployment):
             path, config, deployment_key=None, read_sources=read_sources
         )
         self.deployment_dir = DeploymentDirectory(path, config.roles_src, deployment_key=self.inventory.deployment_key)
+        self.inventory.deployment_key = self.deployment_dir.vault.key
         self.name = config.name
         self.config = config
         self.roles = self._create_role_objects(config.roles)
