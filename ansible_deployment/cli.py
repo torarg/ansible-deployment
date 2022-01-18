@@ -149,7 +149,7 @@ def lock(ctx):
     Encrypt all deployment files except the roles directory.
     """
     try:
-        deployment = Deployment.load(deployment_config_path, read_sources=True)
+        deployment = Deployment.load(deployment_config_path, read_sources=False)
     except Exception as err:
         if ctx.obj['DEBUG']:
             raise
