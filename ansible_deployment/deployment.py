@@ -30,10 +30,10 @@ def unlock_deployment(deployment, mode='w'):
         if was_locked:
             if mode == 'w':
                 unlocked_deployment.deployment_dir.vault.lock()
-                unlocked_deployment.deployment_dir.delete(keep_git=True)
+                unlocked_deployment.deployment_dir.delete(keep=['.git'])
             else:
                 unlocked_deployment.deployment_dir.vault.lock_file_path.touch()
-                unlocked_deployment.deployment_dir.delete(keep_git=True, file_whitelist=["deployment.tar.gz.enc"])
+                unlocked_deployment.deployment_dir.delete(keep=['.git', 'deployment.tar.gz.enc'])
             unlocked_deployment.deployment_dir.vault.setup_shadow_repo()
 
 @contextmanager
@@ -43,7 +43,7 @@ def lock_deployment(deployment):
         locked_deployment = deployment
     else:
         deployment.deployment_dir.vault.lock()
-        deployment.deployment_dir.delete(keep_git=True)
+        deployment.deployment_dir.delete(keep=['git'])
         deployment.deployment_dir.vault.setup_shadow_repo()
         locked_deployment = Deployment(deployment.deployment_dir.path, deployment.config)
     try:
