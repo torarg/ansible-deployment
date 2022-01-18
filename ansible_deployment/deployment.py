@@ -194,7 +194,11 @@ class Deployment(AnsibleDeployment):
             host (str): Target host.
         """
         if host in self.inventory.hosts["all"]["hosts"]:
-            host_info = self.inventory.host_vars[host]
+            if host in self.inventory.host_vars:
+                host_info = self.inventory.host_vars[host]
+            else:
+                host_info = { "ansible_host": host }
+
             ansible_user = self.inventory.group_vars["all"]["ansible_user"]
             subprocess.run(
                 ["ssh", "-l", ansible_user, host_info["ansible_host"]],
