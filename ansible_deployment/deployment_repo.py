@@ -111,7 +111,7 @@ class DeploymentRepo(AnsibleDeployment):
                 try:
                     self.repo.index.remove(str(git_file))
                 except GitCommandError as e:
-                    print(e)
+                    pass
 
         self.update_changed_files()
         commit_message = "ansible-deployment: {}".format(message.capitalize())
