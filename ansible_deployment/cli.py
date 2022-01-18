@@ -133,14 +133,13 @@ def delete(ctx, non_interactive):
     """
     deployment = ctx.obj["DEPLOYMENT"]
     if non_interactive:
-        deployment.deployment_dir.delete(additional_paths=deployment.inventory.plugin.added_files,
-                                         full_delete=True)
+        deployment.inventory.plugin.delete_added_files()
+        deployment.deployment_dir.delete(full_delete=True)
     else:
         ctx.invoke(show)
         if click.confirm("Delete deployment?"):
-            deployment.deployment_dir.delete()
-            deployment.deployment_dir.delete(additional_paths=deployment.inventory.plugin.added_files,
-                                             full_delete=True)
+            deployment.inventory.plugin.delete_added_files()
+            deployment.deployment_dir.delete(full_delete=True)
 
 
 @cli.command()
@@ -164,7 +163,8 @@ def lock(ctx):
     )
     if click.confirm(prompt):
         deployment.deployment_dir.vault.lock()
-        deployment.deployment_dir.delete(keep=['.git'], additional_paths=deployment.inventory.plugin.added_files)
+        deployment.inventory.plugin.delete_added_files()
+        deployment.deployment_dir.delete(keep=['.git'])
         deployment.deployment_dir.vault.setup_shadow_repo()
 
 
@@ -185,6 +185,7 @@ def unlock(ctx, force):
     )
     if click.confirm(prompt):
         deployment.deployment_dir.vault.unlock(force)
+        deployment.deployment_dir.vault.delete()
         deployment = Deployment.load(deployment_config_path)
 
 

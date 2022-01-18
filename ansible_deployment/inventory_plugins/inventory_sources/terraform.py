@@ -32,6 +32,7 @@ class Terraform(InventoryPlugin):
         self.resource_functions = {
             "hcloud_server": self.parse_hcloud_servers,
         }
+        self.added_files.append(inventory_src)
 
     def _filter_instances(self, tfstate_data):
         """

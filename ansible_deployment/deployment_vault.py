@@ -45,6 +45,8 @@ class DeploymentVault(AnsibleDeployment):
         self.new_key = False
         self.locked = False
         self.path = Path(path)
+        self.git_path = self.path / '.git'
+        self.shadow_git_path = self.path / '.git.shadow'
         self.lock_file_path = self.path / self.lock_file_name
         self.tar_path = self.path / self.tar_file_name
         self.encrypted_tar_path = Path(str(self.tar_path) + self.encryption_suffix)
@@ -188,8 +190,6 @@ class DeploymentVault(AnsibleDeployment):
         a pushable deployment state while the deployment
         is locked.
         """
-        git_path = self.path / ".git"
-        shadow_git_path = self.path / '.git.shadow'
         exclude_files = ('deployment.key', '.terraform', 'deployment.tar.gz.enc', '.ssh')
         include_files = ('.LOCKED', '.drone.yml', '.gitlab-ci', '.gitignore')
 
@@ -197,9 +197,9 @@ class DeploymentVault(AnsibleDeployment):
             with open(self.encrypted_tar_sha256sum_path, 'w') as f:
                 f.write(self.encrypted_tar_sha256sum)
 
-        shutil.rmtree(git_path)
-        if shadow_git_path.exists():
-            shutil.move(shadow_git_path, git_path)
+        shutil.rmtree(self.git_path)
+        if self.shadow_git_path.exists():
+            shutil.move(self.shadow_git_path, self.git_path)
 
         deployment_files = list(
             self.path.glob("[!.]*")
@@ -225,11 +225,9 @@ class DeploymentVault(AnsibleDeployment):
         """
         Restores deployment dir from tar archive.
         """
-        git_path = self.path / '.git'
-        shadow_git_path = self.path / '.git.shadow'
 
-        if git_path.exists():
-            shutil.move(git_path, shadow_git_path)
+        if self.git_path.exists():
+            shutil.move(self.git_path, self.shadow_git_path)
 
         with tarfile.open(self.tar_path) as tar:
             tar.extractall(self.path)
@@ -278,3 +276,11 @@ class DeploymentVault(AnsibleDeployment):
             self.lock_file_path.unlink()
         else:
             raise DeploymentVaultError("Deployment already unlocked")
+
+    def delete(self, delete_shadowgit=False):
+        self.lock_file_path.unlink(missing_ok=True)
+        self.encrypted_tar_path.unlink(missing_ok=True)
+        self.encrypted_tar_sha256sum_path.unlink(missing_ok=True)
+        self.tar_path.unlink(missing_ok=True)
+        if delete_shadowgit:
+            shutil.rmtree(self.shadow_git_path, ignore_errors=True)

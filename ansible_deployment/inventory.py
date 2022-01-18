@@ -65,6 +65,8 @@ class Inventory(AnsibleDeployment):
         self.deployment_key = deployment_key
 
         self._load_plugins(config)
+
+        self.update_added_files()
         if read_sources:
             print("loading inventory plugins")
             self.run_reader_plugins()
@@ -154,8 +156,11 @@ class Inventory(AnsibleDeployment):
         """
         for plugin in self.loaded_sources:
             plugin.update_inventory()
-            self.plugin.added_files += plugin.added_files
             self._update_plugin_inventory(plugin)
+
+    def update_added_files(self):
+        for plugin in self.loaded_sources:
+            self.plugin.added_files += plugin.added_files
 
     def run_writer_plugins(self, template_mode=False):
         """

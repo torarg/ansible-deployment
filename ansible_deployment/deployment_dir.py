@@ -52,6 +52,7 @@ class DeploymentDirectory(AnsibleDeployment):
         self.config_file = self.path / "deployment.json"
         self.ssh_private_key = self.path / ".ssh" / "id_rsa"
         self.ssh_public_key = self.path / ".ssh" / "id_rsa.pub"
+        self.additional_files = []
 
         self.filtered_representation = {
             "path": str(self.path),
@@ -151,11 +152,7 @@ class DeploymentDirectory(AnsibleDeployment):
             additional_paths (list): List of file system paths for additional deletion.
         """
         if full_delete:
-            additional_paths.append("deployment.tar.gz")
-            additional_paths.append("deployment.tar.gz.enc")
-            additional_paths.append("deployment.tar.gz.enc.SHA256")
-            additional_paths.append(".git.shadow")
-            additional_paths.append(".LOCKED")
+            self.vault.delete(delete_shadowgit=True)
         for directory_name in self.directory_layout:
             directory_path = self.path / directory_name
             if directory_path.exists() and directory_path.name not in keep:
