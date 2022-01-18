@@ -1,6 +1,8 @@
 # 0.8.0 (upcoming)
+- improve delete workflow
 - add shasum verification for encrypted deployment
 - support commands on locked deployment
+- support storage of encrypted deployment as git object
 - add push and pull commands
 - improve deployment encryption
 - fix deprecated usage of collections
