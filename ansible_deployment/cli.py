@@ -19,9 +19,9 @@ def cli(ctx, debug):
     """
     All available commands are listed below.
 
-    Each command has it's own help that can be shown by passing ``--help``:
+    Each command has it's own help that can be shown by passing '--help':
 
-        ``ansible-deployment COMMAND --help``
+        $ ansible-deployment COMMAND --help
     """
     try:
         deployment = Deployment.load(deployment_config_path)
@@ -107,9 +107,6 @@ def show(ctx, attribute):
 def run(ctx, role, limit, extra_var):
     """
     Run deployment with ansible-playbook.
-
-    This will create a commit in the deployment repository
-    containing the executed command.
     """
     deployment = ctx.obj["DEPLOYMENT"]
     try:
