@@ -110,3 +110,46 @@ def prompt_for_update_choices(deployment_dir):
         click.clear()
 
     return files_to_commit
+
+def update_deployment(deployment, scope, non_interactive):
+    check_environment(deployment)
+    try:
+        old_roles_repo_head = (
+            deployment.deployment_dir.roles_repo.repo.head.commit.hexsha
+        )
+        deployment.deployment_dir.update(deployment, scope)
+    except AttributeError:
+        deployment.deployment_dir.roles_repo.clone()
+        old_roles_repo_head = (
+            deployment.deployment_dir.roles_repo.repo.head.commit.hexsha
+        )
+        deployment.deployment_dir.update(deployment, scope)
+    except Exception as err:
+        if ctx.obj["DEBUG"]:
+            raise
+        else:
+            raise click.ClickException(err)
+    if non_interactive:
+        files_to_commit = deployment.deployment_dir.deployment_repo.changes["all"]
+    else:
+        files_to_commit = prompt_for_update_choices(
+            deployment.deployment_dir
+        )
+    files_to_commit += deployment.deployment_dir.deployment_repo.changes["new"]
+    commit_message = "deployment update with scope: {}".format(scope)
+    if deployment.deployment_dir.deployment_repo.changes["new"]:
+        click.echo(
+            f"New files: {deployment.deployment_dir.deployment_repo.changes['new']}"
+        )
+    if (
+        deployment.deployment_dir.roles_repo.repo.head.commit.hexsha
+        != old_roles_repo_head
+    ):
+        click.echo("Updated roles repository.")
+        click.echo(f"Old HEAD: {old_roles_repo_head}")
+        click.echo(
+            f"New HEAD: {deployment.deployment_dir.roles_repo.repo.head.commit.hexsha}"
+        )
+    deployment.deployment_dir.deployment_repo.update(
+        files=files_to_commit, message=commit_message
+    )

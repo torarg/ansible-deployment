@@ -3,7 +3,11 @@
 - add shasum verification for encrypted deployment
 - support commands on locked deployment
 - support storage of encrypted deployment as git object
-- add push and pull commands
+- add push command
+- add pull command
+- add edit command
+- add commit command
+- remove update command
 - improve deployment encryption
 - fix deprecated usage of collections
 - multistage docker build

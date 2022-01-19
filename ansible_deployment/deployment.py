@@ -173,21 +173,6 @@ class Deployment(AnsibleDeployment):
                 command += ["-e", extra_var]
         subprocess.run(command, check=True)
 
-    def edit(self):
-        """
-        Edit deployment with vim.
-        """
-        command = ["vim", "."]
-        subprocess.run(command, check=True)
-
-    def commit(self):
-        """
-        Commit deployment files.
-        """
-        command = ["git", "commit", "-a"]
-        subprocess.run(command, check=True)
-
-
     def update_inventory(self):
         """
         Updates inventory.
