@@ -284,7 +284,7 @@ def update(ctx, scope, non_interactive):
 @click.pass_context
 def push(ctx, template_mode=False):
     """
-    Run configured ``ìnventory_writers`` and push encrypted git repo.
+    Run configured ìnventory_writers and push encrypted git repo.
     """
     deployment = ctx.obj["DEPLOYMENT"]
     with unlock_deployment(deployment, 'r') as unlocked_deployment:
@@ -315,7 +315,7 @@ def push(ctx, template_mode=False):
 @click.pass_context
 def pull(ctx):
     """
-    Run configured ``ìnventory_sources`` and pull encrypted git repo.
+    Pull encrypted git repo.
     """
     deployment = ctx.obj["DEPLOYMENT"]
     with lock_deployment(deployment) as locked_deployment:
@@ -329,9 +329,41 @@ def pull(ctx):
                 raise click.ClickException(err)
 
 
+@cli.command()
+@click.pass_context
+def edit(ctx):
+    """
+    Run deployment with ansible-playbook.
+
+    This will create a commit in the deployment repository
+    containing the executed command.
+    """
+    deployment = ctx.obj["DEPLOYMENT"]
+    try:
+        with unlock_deployment(deployment, 'w') as unlocked_deployment:
+            cli_helpers.check_environment(unlocked_deployment)
+            unlocked_deployment.edit()
+    except Exception as err:
+        raise click.ClickException(err)
+
+@cli.command()
+@click.pass_context
+def commit(ctx):
+    """
+    Commit all changes.
+    """
+    deployment = ctx.obj["DEPLOYMENT"]
+    try:
+        with unlock_deployment(deployment, 'w') as unlocked_deployment:
+            cli_helpers.check_environment(unlocked_deployment, ignore_dirty_repo=True)
+            unlocked_deployment.commit()
+    except Exception as err:
+        raise click.ClickException(err)
+
+
 def main():
     """
-    This function is only used to set ``auto_envvars_prefix``
+    This function is only used to set 'auto_envvars_prefix'.
     """
     cli(auto_envvar_prefix="AD")
 
