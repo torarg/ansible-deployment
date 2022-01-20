@@ -265,6 +265,7 @@ def update(ctx, non_interactive):
     Updates deployment inventory from inventory_sources and pulls changes
     from roles repository.
     """
+    deployment = ctx.obj["DEPLOYMENT"]
     with unlock_deployment(deployment) as unlocked_deployment:
         try:
             cli_helpers.update_deployment(unlocked_deployment, 'all', non_interactive)
