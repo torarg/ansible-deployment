@@ -237,12 +237,9 @@ def push(ctx, template_mode=False):
 
 @cli.command()
 @click.pass_context
-@click.option(
-    "--non-interactive", is_flag=True, help="Apply all updates without asking."
-)
-def pull(ctx, non_interactive):
+def pull(ctx):
     """
-    Pull encrypted git repo, update roles and apply inventory sources.
+    Pull encrypted deployment repo.
     """
     deployment = ctx.obj["DEPLOYMENT"]
     with lock_deployment(deployment) as locked_deployment:
@@ -255,6 +252,19 @@ def pull(ctx, non_interactive):
             else:
                 raise click.ClickException(err)
 
+
+@cli.command()
+@click.pass_context
+@click.option(
+    "--non-interactive", is_flag=True, help="Apply all updates without asking."
+)
+def update(ctx, non_interactive):
+    """
+    Update deployment.
+
+    Updates deployment inventory from inventory_sources and pulls changes
+    from roles repository.
+    """
     with unlock_deployment(deployment) as unlocked_deployment:
         try:
             cli_helpers.update_deployment(unlocked_deployment, 'all', non_interactive)
