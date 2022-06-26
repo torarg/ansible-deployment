@@ -191,7 +191,7 @@ class Deployment(AnsibleDeployment):
             host (str): Target host.
         """
         if host in self.inventory.hosts["all"]["hosts"]:
-            if host in self.inventory.host_vars:
+            if host in self.inventory.host_vars and "ansible_host" in self.inventory.host_vars[host]:
                 host_info = self.inventory.host_vars[host]
             else:
                 host_info = { "ansible_host": host }
