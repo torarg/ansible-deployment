@@ -27,7 +27,7 @@ class InventoryPlugin:
         self.deployment_key = None
         self.all_hosts = {}
         self.deployment_group = {}
-        self.groups = [ role.replace('-', '_') for role in config.roles ]
+        self.groups = [ role.replace('-', '_').replace('/', '_') for role in config.roles ]
         self.ansible_user = "ansible"
         self.hosts = {
             "all": {

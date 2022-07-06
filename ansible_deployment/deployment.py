@@ -121,7 +121,7 @@ class Deployment(AnsibleDeployment):
         parsed_roles = []
         for role_name in role_names:
             role_path = self.deployment_dir.path / '.roles.git' / role_name
-            parsed_roles.append(Role(role_path))
+            parsed_roles.append(Role(name=role_name, path=role_path))
         return parsed_roles
 
     def initialize_deployment_directory(self):
