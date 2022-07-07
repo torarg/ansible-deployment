@@ -197,7 +197,8 @@ class Deployment(AnsibleDeployment):
                 host_info = { "ansible_host": host }
 
             ansible_user = self.inventory.group_vars["all"]["ansible_user"]
+            ssh_key = self.deployment_dir.ssh_private_key
             subprocess.run(
-                ["ssh", "-l", ansible_user, host_info["ansible_host"]],
+                ["ssh", "-i", ssh_key, "-l", ansible_user, host_info["ansible_host"]],
                 check=True,
             )
