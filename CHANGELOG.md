@@ -1,5 +1,6 @@
 # CHANGELOG
 ## 0.9.0 (upcoming)
+- inventory writers (currently there's only vault) now support deletion of written data
 - fix usage of roles inside of sub directories
 - add update command again
 - add reset command
