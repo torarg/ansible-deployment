@@ -160,6 +160,20 @@ class Inventory(AnsibleDeployment):
         for plugin in self.loaded_sources:
             self.plugin.added_files += plugin.added_files
 
+    def delete_from_writers(self):
+        """
+        Delete stored inventory from configured writer plugins.
+        """
+        if self.deployment_key is None:
+            raise DeploymentKeyError("Deployment key is missing")
+        for plugin in self.loaded_writers:
+            print("delete plugin: ", plugin.name)
+            plugin.delete(
+                self.local_inventory.hosts,
+                self.local_inventory.host_vars,
+                self.local_inventory.group_vars
+            )
+
     def run_writer_plugins(self, template_mode=False):
         """
         Run loaded inventory writers.
