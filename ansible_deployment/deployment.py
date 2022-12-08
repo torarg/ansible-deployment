@@ -33,7 +33,7 @@ class Deployment(AnsibleDeployment):
         self.deployment_dir.update(self.roles)
         self.playbook.write()
         self.inventory.write()
-        self.deployment_dir.update_git(message="initial commit")
+        self.deployment_dir.update_git(message="add deployment files")
 
     def save(self):
         role_names = []
