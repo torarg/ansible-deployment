@@ -59,6 +59,8 @@ def show(attribute):
 @click.argument('role', required=False, nargs=-1)
 def run(role):
     deployment = Deployment.load(deployment_state_path)
+    if deployment.deployment_dir.repo.is_dirty():
+        err_exit('Deployment repo has to be clean.')
     deployment.run(role)
 
 
@@ -84,8 +86,8 @@ def update():
     files_to_commit = []
     if not deployment:
         err_exit("Failed to load deployment.json")
-    elif len(deployment.deployment_dir.unstaged_changes) > 0:
-        err_exit("Unstaged changes: {}".format(
+    elif deployment.deployment_dir.repo.is_dirty():
+        err_exit("Repo is dirty. Unstaged changes: {}".format(
             deployment.deployment_dir.unstaged_changes))
     elif not deployment.deployment_dir.roles_path.exists():
         err_exit("Deployment directory not initialized.")
