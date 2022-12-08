@@ -24,14 +24,10 @@ class DeploymentDirectory(AnsibleDeployment):
     Attributes:
         path (Path): Path to deployment directory.
         roles_path (Path): Path to deployment roles directory.
-        roles_repo (Repo): Roles src repository.
+        roles_repo (DeploymentRepo): Roles src repository.
+        deployment_repo (DeploymentRepo): Deployment git repository.
         config_file (Path): Path to deployment config file.
-        repo (git.Repo): Deployment git repository.
-        git_repo_content (list): List of files describing repo content.
         vault (DeploymentVault): Vault object for file encryption.
-        unstaged_changes (list): List of unstaged files.
-        staged_changes (list): List of staged files.
-        changes (list): List of all changed files.
     """
     ansible_cfg = [
         '[defaults]', 'inventory = hosts.yml', 'host_key_checking = False'
