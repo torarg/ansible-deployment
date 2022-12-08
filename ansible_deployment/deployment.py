@@ -129,7 +129,8 @@ class Deployment(AnsibleDeployment):
         self.deployment_dir.create()
         self.roles = self._create_role_objects(role_names)
         self.deployment_dir.update(self)
-        self.playbook.write()
+        self.inventory = Inventory(self.deployment_dir.path, self.config)
+        #self.playbook.write()
         self.inventory.write()
         self.deployment_dir.deployment_repo.update(
             message="add deployment files")
