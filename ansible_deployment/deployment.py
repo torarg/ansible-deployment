@@ -18,7 +18,7 @@ from ansible_deployment.config import load_config_file
 
 
 @contextmanager
-def unlock_deployment(deployment):
+def unlock_deployment(deployment, mode='w'):
     was_locked = deployment.deployment_dir.vault.locked
     unlocked_deployment = deployment
     if was_locked:
@@ -28,8 +28,11 @@ def unlock_deployment(deployment):
         yield unlocked_deployment
     finally:
         if was_locked:
-            unlocked_deployment.deployment_dir.vault.lock()
-            unlocked_deployment.deployment_dir.delete(keep_git=True)
+            if mode == 'w':
+                unlocked_deployment.deployment_dir.vault.lock()
+            else:
+                unlocked_deployment.deployment_dir.vault.lock_file_path.touch()
+            unlocked_deployment.deployment_dir.delete(keep_git=True, file_whitelist=["deployment.tar.gz.enc"])
             unlocked_deployment.deployment_dir.vault.setup_shadow_repo()
 
 @contextmanager
