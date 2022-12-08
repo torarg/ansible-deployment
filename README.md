@@ -199,7 +199,7 @@ _ANSIBLE_DEPLOYMENT_COMPLETE=bash_source ansible-deployment > ~/.ansible-deploym
 
 Source shell completion script in your `.bashrc`:
 ```
-echo ". ~/.foo-bar-complete.bash" >> ~/.bashrc
+echo ". ~/.ansible-deployment-complete.bash" >> ~/.bashrc
 ```
 
 ### Zsh
@@ -210,7 +210,7 @@ _ANSIBLE_DEPLOYMENT_COMPLETE=zsh_source ansible-deployment > ~/.ansible-deployme
 
 Source shell completion script in your `.zshrc`:
 ```
-echo ". ~/.foo-bar-complete.zsh" >> ~/.zshrc
+echo ". ~/.ansible-deployment-complete.zsh" >> ~/.zshrc
 ```
 
 ### Fish
