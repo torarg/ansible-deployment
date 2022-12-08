@@ -1,5 +1,5 @@
 import click
-from pathlib import Path
+from pathlib import Path, PosixPath
 from pprint import pprint
 from ansible_deployment.deployment import Deployment, load_deployment
 
@@ -27,8 +27,12 @@ def init(roles, ansible_roles_dir, inventory_type):
 def show(attribute):
     deployment_state_path = Path.cwd() / '.deployment.state'
     deployment = load_deployment()
+    print_types = (str, list, PosixPath)
     if attribute:
-        pprint(deployment.__dict__[attribute].__dict__)
+        if type(deployment.__dict__[attribute]) in print_types:
+            pprint(deployment.__dict__[attribute])
+        else:
+            pprint(deployment.__dict__[attribute].__dict__)
     else:
         pprint(deployment.__dict__)
 
