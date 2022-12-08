@@ -96,6 +96,7 @@ def show(ctx, attribute):
     Deployment information may be filtered by specifying attribute(s).
     """
     with unlock_deployment(ctx.obj["DEPLOYMENT"], 'r') as deployment:
+        deployment.inventory.run_reader_plugins()
         output = deployment
         if attribute:
             try:
