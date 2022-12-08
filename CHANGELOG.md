@@ -1,4 +1,6 @@
 # 0.8.0 (upcoming)
+- support commands on locked deployment
+- add push and pull commands
 - improve deployment encryption
 - fix deprecated usage of collections
 - multistage docker build
