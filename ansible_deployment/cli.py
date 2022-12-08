@@ -1,7 +1,12 @@
+import sys
 import click
+import json
 from pathlib import Path, PosixPath
 from pprint import pprint
-from ansible_deployment.deployment import Deployment, load_deployment
+from ansible_deployment.deployment import Deployment
+from ansible_deployment.playbook import Playbook
+from ansible_deployment.role import Role
+from ansible_deployment.inventory import Inventory
 
 
 @click.group()
@@ -28,36 +33,51 @@ def init(roles, ansible_roles, inventory_type):
 @cli.command()
 @click.argument('attribute', required=False)
 def show(attribute):
-    deployment_state_path = Path.cwd() / '.deployment.state'
     deployment = load_deployment()
-    print_types = (str, list, PosixPath)
+    dict_types = (Deployment, Playbook, Role, Inventory, dict)
     if attribute:
-        if type(deployment.__dict__[attribute]) in print_types:
-            pprint(deployment.__dict__[attribute])
-        else:
+        if type(deployment.__dict__[attribute]) in dict_types:
             pprint(deployment.__dict__[attribute].__dict__)
+        else:
+            pprint(deployment.__dict__[attribute])
     else:
         pprint(deployment.__dict__)
 
 @cli.command()
 def run():
-    deployment_state_path = Path.cwd() / '.deployment.state'
     deployment = load_deployment()
     deployment.run()
 
 @cli.command()
 def delete():
-    deployment_state_path = Path.cwd() / '.deployment.state'
     deployment = load_deployment()
     deployment.delete()
 
 @cli.command()
 @click.argument('host')
 def ssh(host):
-    deployment_state_path = Path.cwd() / '.deployment.state'
     deployment = load_deployment()
     deployment.ssh(host)
     
+
+def load_deployment():
+    deployment_state_file_path = Path.cwd() / 'deployment.json'
+    if deployment_state_file_path.exists():
+        with open(deployment_state_file_path) as deployment_state_file_stream:
+            deployment_state = json.load(deployment_state_file_stream)
+            deployment_path = deployment_state_file_path.parent
+
+        return Deployment(deployment_path,
+                          deployment_state['ansible_roles_dir'],
+                          deployment_state['roles'], 
+                          deployment_state['inventory_type'])
+    else:
+        err_exit('{} does not exist.'.format(deployment_state_file_path))
+    return load_deployment()
+
+def err_exit(error_message):
+    print("Error: {}".format(error_message))
+    sys.exit(1)
 
 def main():
     cli(auto_envvar_prefix='AD')
