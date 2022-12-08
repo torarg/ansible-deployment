@@ -248,9 +248,6 @@ def push(ctx, template_mode=False):
     with unlock_deployment(deployment) as unlocked_deployment:
         cli_helpers.check_environment(unlocked_deployment)
         if unlocked_deployment.inventory.loaded_writers:
-            inventory_writers = [
-                writer.name for writer in unlocked_deployment.inventory.loaded_writers
-            ]
             try:
                 unlocked_deployment.inventory.run_writer_plugins(template_mode)
             except Exception as err:
