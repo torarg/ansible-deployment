@@ -13,10 +13,10 @@ class CustomJSONEncoder(json.JSONEncoder):
         result = None
         if type(o) is dict:
             result = o
-        elif isinstance(o, Path):
-            result = str(o)
         elif isinstance(o, AnsibleDeployment):
             result = o.__dict__
+        else:
+            result = str(o)
         return result
 
 
