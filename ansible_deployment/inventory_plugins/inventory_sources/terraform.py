@@ -90,7 +90,6 @@ class Terraform(InventoryPlugin):
         for instance in instances:
             host = instance["attributes"]
             host["ansible_host"] = host["ipv4_address"]
-            host["ansible_user"] = self.ansible_user
             host["bootstrap_user"] = "root"
             self.all_hosts[host["name"]] = None
             self.deployment_group[host["name"]] = None
