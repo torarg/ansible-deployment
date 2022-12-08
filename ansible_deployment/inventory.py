@@ -31,7 +31,8 @@ class Inventory(AnsibleDeployment):
 
     inventory_sources = {
         'terraform': Terraform,
-        'vault': VaultReader
+        'vault': VaultReader,
+        'local': Local
     }
 
     inventory_writers = {
