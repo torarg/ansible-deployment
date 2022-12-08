@@ -2,7 +2,7 @@
 
 ## overview
 
-ansible-deployment is a cli application managing ansible deployments.
+ansible-deployment is a cli application for managing ansible deployments.
 
 It features:
 
