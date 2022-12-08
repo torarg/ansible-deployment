@@ -107,7 +107,7 @@ class DeploymentDirectory(AnsibleDeployment):
         """
         group_vars_path = self.path / "group_vars"
         for role in roles:
-            group_vars_file_path = group_vars_path / role.name.replace('-', '_')
+            group_vars_file_path = group_vars_path / role.group_name
             if (group_vars_file_path).exists():
                 group_vars_file_path.unlink()
 

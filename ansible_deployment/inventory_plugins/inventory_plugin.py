@@ -56,7 +56,7 @@ class InventoryPlugin:
         """
         for role in roles:
             for vars_file in role.defaults:
-                self.group_vars[role.name] = self.group_vars.get(role.name, {}) | role.defaults[vars_file]['data']
+                self.group_vars[role.group_name] = self.group_vars.get(role.group_name, {}) | role.defaults[vars_file]['data']
 
     def _set_groups(self):
         """
