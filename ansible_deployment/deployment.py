@@ -7,7 +7,20 @@ import json
 import subprocess
 
 DeploymentConfig = namedtuple('DeploymentConfig',
-                              'roles roles_src inventory_plugin')
+                              'roles roles_src inventory_plugin ansible_user')
+"""
+Represents the deployment configuration.
+
+Attributes:
+    roles (sequence): A sequence of role names.
+    roles_src (dict): Dictionary containing roles repo information.
+                      The following keys need to be present:
+                      `repo` is a git clonable url.
+                      `branch` is branch name of that repo.
+    inventory_plugin (str): Name of the inventory plugin to use.
+    ansible_user (str): Name of the default ansible user.
+"""
+
 
 
 class Deployment(AnsibleDeployment):
@@ -17,10 +30,6 @@ class Deployment(AnsibleDeployment):
     Args:
         path (str): Path to deployment directory.
         config (DeploymentConfig): Namedtuple containing deployment config.
-                                   It needs to have the following attributes.
-                                   'roles' is list of role names.
-                                   'roles_src' is a dict containing git info.
-                                   'inventory_plugin' is the name of the used inventory plugin.
 
     Attributes:
         deployment_dir (DeploymentDirectory): Deployment directory object.
