@@ -7,6 +7,7 @@ Welcome to ansible_deployment's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   README
    AnsibleDeployment
    RolesRepo
    DeploymentConfig

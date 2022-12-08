@@ -6,16 +6,16 @@ ansible-deployment is a cli application managing ansible deployments.
 
 It features:
 
-    - generating a deployment directory from:
-        - an ansible roles git repository
-        - an inventory plugin
-        - a config file defining roles and inventory plugin
-    - the deployment directory will include 
-        playbook.yml: a templated playbook including specified roles
-        group_vars/*: containing each role's defaults seperated by group
-        host_vars/* : containing inventory plugin information
-        hosts.yml   : inventory file with host and group assignments
-        .git        : a git repository tracking changes the deployment
+- generating a deployment directory from:
+    - an ansible roles git repository
+    - an inventory plugin
+    - a config file defining roles and inventory plugin
+- the deployment directory will include 
+    playbook.yml: a templated playbook including specified roles
+    group_vars/*: containing each role's defaults seperated by group
+    host_vars/* : containing inventory plugin information
+    hosts.yml   : inventory file with host and group assignments
+    .git        : a git repository tracking changes the deployment
 
 The idea of this tool is to enforce structure on ansible role development
 and usage. All deployment roles' default variables will be written
