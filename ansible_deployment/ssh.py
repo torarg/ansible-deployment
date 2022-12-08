@@ -30,12 +30,12 @@ class SSHKeypair:
 
     def read(self):
         if self.public_key_path is not None and self.public_key_path.exists():
-            self.public_key = public_key_path.read_text()
+            self.public_key = self.public_key_path.read_text()
         else:
             raise ValueError("Invalid public key file")
 
         if self.private_key_path is not None and self.private_key_path.exists():
-            self.private_key = private_key_path.read_text()
+            self.private_key = self.private_key_path.read_text()
         else:
             raise ValueError("Invalid private key file")
 

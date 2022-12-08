@@ -20,6 +20,11 @@ class VaultReader(InventoryPlugin):
 
         secret (str): Vault secret path.
         """
+        vault_client, error = vault_helpers.init_vault_client()
+
+        if error is not None:
+            raise Exception(error)
+
         vault_path = f"ansible-deployment/{self.deployment_name}/{secret}"
         try:
             if secret == 'deployment_key':
@@ -35,11 +40,6 @@ class VaultReader(InventoryPlugin):
         return query_result
         
     def update_inventory(self):
-        vault_client, error = vault_helpers.init_vault_client()
-
-        if error is not None:
-            raise Exception(error)
-
         self.hosts = self.read_secret("hosts", fallback_value=dict())
         self.deployment_key = self.read_secret("deployment_key")
         
