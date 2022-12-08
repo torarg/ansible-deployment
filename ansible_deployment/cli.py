@@ -99,6 +99,8 @@ def lock(ctx):
     prompt = "Encrypt deployment with {}?".format(
         deployment.deployment_dir.vault.key_file)
     if click.confirm(prompt):
+        deployment.deployment_dir.update_git(message='deployment was locked',
+                                             force_commit=True)
         deployment.deployment_dir.vault.lock()
 
 
@@ -113,6 +115,9 @@ def unlock(ctx):
         deployment.deployment_dir.vault.key_file)
     if click.confirm(prompt):
         deployment.deployment_dir.vault.unlock()
+        deployment = Deployment.load(deployment_config_path)
+        deployment.deployment_dir.update_git(message='deployment was unlocked',
+                                             force_commit=True)
 
 
 @cli.command()
