@@ -38,7 +38,6 @@ class DeploymentDirectory(AnsibleDeployment):
     ansible_cfg = [
         "[defaults]",
         "inventory = hosts.yml",
-        "host_key_checking = False",
         "interpreter_python = auto_silent",
         "stdout_callback = yaml"
     ]
