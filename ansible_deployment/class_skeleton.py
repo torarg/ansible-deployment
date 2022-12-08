@@ -9,7 +9,19 @@ from ansible_deployment.config import DEFAULT_OUTPUT_JSON_INDENT
 
 
 class CustomJSONEncoder(json.JSONEncoder):
+    """
+    Custom JSON encoder.
+    """
     def default(self, o):
+        """
+        Encode object to json.
+
+        Args:
+            o (any): Object to encode.
+
+        Returns:
+            str: Encoded json.
+        """
         result = None
         if type(o) is dict:
             result = o

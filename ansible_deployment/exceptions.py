@@ -1,3 +1,8 @@
+"""
+ansible-deployment specific exceptions.
+"""
+
+
 class DeploymentConfigNotFound(Exception):
     """
     Exception raised when deployment config doesn't exist.

@@ -1,3 +1,8 @@
+"""
+Custom click.ParamType classes for shell completion.
+"""
+
+
 import click
 import inspect
 from click import ParamType
@@ -10,6 +15,10 @@ from ansible_deployment.class_skeleton import AnsibleDeployment
 
 
 class CustomParamType(ParamType):
+    """
+    Custom ParamType parent class for ansible-deployment cli parameters.
+    """
+    name = "custom_parameter"
     @staticmethod
     def try_to_load_deployment():
         """
@@ -30,6 +39,9 @@ class CustomParamType(ParamType):
 
 
 class RoleType(CustomParamType):
+    """
+    Custom ParamType for `Role` objects.
+    """
     name = "role"
 
     def shell_complete(self, ctx, param, incomplete):
@@ -44,6 +56,9 @@ class RoleType(CustomParamType):
 
 
 class HostType(CustomParamType):
+    """
+    Custom ParamType for `Host` objects.
+    """
     name = "host"
 
     def shell_complete(self, ctx, param, incomplete):
@@ -58,6 +73,9 @@ class HostType(CustomParamType):
 
 
 class InventoryWriterType(CustomParamType):
+    """
+    Custom ParamType for `InventoryWriter` objects.
+    """
     name = "inventory_writer"
 
     def shell_complete(self, ctx, param, incomplete):
@@ -72,6 +90,9 @@ class InventoryWriterType(CustomParamType):
 
 
 class InventorySourceType(CustomParamType):
+    """
+    Custom ParamType for `InventorySource` objects.
+    """
     name = "inventory_source"
 
     def shell_complete(self, ctx, param, incomplete):
@@ -86,6 +107,9 @@ class InventorySourceType(CustomParamType):
 
 
 class ShowAttributeType(CustomParamType):
+    """
+    Custom ParamType for any given attribute for `show` subcommand.
+    """
     name = "show_attribute"
 
     def shell_complete(self, ctx, param, incomplete):
