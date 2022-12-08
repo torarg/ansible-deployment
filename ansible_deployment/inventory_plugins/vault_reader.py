@@ -10,6 +10,8 @@ class VaultReader(Vault):
     VaultReader InventoryPlugin class.
     """
 
+    name = "vault"
+
     def update_inventory(self):
         vault_base_path = f"ansible-deployment/{self.deployment_name}"
         vault_client, error = self.init_vault_client()

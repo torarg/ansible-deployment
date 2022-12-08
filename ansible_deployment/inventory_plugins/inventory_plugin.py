@@ -17,6 +17,7 @@ class InventoryPlugin:
         added_files (list): List of files added to deployment.
     """
 
+    name = "skeleton"
     plugin_type = "reader"
 
     def __init__(self, config):

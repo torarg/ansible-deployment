@@ -11,6 +11,8 @@ class Vault(InventoryPlugin):
     Vault InventoryPlugin class.
     """
 
+    name = "vault"
+
     def init_vault_client(self):
         """
         Initializes vault client.
