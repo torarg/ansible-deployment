@@ -1,20 +1,12 @@
-Welcome to ansible_deployment's documentation!
-==============================================
-
+.. include:: README.md
+   :parser: myst_parser.sphinx_
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
+   :hidden:
 
-   README
+   self
    cli
    api
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
