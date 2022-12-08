@@ -1,5 +1,5 @@
 # CHANGELOG
-## 1.0.1 (2022/12/08)
+## 1.0.2 (2022/12/08)
 - add __version__ to python package
 - add urls for python package
 - change docs structure for gh-pages upload
