@@ -171,7 +171,14 @@ def ssh(ctx, host):
     Run 'ssh' command to connect to a inventory host.
     """
     deployment = ctx.obj["DEPLOYMENT"]
-    deployment.ssh(host)
+    try:
+        deployment.ssh(host)
+    except Exception as err:
+        if ctx.obj["DEBUG"]:
+            raise
+        else:
+            raise click.ClickException(err)
+
 
 
 @cli.command()
