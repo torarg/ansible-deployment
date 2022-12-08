@@ -133,11 +133,14 @@ def delete(ctx, non_interactive):
     """
     deployment = ctx.obj["DEPLOYMENT"]
     if non_interactive:
-        deployment.deployment_dir.delete()
+        deployment.deployment_dir.delete(additional_paths=deployment.inventory.plugin.added_files,
+                                         full_delete=True)
     else:
         ctx.invoke(show)
         if click.confirm("Delete deployment?"):
             deployment.deployment_dir.delete()
+            deployment.deployment_dir.delete(additional_paths=deployment.inventory.plugin.added_files,
+                                             full_delete=True)
 
 
 @cli.command()

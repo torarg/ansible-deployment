@@ -142,7 +142,7 @@ class DeploymentDirectory(AnsibleDeployment):
         self._copy_roles_to_deployment()
         self._write_ansible_cfg()
 
-    def delete(self, keep=[], additional_paths=[]):
+    def delete(self, keep=[], additional_paths=[], full_delete=False):
         """
         Delete deployment directory.
 
@@ -150,6 +150,12 @@ class DeploymentDirectory(AnsibleDeployment):
             keep (list): List of file system paths to exclude from deletion.
             additional_paths (list): List of file system paths for additional deletion.
         """
+        if full_delete:
+            additional_paths.append("deployment.tar.gz")
+            additional_paths.append("deployment.tar.gz.enc")
+            additional_paths.append("deployment.tar.gz.enc.SHA256")
+            additional_paths.append(".git.shadow")
+            additional_paths.append(".LOCKED")
         for directory_name in self.directory_layout:
             directory_path = self.path / directory_name
             if directory_path.exists() and directory_path.name not in keep:
