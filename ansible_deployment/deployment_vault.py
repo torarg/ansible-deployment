@@ -37,6 +37,7 @@ class DeploymentVault(AnsibleDeployment):
         self.new_key = False
         self.locked = False
         self.path = Path(path)
+        self.lock_file_path = self.path / "LOCKED"
         self.tar_path = self.path / "deployment.tar.gz"
         self.encrypted_tar_path = Path(str(self.tar_path) + self.encryption_suffix)
         self.key_file = self.path / key_name
@@ -45,7 +46,7 @@ class DeploymentVault(AnsibleDeployment):
         self.locked_files = list(
             self.path.glob("**/*{}".format(self.encryption_suffix))
         )
-        if len(self.locked_files) > 0:
+        if len(self.locked_files) > 0 or self.lock_file_path.exists():
             self.locked = True
             self.files = self.locked_files
 
@@ -217,6 +218,7 @@ class DeploymentVault(AnsibleDeployment):
         if not self.locked:
             self._encrypt_files(self.files)
             self.locked = True
+            self.lock_file_path.touch()
         else:
             raise EnvironmentError("Deployment already locked")
 
@@ -231,5 +233,6 @@ class DeploymentVault(AnsibleDeployment):
             self._decrypt_file(self.encrypted_tar_path)
             self._restore_deployment_dir()
             self.locked = False
+            self.lock_file_path.unlink()
         else:
             raise EnvironmentError("Deployment already unlocked")
