@@ -57,6 +57,11 @@ def delete():
 def ssh(host):
     deployment = load_deployment()
     deployment.ssh(host)
+
+@cli.command(help='Update deployment roles.')
+def update():
+    deployment = load_deployment()
+    deployment.update()
     
 
 def load_deployment():
