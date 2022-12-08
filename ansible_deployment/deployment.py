@@ -1,5 +1,4 @@
 from pathlib import Path
-from pprint import pformat
 from collections import namedtuple
 from ansible_deployment import (AnsibleDeployment, Role, Inventory, Playbook,
                                 DeploymentDirectory)
