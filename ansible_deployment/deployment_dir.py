@@ -129,7 +129,8 @@ class DeploymentDirectory(AnsibleDeployment):
         Generates ssh key pair inside deployment directory.
         """
         if not self.ssh_private_key.exists():
-            subprocess.run(["ssh-keygen", "-f", str(self.ssh_private_key), "-q", "-N", ""])
+            subprocess.run(["ssh-keygen", "-t", "ed25519",
+                            "-f", str(self.ssh_private_key), "-q", "-N", ""])
 
 
     def create(self):
