@@ -1,17 +1,15 @@
 from pathlib import Path
 from pprint import pformat
 from collections import namedtuple
-from ansible_deployment import (
-    AnsibleDeployment,
-    Role,
-    Inventory,
-    Playbook,
-    DeploymentDirectory)
+from ansible_deployment import (AnsibleDeployment, Role, Inventory, Playbook,
+                                DeploymentDirectory)
 import json
 import subprocess
 
+DeploymentConfig = namedtuple('DeploymentConfig',
+                              'roles roles_src inventory_plugin')
 
-DeploymentConfig = namedtuple('DeploymentConfig', 'roles roles_src inventory_plugin')
+
 class Deployment(AnsibleDeployment):
     filtered_values = ['playbook', 'inventory']
 
@@ -29,13 +27,13 @@ class Deployment(AnsibleDeployment):
         deployment = Deployment(deployment_path, config)
         return deployment
 
-
     def __init__(self, path, config):
         self.deployment_dir = DeploymentDirectory(path, config.roles_src)
         self.name = self.deployment_dir.path.name
         self.config = config
         self.roles = self._create_role_objects(config.roles)
-        self.inventory = Inventory(self.deployment_dir.path, config.inventory_plugin)
+        self.inventory = Inventory(self.deployment_dir.path,
+                                   config.inventory_plugin)
         self.playbook = Playbook(self.deployment_dir.path / 'playbook.yml',
                                  'all', self.roles)
 
@@ -45,7 +43,6 @@ class Deployment(AnsibleDeployment):
             role_path = self.deployment_dir.roles_path / role_name
             parsed_roles.append(Role(role_path))
         return parsed_roles
-
 
     def initialize_deployment_directory(self):
         role_names = (role.name for role in self.roles)
@@ -79,5 +76,3 @@ class Deployment(AnsibleDeployment):
 
     def update(self):
         self.deployment_dir.update(self.roles, self.playbook, self.inventory)
-
-

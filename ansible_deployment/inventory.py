@@ -5,26 +5,28 @@ from ansible_deployment.inventory_plugins import Terraform
 import json
 import yaml
 
+
 class Inventory(AnsibleDeployment):
-    plugins = {
-        'terraform': Terraform
-    }
+    plugins = {'terraform': Terraform}
     filtered_attributes = ['vars']
 
-    def __init__(self, inventory_path, inventory_plugin, ansible_user='ansible'):
-        self.plugins = {
-            'terraform': Terraform
-        }
+    def __init__(self,
+                 inventory_path,
+                 inventory_plugin,
+                 ansible_user='ansible'):
+        self.plugins = {'terraform': Terraform}
         self.path = Path(inventory_path)
         self.plugin = self.plugins[inventory_plugin]()
         self.hosts = self.plugin.hosts
         self.host_vars = self.plugin.host_vars
         self.group_vars = self.plugin.group_vars
-        self.vars = {'host_vars': self.host_vars, 'group_vars': self.group_vars}
+        self.vars = {
+            'host_vars': self.host_vars,
+            'group_vars': self.group_vars
+        }
         self._load_vars('host_vars')
         self._load_vars('group_vars')
         self.plugin.update_inventory()
-
 
     def _load_vars(self, vars_type):
         ignore_patterns = ('.swp', )
@@ -36,7 +38,6 @@ class Inventory(AnsibleDeployment):
             with open(vars_file) as vars_file_stream:
                 self.vars[vars_type][vars_name] = yaml.safe_load(
                     vars_file_stream)
-
 
     def write(self):
         for host in self.host_vars.values():

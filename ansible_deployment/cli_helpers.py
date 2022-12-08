@@ -1,8 +1,10 @@
 import click
 
+
 def err_exit(error_message):
     cli_context = click.get_current_context()
     cli_context.fail(error_message)
+
 
 def filter_output_by_attribute(output, attribute):
     for attr in attribute:
@@ -10,6 +12,7 @@ def filter_output_by_attribute(output, attribute):
             err_exit('Attribute not found')
         output = output[attr]
     return output
+
 
 def check_environment(deployment):
     if not deployment:
@@ -20,12 +23,13 @@ def check_environment(deployment):
     elif not deployment.deployment_dir.roles_path.exists():
         err_exit("Deployment directory not initialized.")
 
+
 def echo_file_diff(deployment_dir, file_name):
     if file_name in deployment_dir.unstaged_changes:
         click.echo(deployment_dir.repo.git.diff(file_name))
     elif file_name in deployment_dir.staged_changes:
-        click.echo(
-            deployment_dir.repo.git.diff('--staged', file_name))
+        click.echo(deployment_dir.repo.git.diff('--staged', file_name))
+
 
 def prompt_for_update_choices(deployment_dir):
     files_to_commit = []
@@ -37,11 +41,10 @@ def prompt_for_update_choices(deployment_dir):
     }
     for file_name in deployment_dir.changes:
         _echo_file_diff(deployment_dir, file_name)
-        update_choice = click.prompt(
-            prompt_message,
-            default='k',
-            type=prompt_choice,
-            show_choices=False)
+        update_choice = click.prompt(prompt_message,
+                                     default='k',
+                                     type=prompt_choice,
+                                     show_choices=False)
         if update_choice in prompt_actions:
             prompt_actions[update_choice](file_name)
 
