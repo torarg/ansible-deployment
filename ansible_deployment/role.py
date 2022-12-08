@@ -2,6 +2,7 @@ import yaml
 import shutil
 from pathlib import Path
 
+
 class Role:
     """
     Represents an ansible role.
@@ -36,7 +37,6 @@ class Role:
         self.templates = self._parse_role_sub_directory('templates')
         self.meta = self._parse_role_sub_directory('meta')
 
-
     def __repr__(self):
         return 'Role({})'.format(self.name)
 
@@ -53,7 +53,6 @@ class Role:
         with open(file_path) as file_stream:
             yaml_data = yaml.safe_load(file_stream)
         return yaml_data
-
 
     def _generate_file_info(self, path_object, data):
         """
@@ -72,7 +71,6 @@ class Role:
             'data': data
         }
 
-
     def _parse_role_sub_directory(self, sub_directory_name):
         """
         Parses an ansible role sub directory.
@@ -88,7 +86,6 @@ class Role:
 
         if not sub_directory_path.exists:
             return None
-
 
         all_files = list(sub_directory_path.glob('**/*'))
         yaml_files = list(sub_directory_path.glob('**/*.yml'))
