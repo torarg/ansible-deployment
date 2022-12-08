@@ -90,19 +90,12 @@ class DeploymentDirectory(AnsibleDeployment):
         for role in roles:
             role = Role(role.path)
             group_vars_file_path = group_vars_path / role.name
-            is_new = True
             if (group_vars_file_path).exists():
-                is_new = False
                 group_vars_file_path.unlink()
 
             for defaults_file in role.defaults.values():
                 with open(group_vars_file_path, 'a') as group_vars_file_stream:
                     yaml.dump(defaults_file['data'], group_vars_file_stream)
-            if is_new:
-                commit_message = 'Add new group_vars file from role {}'.format(
-                    role.name)
-                self.deployment_repo.update(commit_message,
-                                            files=[str(group_vars_file_path)])
 
     def _write_ansible_cfg(self):
         """
