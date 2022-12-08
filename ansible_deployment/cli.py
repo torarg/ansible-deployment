@@ -234,7 +234,7 @@ def update(ctx, scope, non_interactive):
         scope (str): Update scope. Defaults to 'all'.
     """
 
-    with unlock_deployment(ctx.obj["DEPLOYMENT"]) as deployment:
+    with unlock_deployment(ctx.obj["DEPLOYMENT"], 'w') as deployment:
         cli_helpers.check_environment(deployment)
         try:
             old_roles_repo_head = (
