@@ -1,11 +1,12 @@
 """
 Vault inventory reader plugin.
 """
-from ansible_deployment.inventory_plugins.vault import Vault
+import ansible_deployment.inventory_plugins.helpers.vault as vault_helpers
+from ansible_deployment.inventory_plugins.inventory_plugin import InventoryPlugin
 from hvac import exceptions as vault_exceptions
 
 
-class VaultReader(Vault):
+class VaultReader(InventoryPlugin):
     """
     VaultReader InventoryPlugin class.
     """
@@ -14,7 +15,7 @@ class VaultReader(Vault):
 
     def update_inventory(self):
         vault_base_path = f"ansible-deployment/{self.deployment_name}"
-        vault_client, error = self.init_vault_client()
+        vault_client, error = vault_helpers.init_vault_client()
 
         if error is not None:
             raise Exception(error)
