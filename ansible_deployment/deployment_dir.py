@@ -73,8 +73,8 @@ class DeploymentDirectory:
     def create(self, roles):
         self._create_deployment_directories()
         self.roles_repo = Repo.clone_from(self.roles_src['repo'],
-                        self.roles_path,
-                        branch=self.roles_src['branch'])
+                                          self.roles_path,
+                                          branch=self.roles_src['branch'])
         self._reset_role_symlinks(roles)
         self._write_ansible_cfg()
 
