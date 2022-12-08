@@ -29,7 +29,7 @@ class AnsibleDeployment:
     """
 
     filtered_attributes = ["config"]
-    filtered_values = ["inventory", "deployment_dir"]
+    filtered_values = []
     filtered_representation = None
     name = "ansible_deployment_object"
 
