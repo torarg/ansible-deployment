@@ -178,18 +178,22 @@ class Inventory(AnsibleDeployment):
         for plugin in self.loaded_sources:
             self.plugin.added_files += plugin.added_files
 
-    def delete_from_writers(self):
+    def delete_from_writers(self, writer_override=()):
         """
         Delete stored inventory from configured writer plugins.
         """
+        for override in writer_override:
+            if override not in self.config.inventory_writers:
+                raise KeyError(f"Invalid inventory writer override: {override}")
         if self.deployment_key is None:
             raise DeploymentKeyError("Deployment key is missing")
         for plugin in self.loaded_writers:
-            plugin.delete(
-                self.local_inventory.hosts,
-                self.local_inventory.host_vars,
-                self.local_inventory.group_vars
-            )
+            if len(writer_override) == 0 or plugin.name in writer_override:
+                plugin.delete(
+                    self.local_inventory.hosts,
+                    self.local_inventory.host_vars,
+                    self.local_inventory.group_vars
+                )
 
     def run_writer_plugins(self, template_mode=False):
         """

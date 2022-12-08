@@ -121,23 +121,42 @@ def run(ctx, role, limit, extra_var):
 @cli.command()
 @click.pass_context
 @click.option(
+    "-w", "--from-writer",
+    help="""Only delete deployment from specified inventory writer.
+            May be specified multiple times.""",
+    multiple=True
+)
+@click.option(
     "--non-interactive", is_flag=True, help="Don't ask before deleting deployment."
 )
-def delete(ctx, non_interactive):
+def delete(ctx, from_writer, non_interactive):
     """
     Delete deployment.
 
-    Deletes all created files and directories in deployment directory.
+    Deletes all created files and directories in deployment directory and also
+    purges deployment data from configured inventory writers.
+
+    If `--from-writer` is specified the deployment will only be deleted
+    from the specified inventory writers. The deployment directory will
+    NOT be deleted if this option is used.
     """
-    deployment = ctx.obj["DEPLOYMENT"]
-    if non_interactive:
-        deployment.inventory.delete_from_writers()
-        deployment.deployment_dir.delete(full_delete=True)
-    else:
-        ctx.invoke(show)
-        if click.confirm("Delete deployment?"):
-            deployment.inventory.delete_from_writers()
-            deployment.deployment_dir.delete(full_delete=True)
+    try:
+        deployment = ctx.obj["DEPLOYMENT"]
+        if non_interactive:
+            deployment.inventory.delete_from_writers(from_writer)
+            if len(from_writer) == 0:
+                deployment.deployment_dir.delete(full_delete=True)
+        else:
+            ctx.invoke(show)
+            if click.confirm("Delete deployment?"):
+                deployment.inventory.delete_from_writers(from_writer)
+                if len(from_writer) == 0:
+                    deployment.deployment_dir.delete(full_delete=True)
+    except Exception as err:
+        if ctx.obj['DEBUG']:
+            raise
+        else:
+            raise click.ClickException(err)
 
 
 @cli.command()
