@@ -2,8 +2,12 @@
 ansible-deployment config module.
 """
 import json
+from pathlib import Path
 from collections import namedtuple
+from ansible_deployment.exceptions import DeploymentConfigNotFound
 
+DEFAULT_DEPLOYMENT_PATH = Path.cwd()
+DEFAULT_DEPLOYMENT_CONFIG_PATH = Path.cwd() / "deployment.json"
 
 RepoConfig = namedtuple("RepoConfig", "url reference")
 """
@@ -62,6 +66,8 @@ def load_config_file(config_file_path):
     Returns:
         DeploymentConfig: Namedtuple containing deployment config.
     """
+    if not config_file_path.exists():
+        raise DeploymentConfigNotFound(config_file_path)
     with open(config_file_path) as config_file_stream:
         config = json.load(config_file_stream)
     config["deployment_repo"] = parse_repo_config(config['deployment_repo'])

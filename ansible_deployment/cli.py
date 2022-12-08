@@ -2,7 +2,6 @@
 This module represents the ansible-deployment cli.
 """
 
-from pathlib import Path
 from pprint import pformat
 import click
 import subprocess
@@ -13,10 +12,10 @@ from ansible_deployment.cli_autocomplete import (
     InventoryWriterType,
     InventorySourceType
 )
+from ansible_deployment.config import (
+    DEFAULT_DEPLOYMENT_CONFIG_PATH
+)
 
-
-deployment_path = Path.cwd()
-deployment_config_path = Path.cwd() / "deployment.json"
 
 @click.group()
 @click.version_option()
@@ -31,7 +30,7 @@ def cli(ctx, debug):
         $ ansible-deployment COMMAND --help
     """
     try:
-        deployment = Deployment.load(deployment_config_path)
+        deployment = Deployment.load(DEFAULT_DEPLOYMENT_CONFIG_PATH)
     except Exception as err:
         if debug:
             raise
@@ -69,7 +68,7 @@ def init(ctx, non_interactive):
     """
 
     try:
-        deployment = Deployment.load(deployment_config_path, read_sources=True)
+        deployment = Deployment.load(DEFAULT_DEPLOYMENT_CONFIG_PATH, read_sources=True)
     except Exception as err:
         if ctx.obj['DEBUG']:
             raise
@@ -105,12 +104,12 @@ def show(ctx, attribute):
 @cli.command()
 @click.pass_context
 @click.option(
-    "-l", "--limit", help="Limit playbook execution.", type=HostType(deployment_config_path)
+    "-l", "--limit", help="Limit playbook execution.", type=HostType()
 )
 @click.option(
     "-e", "--extra-var", help="Set extra var for playbook execution.", multiple=True
 )
-@click.argument("role", required=False, nargs=-1, type=RoleType(deployment_config_path))
+@click.argument("role", required=False, nargs=-1, type=RoleType())
 def run(ctx, role, limit, extra_var):
     """
     Run deployment with ansible-playbook.
@@ -131,7 +130,7 @@ def run(ctx, role, limit, extra_var):
     help="""Only delete deployment from specified inventory writer.
             May be specified multiple times.""",
     multiple=True,
-    type=InventoryWriterType(deployment_config_path)
+    type=InventoryWriterType()
 )
 @click.option(
     "--non-interactive", is_flag=True, help="Don't ask before deleting deployment."
@@ -173,7 +172,7 @@ def lock(ctx):
     Encrypt all deployment files except the roles directory.
     """
     try:
-        deployment = Deployment.load(deployment_config_path, read_sources=False)
+        deployment = Deployment.load(DEFAULT_DEPLOYMENT_CONFIG_PATH, read_sources=False)
     except Exception as err:
         if ctx.obj['DEBUG']:
             raise
@@ -210,12 +209,12 @@ def unlock(ctx, force):
     if click.confirm(prompt):
         deployment.deployment_dir.vault.unlock(force)
         deployment.deployment_dir.vault.delete()
-        deployment = Deployment.load(deployment_config_path)
+        deployment = Deployment.load(DEFAULT_DEPLOYMENT_CONFIG_PATH)
 
 
 @cli.command()
 @click.pass_context
-@click.argument("host", type=HostType(deployment_config_path))
+@click.argument("host", type=HostType())
 def ssh(ctx, host):
     """
     Run 'ssh' command to connect to a inventory host.
@@ -289,7 +288,7 @@ def pull(ctx):
     "-s", "--from-source", help="""Only query given inventory sources.
                                    May be specified multiple times.""",
     multiple=True,
-    type=InventorySourceType(deployment_config_path)
+    type=InventorySourceType()
 )
 def update(ctx, non_interactive, from_source):
     """
@@ -400,7 +399,7 @@ def update_known_hosts(ctx):
 
 @cli.command()
 @click.pass_context
-@click.argument("inventory_source", type=InventorySourceType(deployment_config_path))
+@click.argument("inventory_source", type=InventorySourceType())
 def fetch_key(ctx, inventory_source):
     """
     Fetch deployment key from given inventory source.
