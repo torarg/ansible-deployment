@@ -2,7 +2,7 @@ import sys
 import click
 import json
 from pathlib import Path, PosixPath
-from pprint import pprint
+from pprint import pformat
 from ansible_deployment.deployment import Deployment
 from ansible_deployment.playbook import Playbook
 from ansible_deployment.role import Role
@@ -48,11 +48,11 @@ def show(attribute):
         if not attribute in deployment.__dict__:
             err_exit("Attribute not found.")
         if type(deployment.__dict__[attribute]) in dict_types:
-            pprint(deployment.__dict__[attribute].__dict__)
+            click.echo(pformat(deployment.__dict__[attribute].__dict__))
         else:
-            pprint(deployment.__dict__[attribute])
+            click.echo(pformat(deployment.__dict__[attribute]))
     else:
-        pprint(deployment.__dict__)
+        click.echo(pformat(deployment.__dict__))
 
 @cli.command(help='Run deployment with ansible-playbook.')
 def run():
