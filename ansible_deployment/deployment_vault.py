@@ -3,7 +3,8 @@ from cryptography.fernet import Fernet
 
 class DeploymentVault:
     def __init__(self, key_file, vault_files, lock_file):
-        self.key_file = key_file
+        self.new_key = False
+        self.key_file = Path(key_file)
         self.files = vault_files
         self.lock_file = Path(lock_file)
         self.locked = self.lock_file.exists()
@@ -16,10 +17,12 @@ class DeploymentVault:
         else:
             self.key = self._generate_key()
             self._save_key()
+            self.new_key = True
 
     def _save_key(self):
         with open(self.key_file, 'wb') as fobj:
             fobj.write(self.key)
+        self.key_file.chmod(0o400)
 
     def _generate_key(self):
         return Fernet.generate_key()
