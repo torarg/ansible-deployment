@@ -7,15 +7,14 @@ Deployments can either be stateless or stateful depending on the configured
 ``inventory_sources`` and ``inventory_writers``.
 
 When initialized ansible-deployment will:
-
-    - clone the configured roles repository into deployment directory
-    - generate a playbook based on specified roles
-    - write role defaults as group_vars/ROLE_NAME
-    - apply inventory sources
-        - if multiple inventory sources are used, they will be merged
-        - the last specified inventory plugin will overwrite previously specified keys
-    - write the final deployment inventory to all ``inventory_writers``
-    - create a local git repository for the deployment directory
+- clone the configured roles repository into deployment directory
+- generate a playbook based on specified roles
+- write role defaults as group_vars/ROLE_NAME
+- apply inventory sources
+    - if multiple inventory sources are used, they will be merged
+    - the last specified inventory plugin will overwrite previously specified keys
+- write the final deployment inventory to all ``inventory_writers``
+- create a local git repository for the deployment directory
 
 The idea of this tool is to enforce structure on ansible role development
 and usage. All deployment roles' default variables will be written
