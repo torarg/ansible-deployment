@@ -38,6 +38,12 @@ class AnsibleDeployment:
 
     The main purpose of this class is to provide 'magic methods'
     for object lookup and representation.
+
+    Attributes:
+        name (str): Class name.
+        filtered_attributes (list): Attributes filtered in representation.
+        filtered_values (list): Values filtered in representation.
+        filtered_representation (dict): If defined, will override default representation.
     """
 
     filtered_attributes = ["config"]
@@ -105,4 +111,13 @@ class AnsibleDeployment:
         return representation
 
     def startswith(self, substring):
+        """
+        Wrapper for `self.name.startswith()`.
+
+        Args:
+            substring: Substring to match against.
+
+        Returns:
+            bool: Whether or not a match was found.
+        """
         return self.name.startswith(substring)

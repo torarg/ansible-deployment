@@ -243,6 +243,15 @@ class Deployment(AnsibleDeployment):
         self.deployment_dir.vault._save_key()
 
     def get_connection_details(self, host):
+        """
+        Get ssh connection details for a given host.
+
+        Args:
+            host (str): Inventory hostname.
+
+        Returns:
+            dict: Connection details (user, hostname, port)
+        """
         if host not in self.inventory.filtered_representation:
             raise KeyError("Host not in inventory.")
         return self.inventory.filtered_representation[host]
