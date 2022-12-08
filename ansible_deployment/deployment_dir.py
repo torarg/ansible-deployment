@@ -1,5 +1,6 @@
 from pathlib import Path
 from git import Repo
+import gitdb.exc as git_exc
 from pprint import pformat
 from ansible_deployment.class_skeleton import AnsibleDeployment
 import yaml
@@ -11,7 +12,7 @@ class DeploymentDirectory(AnsibleDeployment):
         '[defaults]', 'inventory = hosts.yml', 'host_key_checking = False'
     ]
     directory_layout = ('host_vars', 'group_vars', 'roles', '.git', '.roles')
-    deployment_files = ['playbook.yml', 'hosts.yml', 'ansible.cfg']
+    deployment_files = ['playbook.yml', 'hosts.yml', 'ansible.cfg', '.gitmodules']
     git_repo_content = deployment_files + [
         'host_vars', 'group_vars', 'deployment.json'
     ]
@@ -23,12 +24,18 @@ class DeploymentDirectory(AnsibleDeployment):
         self.state_file = self.path / 'deployment.json'
         self.repo = Repo.init(self.path)
         self.unstaged_changes = []
-        self._update_unstaged_changes()
+        self._update_changed_files()
 
-    def _update_unstaged_changes(self):
+    def _update_changed_files(self):
         self.unstaged_changes = [
             diff.a_path for diff in self.repo.index.diff(None)
         ]
+        try:
+            self.staged_changes = [
+                diff.a_path for diff in self.repo.index.diff('HEAD')
+            ]
+        except git_exc.BadName:
+            self.staged_changes = []
 
     def _create_deployment_directories(self):
         for directory_name in self.directory_layout:
@@ -50,7 +57,7 @@ class DeploymentDirectory(AnsibleDeployment):
 
     def create(self, roles):
         self._create_deployment_directories()
-        self.update_git('initial commit')
+        self.update_git('initial commit', force_commit=True)
         self.repo.create_submodule('roles', str(self.roles_path),
                                    url=self.roles_src['repo'],
                                    branch=self.roles_src['branch']) 
@@ -73,13 +80,15 @@ class DeploymentDirectory(AnsibleDeployment):
         self.repo.submodule_update()
         self._write_role_defaults_to_group_vars(roles)
         self._write_ansible_cfg()
-        self._update_unstaged_changes()
+        self._update_changed_files()
 
     def update_git(self,
                    message="Automatic ansible-deployment update.",
-                   files=git_repo_content):
+                   files=git_repo_content,
+                   force_commit=False):
         for git_file in files:
             if Path(git_file).exists():
                 self.repo.index.add(git_file)
-        self.repo.index.commit(message)
-        self._update_unstaged_changes()
+        self._update_changed_files()
+        if len(self.staged_changes) > 0 or force_commit:
+            self.repo.index.commit(message)

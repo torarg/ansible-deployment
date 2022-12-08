@@ -95,13 +95,14 @@ def update():
         update_choice = click.prompt(
             'Please select update strategy ([a]pply, [d]iscard, [k]eep unstaged)',
             default='k',
-            type=click.Choice(['a', 'd', 'k']))
+            type=click.Choice(['a', 'd', 'k']),
+            show_choices=False)
         if update_choice == 'a':
             files_to_commit.append(file_name)
         elif update_choice == 'd':
             deployment.deployment_dir.repo.git.checkout(file_name)
 
-        deployment.deployment_dir.update_git(files=files_to_commit)
+    deployment.deployment_dir.update_git(files=files_to_commit)
 
 
 def err_exit(error_message):
