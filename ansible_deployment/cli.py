@@ -154,8 +154,11 @@ def lock(ctx):
 
 
 @cli.command()
+@click.option(
+    "--force", is_flag=True, help="Unlock even if deployment verification failed."
+)
 @click.pass_context
-def unlock(ctx):
+def unlock(ctx, force):
     """
     Decrypt all deployment files except the roles directory.
     """
@@ -166,7 +169,7 @@ def unlock(ctx):
         deployment.deployment_dir.vault.key_file
     )
     if click.confirm(prompt):
-        deployment.deployment_dir.vault.unlock()
+        deployment.deployment_dir.vault.unlock(force)
         deployment = Deployment.load(deployment_config_path)
 
 
@@ -287,7 +290,7 @@ def push(ctx, template_mode=False):
     with lock_deployment(deployment) as locked_deployment:
         try:
             locked_deployment.deployment_dir.deployment_repo.push()
-        except:
+        except Exception as err:
             if ctx.obj["DEBUG"]:
                 raise
             else:
