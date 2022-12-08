@@ -156,7 +156,8 @@ class DeploymentRepo(AnsibleDeployment):
         if self.remote_config is not None:
             self.repo.git.checkout(self.remote_config.reference)
         if not self.repo.head.is_detached:
-            self.repo.remotes.origin.pull()
+            self.repo.git.reset('--hard', f'origin/{self.remote_config.reference}')
+            self.repo.remotes.origin.pull(self.remote_config.reference)
             self._pull_blobs()
 
     def push(self):
@@ -169,7 +170,7 @@ class DeploymentRepo(AnsibleDeployment):
         if self.remote_config is not None:
             self.repo.git.checkout(self.remote_config.reference)
         if not self.repo.head.is_detached:
-            self.repo.remotes.origin.push(self.remote_config.reference)
+            self.repo.git.push('-f', '--set-upstream', 'origin', 'master')
             if self.blobs:
                 self.repo.git.push("-f", "--tags")
 
