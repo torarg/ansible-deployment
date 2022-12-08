@@ -3,6 +3,8 @@ This module contains the AnsibleDeployment skeleton class.
 """
 
 from pprint import pformat
+from pathlib import Path
+from ansible_deployment.config import DEFAULT_OUTPUT_JSON_INDENT
 
 
 class AnsibleDeployment:
@@ -67,9 +69,11 @@ class AnsibleDeployment:
                 representation[attribute] = [
                     role["name"] for role in self.__dict__["roles"]
                 ]
+            elif isinstance(attribute, Path):
+                representation[attribute] = str(attribute)
             else:
                 representation[attribute] = self.__dict__[attribute]
-        return pformat(representation, indent=4)
+        return pformat(representation, indent=DEFAULT_OUTPUT_JSON_INDENT)
 
     def startswith(self, substring):
         return self.name.startswith(substring)

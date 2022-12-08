@@ -2,10 +2,13 @@
 Inventory class skeleton.
 """
 from pathlib import Path
+from pprint import pformat
 from ansible_deployment import SSHKeypair
+from ansible_deployment.class_skeleton import AnsibleDeployment
+from ansible_deployment.config import DEFAULT_OUTPUT_JSON_INDENT
 
 
-class InventoryPlugin:
+class InventoryPlugin(AnsibleDeployment):
     """
     Represents the skeleton of an inventory plugin.
 
@@ -21,6 +24,7 @@ class InventoryPlugin:
 
     name = "skeleton"
     plugin_type = "reader"
+    filtered_attributes = ["vars", "resource_functions"]
 
     def __init__(self, config, roles=None):
         self.deployment_name = config.name

@@ -8,6 +8,7 @@ from ansible_deployment.exceptions import DeploymentConfigNotFound
 
 DEFAULT_DEPLOYMENT_PATH = Path.cwd()
 DEFAULT_DEPLOYMENT_CONFIG_PATH = Path.cwd() / "deployment.json"
+DEFAULT_OUTPUT_JSON_INDENT = 2
 
 RepoConfig = namedtuple("RepoConfig", "url reference")
 """

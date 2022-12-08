@@ -98,7 +98,10 @@ def show(ctx, attribute):
     with unlock_deployment(ctx.obj["DEPLOYMENT"], 'r') as deployment:
         output = deployment
         if attribute:
-            output = cli_helpers.filter_output_by_attribute(output, attribute)
+            try:
+                output = cli_helpers.filter_output_by_attribute(output, attribute)
+            except Exception as err:
+                raise click.ClickException(err)
         click.echo(pformat(output))
 
 
