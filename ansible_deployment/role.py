@@ -98,7 +98,8 @@ class Role:
             file_data = None
             if file_path in yaml_files:
                 file_data = self._parse_yaml_file(file_path)
-            directory_files[file_path.name] = file_data
+            file_info = self._generate_file_info(file_path, file_data)
+            directory_files[file_path.name] = file_info
 
         return directory_files
 
@@ -110,4 +111,6 @@ class Role:
             destination_path (str): destination path
         """
         destination = Path(destination_path) / self.name
+        if destination.exists():
+            shutil.rmtree(destination)
         shutil.copytree(self.path, destination)
