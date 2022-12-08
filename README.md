@@ -44,7 +44,7 @@ Currently ansible deployment supports the following ``inventory_sources``.
 
 ### local
 The ``local`` inventory source is always the first inventory source and 
-is not required to be explicizly specified in ``deployment.json```.
+is not required to be explicizly specified in ``deployment.json``.
 
 However if you wish to overwrite values supplied by another inventory source,
 you may specify ``local`` as inventory source.
