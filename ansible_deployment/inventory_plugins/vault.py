@@ -18,7 +18,7 @@ class Vault(InventoryPlugin):
         client = None
         error = None
         vault_address = os.environ.get("VAULT_ADDR")
-        if vault_address == None:
+        if vault_address is None:
             error = "VAULT_ADDR not set"
 
         client = hvac.Client(url=vault_address)
