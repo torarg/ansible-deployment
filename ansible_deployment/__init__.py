@@ -15,3 +15,5 @@ from ansible_deployment.deployment import Deployment, unlock_deployment, lock_de
 from ansible_deployment.config import RepoConfig, DeploymentConfig
 from ansible_deployment import cli
 from ansible_deployment import cli_helpers
+
+__version__ = "1.0.1"
