@@ -83,19 +83,19 @@ Deployment key written to: /Users/mw/Deployments/example/deployment.key
     'name': 'locally managed terraform deployment',
     'roles': ['bootstrap', 'webserver', 'gitea']}
 (Re)Initialize Deployment? [y/N]: y
-michaelwilson@mw-mac openbsd-disk-encryption-test % ls -l
+$ ls -l
 total 72
--rw-r--r--   1 michaelwilson  staff    91  9 Mär 00:18 ansible.cfg
--rw-r--r--   1 michaelwilson  staff   352  8 Mär 23:33 deployment.json
--rw-------   1 michaelwilson  staff    44  9 Mär 00:18 deployment.key
-drwxr-xr-x   6 michaelwilson  staff   192  9 Mär 00:18 group_vars
-drwxr-xr-x   4 michaelwilson  staff   128  9 Mär 00:18 host_vars
--rw-r--r--   1 michaelwilson  staff   183  9 Mär 00:18 hosts.yml
--rw-r--r--   1 michaelwilson  staff  1616  9 Mär 00:18 playbook.yml
-drwxr-xr-x  26 michaelwilson  staff   832  9 Mär 00:18 roles
--rw-r--r--   1 michaelwilson  staff   790  3 Feb 11:39 servers.tf
--rw-r--r--   1 michaelwilson  staff  7338  7 Mär 23:36 terraform.tfstate
--rw-r--r--   1 michaelwilson  staff   130 31 Jan 11:06 versions.tf
+-rw-r--r--   1 mw staff    91  9 Mär 00:18 ansible.cfg
+-rw-r--r--   1 mw  staff   352  8 Mär 23:33 deployment.json
+-rw-------   1 mw  staff    44  9 Mär 00:18 deployment.key
+drwxr-xr-x   6 mw  staff   192  9 Mär 00:18 group_vars
+drwxr-xr-x   4 mw  staff   128  9 Mär 00:18 host_vars
+-rw-r--r--   1 mw  staff   183  9 Mär 00:18 hosts.yml
+-rw-r--r--   1 mw  staff  1616  9 Mär 00:18 playbook.yml
+drwxr-xr-x  26 mw  staff   832  9 Mär 00:18 roles
+-rw-r--r--   1 mw  staff   790  3 Feb 11:39 servers.tf
+-rw-r--r--   1 mw  staff  7338  7 Mär 23:36 terraform.tfstate
+-rw-r--r--   1 mw  staff   130 31 Jan 11:06 versions.tf
 ```
 
 ## Inventory Sources
