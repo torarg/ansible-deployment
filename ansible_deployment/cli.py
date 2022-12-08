@@ -14,12 +14,6 @@ deployment_config_path = Path.cwd() / 'deployment.json'
 @click.version_option()
 @click.pass_context
 def cli(ctx):
-    """
-    Click command group.
-
-    This function is called prior to any cli command and
-    initializes the deployment object for further usage.
-    """
     deployment = Deployment.load(deployment_config_path)
 
     if not deployment:
