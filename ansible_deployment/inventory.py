@@ -47,7 +47,7 @@ class Inventory(AnsibleDeployment):
 
     filtered_attributes = ["vars"]
 
-    def __init__(self, inventory_path, config, deployment_key=None, roles=None):
+    def __init__(self, inventory_path, config, deployment_key=None, roles=None, read_sources=True):
         self.path = Path(inventory_path)
         self.hosts = {}
         self.groups = []
@@ -65,7 +65,13 @@ class Inventory(AnsibleDeployment):
         self.deployment_key = deployment_key
 
         self._load_plugins(config)
-        self.run_reader_plugins()
+        if read_sources:
+            print("loading inventory plugins")
+            self.run_reader_plugins()
+        else:
+            print("loading just local inventory")
+            self.local_inventory.update_inventory()
+            self._update_plugin_inventory(self.local_inventory)
 
         self.filtered_representation = {}
 
@@ -79,6 +85,7 @@ class Inventory(AnsibleDeployment):
                 self.filtered_representation[host]["ansible_user"] = self.host_vars[
                     host
                 ]["ansible_user"]
+
 
     def _dict_merge(self, dct, merge_dct):
         """

@@ -71,7 +71,7 @@ class Deployment(AnsibleDeployment):
     """
 
     @staticmethod
-    def load(config_file):
+    def load(config_file, read_sources=False):
         """
         Initializes deployment object from config file.
 
@@ -85,12 +85,12 @@ class Deployment(AnsibleDeployment):
         config_file_path = Path(config_file)
         deployment_path = config_file_path.parent
         config = load_config_file(config_file_path)
-        deployment = Deployment(deployment_path, config)
+        deployment = Deployment(deployment_path, config, read_sources=read_sources)
         return deployment
 
-    def __init__(self, path, config):
+    def __init__(self, path, config, read_sources=False):
         self.inventory = Inventory(
-            path, config, deployment_key=None
+            path, config, deployment_key=None, read_sources=read_sources
         )
         self.deployment_dir = DeploymentDirectory(path, config.roles_src, deployment_key=self.inventory.deployment_key)
         self.name = config.name
@@ -98,8 +98,8 @@ class Deployment(AnsibleDeployment):
         self.roles = self._create_role_objects(config.roles)
         if not self.deployment_dir.vault.locked:
             added_files = self.inventory.plugin.added_files
-            self.deployment_dir.vault.files += added_files
-            self.deployment_dir.deployment_repo.content += added_files
+            self.deployment_dir.vault.files = list(set(self.deployment_dir.vault.files + added_files))
+            self.deployment_dir.deployment_repo.content = list(set(self.deployment_dir.deployment_repo.content + added_files))
             self.playbook = Playbook(
                 self.deployment_dir.path / "playbook.yml", "all", self.roles
             )

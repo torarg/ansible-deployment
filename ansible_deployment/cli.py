@@ -61,7 +61,13 @@ def init(ctx, non_interactive):
     current working directory.
     """
 
-    deployment = ctx.obj["DEPLOYMENT"]
+    try:
+        deployment = Deployment.load(deployment_config_path, read_sources=True)
+    except Exception as err:
+        if ctx.obj['DEBUG']:
+            raise
+        else:
+            raise click.ClickException(err)
 
     if non_interactive:
         deployment.deployment_dir.delete()
@@ -140,7 +146,13 @@ def lock(ctx):
     """
     Encrypt all deployment files except the roles directory.
     """
-    deployment = ctx.obj["DEPLOYMENT"]
+    try:
+        deployment = Deployment.load(deployment_config_path, read_sources=True)
+    except Exception as err:
+        if ctx.obj['DEBUG']:
+            raise
+        else:
+            raise click.ClickException(err)
     if deployment.deployment_dir.vault.locked:
         cli_helpers.err_exit("Deployment already locked")
     cli_helpers.check_environment(deployment)
