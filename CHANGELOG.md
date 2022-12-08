@@ -1,4 +1,8 @@
 # CHANGELOG
+## 1.0.1 (2022/12/08)
+- add __version__ to python package
+- add urls for python package
+- change docs structure for gh-pages upload
 ## 1.0.0 (2022/12/08)
 - generated ssh keys are now ed25519
 - `show` sub command now outputs proper json
