@@ -33,7 +33,7 @@ class Terraform(InventoryPlugin):
             "hcloud_server": self.parse_hcloud_servers,
         }
         terraform_files = list(Path().cwd().glob("**/*.tf"))
-        terraform_files = [ path for path in terraform_files if 'roles.git' not in path.parts ]
+        terraform_files = [ path for path in terraform_files if '.roles.git' not in path.parts ]
         terraform_files = [ path.relative_to(Path().cwd()) for path in terraform_files ]
         self.added_files.append(statefile_name)
         self.added_files.append(statefile_name + ".backup")
