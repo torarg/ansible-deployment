@@ -50,7 +50,7 @@ class HostType(CustomParamType):
         deployment = self.try_to_load_deployment()
         if deployment is None:
             return []
-        hosts = deployment.inventory.filtered_representation
+        hosts = deployment.inventory.host_vars.keys()
         return [
             CompletionItem(host)
             for host in hosts if host.startswith(incomplete)
