@@ -64,9 +64,9 @@ class Deployment(AnsibleDeployment):
             ])
 
     def update(self):
-        self.deployment_dir.update(self.roles)
         self.playbook.write()
         self.inventory.write()
+        self.deployment_dir.update(self.roles)
 
     def load(deployment_state_file):
         deployment = None
