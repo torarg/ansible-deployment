@@ -9,7 +9,6 @@
 - add pull command
 - add edit command
 - add commit command
-- remove update command
 - improve deployment encryption
 - fix deprecated usage of collections
 - multistage docker build
