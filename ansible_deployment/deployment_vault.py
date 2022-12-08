@@ -162,6 +162,7 @@ class DeploymentVault(AnsibleDeployment):
         """
         git_path = self.path / ".git"
         git_config_path = git_path / "config"
+        exclude_files = ('deployment.key', '.terraform')
 
         with open(git_config_path) as f:
             git_config_data = f.read()
@@ -171,7 +172,7 @@ class DeploymentVault(AnsibleDeployment):
         )
         shadow_repo_files = []
         for file in deployment_files:
-            if 'deployment.key' not in file.name:
+            if file.name not in exclude_files:
                 shadow_repo_files.append(file)
         shadow_repo = DeploymentRepo(self.path, files=shadow_repo_files)
         shadow_repo.init()
