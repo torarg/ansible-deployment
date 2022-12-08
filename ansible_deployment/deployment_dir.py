@@ -77,7 +77,7 @@ class DeploymentDirectory(AnsibleDeployment):
     def update(self, roles):
         if not self.roles_path.exists():
             return None
-        self.repo.submodule_update(recursive=False)
+        self.repo.submodule_update()
         self._reset_role_symlinks(roles)
         self._write_role_defaults_to_group_vars(roles)
         self._write_ansible_cfg()
