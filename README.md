@@ -12,33 +12,6 @@
       - [stateful deployment with dynamic terraform inventory](#stateful-deployment-with-dynamic-terraform-inventory)
       - [stateless vault inventory](#stateless-vault-inventory)
   * [usage](#usage)
-    + [Options](#options)
-    + [--version()](#--version--)
-    + [delete](#delete)
-    + [Options](#options-1)
-    + [--non-interactive()](#--non-interactive--)
-    + [init](#init)
-    + [Options](#options-2)
-    + [--non-interactive()](#--non-interactive---1)
-    + [lock](#lock)
-    + [run](#run)
-    + [Arguments](#arguments)
-    + [ROLE()](#role--)
-    + [show](#show)
-    + [Arguments](#arguments-1)
-    + [ATTRIBUTE()](#attribute--)
-    + [ssh](#ssh)
-    + [Arguments](#arguments-2)
-    + [HOST()](#host--)
-    + [unlock](#unlock)
-    + [update](#update)
-    + [Options](#options-3)
-    + [--non-interactive()](#--non-interactive---2)
-    + [Arguments](#arguments-3)
-    + [SCOPE()](#scope--)
-
-<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
-
 
 # ansible-deployment
 
@@ -256,150 +229,31 @@ drwxr-xr-x  22 mw  staff   704  7 Sep 00:27 roles
 ```
 
 ## usage
-
-All available commands are listed below.
-
-Each command has it’s own help that can be shown by passing `--help`:
-
-> `ansible-deployment COMMAND --help`
-
 ```
-ansible-deployment [OPTIONS] COMMAND [ARGS]...
+Usage: ansible-deployment [OPTIONS] COMMAND [ARGS]...
+
+  All available commands are listed below.
+
+  Each command has it's own help that can be shown by passing ``--help``:
+
+      ``ansible-deployment COMMAND --help``
+
+Options:
+  --version  Show the version and exit.
+  --debug    Enable debug output.
+  --help     Show this message and exit.
+
+Commands:
+  delete   Delete deployment.
+  init     Initialize deployment directory.
+  lock     Encrypt all deployment files except the roles directory.
+  persist  Run configured ``ìnventory_writers``.
+  run      Run deployment with ansible-playbook.
+  show     Show deployment information.
+  ssh      Run 'ssh' command to connect to a inventory host.
+  unlock   Decrypt all deployment files except the roles directory.
+  update   Updates all deployment files and directories.
 ```
-
-### Options
-
-
-### --version()
-Show the version and exit.
-
-### delete
-
-Delete deployment.
-
-Deletes all created files and directories in deployment directory.
-
-```
-ansible-deployment delete [OPTIONS]
-```
-
-### Options
-
-
-### --non-interactive()
-Don’t ask before deleting deployment.
-
-### init
-
-Initialize deployment directory.
-
-Initialization requires a ‘deployment.json’ file in the
-current working directory.
-
-```
-ansible-deployment init [OPTIONS]
-```
-
-### Options
-
-
-### --non-interactive()
-Don’t ask before initializing deployment.
-
-### lock
-
-Encrypt all deployment files except the roles directory.
-
-```
-ansible-deployment lock [OPTIONS]
-```
-
-### run
-
-Run deployment with ansible-playbook.
-
-This will create a commit in the deployment repository
-containing the executed command.
-
-```
-ansible-deployment run [OPTIONS] [ROLE]...
-```
-
-### Arguments
-
-
-### ROLE()
-Optional argument(s)
-
-### show
-
-Show deployment information.
-
-Deployment information may be filtered by specifying attribute(s).
-
-```
-ansible-deployment show [OPTIONS] [ATTRIBUTE]...
-```
-
-### Arguments
-
-
-### ATTRIBUTE()
-Optional argument(s)
-
-### ssh
-
-Run ‘ssh’ command to connect to a inventory host.
-
-```
-ansible-deployment ssh [OPTIONS] HOST
-```
-
-### Arguments
-
-
-### HOST()
-Required argument
-
-### unlock
-
-Decrypt all deployment files except the roles directory.
-
-```
-ansible-deployment unlock [OPTIONS]
-```
-
-### update
-
-Updates all deployment files and directories.
-
-This will pull new changes from the roles source repository and
-update all deployment files accordingly.
-All changes will be shown as diff and the user needs to decide a.
-update strategy.
-
-The update can be restricted in scope by specifying the SCOPE argument.
-
-Args:
-
-    scope (str): Update scope. Defaults to ‘all’.
-
-```
-ansible-deployment update [OPTIONS] [[all|playbook|roles|inventory|group_vars|
-                          ansible_cfg]]
-```
-
-### Options
-
-
-### --non-interactive()
-Apply all updates without asking.
-
-### Arguments
-
-
-### SCOPE()
-Optional argument
 
 
 For further information: https://www.1wilson.org/restricted/docs/cli.html#ansible-deployment
