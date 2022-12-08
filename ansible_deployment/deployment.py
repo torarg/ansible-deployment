@@ -13,10 +13,12 @@ class Deployment:
         '[defaults]',
         'inventory = hosts.yml',
         'host_key_checking = False' ]
-    directory_layout = ('host_vars', 'group_vars', 'roles')
+    directory_layout = ('host_vars', 'group_vars', 'roles', '.git')
     temporary_directories = ('.roles',)
     deployment_files = ['playbook.yml', 'hosts.yml', 
                         'ansible.cfg']
+    git_repo_content = deployment_files + [ 'host_vars', 'group_vars', 
+                                            'deployment.json' ]
 
     def __init__(self, deployment_path, roles_src, roles, inventory_type):
         self.path = Path(deployment_path)
@@ -28,10 +30,14 @@ class Deployment:
         self.inventory = Inventory(inventory_type, 'hosts.yml')
         self.playbook = Playbook(self.path / 'playbook.yml', 'all', self.roles)
         self.state_file = self.path / 'deployment.json'
+        self.repo = Repo.init(self.path)
 
     def __repr__(self):
         return 'Deployment({})'.format(self.__dict__)
 
+    def _git_add(self):
+        for git_file in self.git_repo_content:
+            self.repo.index.add(git_file)
 
     def _create_role_objects(self):
         parsed_roles = []
@@ -97,6 +103,8 @@ class Deployment:
         self.inventory.write()
         self._write_role_defaults_to_group_vars()
         self._write_ansible_cfg()
+        self._git_add()
+        self.repo.index.commit('Initial commit.')
 
     def save(self):
         deployment_state = {
@@ -137,6 +145,8 @@ class Deployment:
         self.roles = self._create_role_objects()
         self._write_role_defaults_to_group_vars()
         self.playbook.write()
+        self._git_add()
+        self.repo.index.commit('Update of ansible roles and inventory.')
 
     def load(deployment_state_file):
         deployment = None
