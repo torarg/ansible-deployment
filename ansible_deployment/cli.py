@@ -48,6 +48,7 @@ def init(ctx):
     ctx.invoke(show)
     if click.confirm('(Re)Initialize Deployment?'):
         deployment.initialize_deployment_directory()
+        deployment.inventory.run_writer_plugins()
 
 
 @cli.command()
@@ -173,6 +174,7 @@ def update(ctx, scope):
     click.echo(f"New files: {deployment.deployment_dir.deployment_repo.changes['new']}")
     deployment.deployment_dir.deployment_repo.update(files=files_to_commit,
                                                      message=commit_message)
+    deployment.inventory.run_writer_plugins()
 
 
 def main():
