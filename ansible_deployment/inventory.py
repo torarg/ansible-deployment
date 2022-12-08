@@ -5,8 +5,6 @@ import yaml
 class Inventory:
     inventory_types = [ 'terraform' ]
     def __init__(self, inventory_type, inventory_path):
-        if not inventory_type in self.inventory_types:
-            raise Exception('Unsupported inventory type.')
         self.hosts = {}
         self.hosts['all'] = {}
         self.hosts['all']['hosts'] = {}

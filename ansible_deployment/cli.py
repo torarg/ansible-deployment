@@ -8,6 +8,8 @@ from ansible_deployment.playbook import Playbook
 from ansible_deployment.role import Role
 from ansible_deployment.inventory import Inventory
 
+deployment_path = Path.cwd()
+deployment_state_path = Path.cwd() / 'deployment.json'
 
 @click.group()
 @click.version_option()
@@ -26,26 +28,28 @@ def cli():
 @click.option('--inventory', '-i', 'inventory_type', 
               help='Inventory type. Supported: terraform, static')
 def init(roles, ansible_roles, branch, inventory_type):
-    deployment_path = Path.cwd()
-    deployment_state_path = Path.cwd() / 'deployment.json'
     ansible_roles_src = {
         'repo': ansible_roles,
         'branch': branch
     }
-    if deployment_state_path.exists():
-        deployment = load_deployment()
-    elif not roles or not ansible_roles or not inventory_type or not branch:
-        err_exit('Either supply command options or a deployment.json file')
-    else:
+
+    required_args = (roles, ansible_roles, branch, inventory_type)
+    if all(required_args):
         deployment = Deployment(deployment_path, ansible_roles_src, roles, inventory_type)
+    else:
+        deployment = Deployment.load(deployment_state_path)
+
+    if not deployment:
+        err_exit("Deployment initialization failed.")
+
     deployment.initialize_deployment_directory()
     deployment.save()
 
 @cli.command(help='Show deployment information.')
 @click.argument('attribute', required=False)
 def show(attribute):
-    deployment = load_deployment()
-    dict_types = (Deployment, Playbook, Role, Inventory, dict)
+    deployment = Deployment.load(deployment_state_path)
+    dict_types = (Deployment, Playbook, Role, Inventory, dict, list)
     if attribute:
         if type(deployment.__dict__[attribute]) in dict_types:
             pprint(deployment.__dict__[attribute].__dict__)
@@ -56,40 +60,26 @@ def show(attribute):
 
 @cli.command(help='Run deployment with ansible-playbook.')
 def run():
-    deployment = load_deployment()
+    deployment = Deployment.load(deployment_state_path)
     deployment.run()
 
 @cli.command(help='Delete deployment.')
 def delete():
-    deployment = load_deployment()
+    deployment = Deployment.load(deployment_state_path)
     deployment.delete()
 
 @cli.command(help='SSH into a given host of deployment inventory.')
 @click.argument('host')
 def ssh(host):
-    deployment = load_deployment()
+    deployment = Deployment.load(deployment_state_path)
     deployment.ssh(host)
 
 @cli.command(help='Update deployment roles.')
 def update():
-    deployment = load_deployment()
+    deployment = Deployment.load(deployment_state_path)
     deployment.update()
     
 
-def load_deployment():
-    deployment_state_file_path = Path.cwd() / 'deployment.json'
-    if deployment_state_file_path.exists():
-        with open(deployment_state_file_path) as deployment_state_file_stream:
-            deployment_state = json.load(deployment_state_file_stream)
-            deployment_path = deployment_state_file_path.parent
-
-        return Deployment(deployment_path,
-                          deployment_state['ansible_roles_src'],
-                          deployment_state['roles'], 
-                          deployment_state['inventory_type'])
-    else:
-        err_exit('{} does not exist.'.format(deployment_state_file_path))
-    return load_deployment()
 
 def err_exit(error_message):
     print("Error: {}".format(error_message))

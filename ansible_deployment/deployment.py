@@ -134,3 +134,18 @@ class Deployment:
         self.roles = self._create_role_objects()
         self._write_role_defaults_to_group_vars()
         self.playbook.write()
+
+    def load(deployment_state_file):
+        deployment = None
+        deployment_state_file_path = Path(deployment_state_file)
+        if deployment_state_file_path.exists():
+            with open(deployment_state_file_path) as deployment_state_file_stream:
+                deployment_state = json.load(deployment_state_file_stream)
+                deployment_path = deployment_state_file_path.parent
+    
+            deployment = Deployment(deployment_path,
+                              deployment_state['ansible_roles_src'],
+                              deployment_state['roles'], 
+                              deployment_state['inventory_type'])
+
+        return deployment
