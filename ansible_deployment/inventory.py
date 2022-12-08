@@ -27,7 +27,6 @@ class Inventory(AnsibleDeployment):
     filtered_attributes = ['vars']
 
     def __init__(self, inventory_path, config):
-        self.plugins = {'terraform': Terraform}
         self.path = Path(inventory_path)
         self.plugin = self.plugins[config.inventory_plugin](config)
         self.hosts = self.plugin.hosts
