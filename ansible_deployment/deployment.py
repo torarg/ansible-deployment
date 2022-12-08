@@ -14,20 +14,21 @@ import subprocess
 DeploymentConfig = namedtuple('DeploymentConfig', 'roles roles_src inventory_plugin')
 class Deployment(AnsibleDeployment):
     filtered_values = ['playbook', 'inventory']
-    def load(deployment_config_file):
-        deployment = None
-        deployment_config_file_path = Path(deployment_config_file)
-        deployment_path = deployment_config_file_path.parent
-        deployment_config = Deployment._load_config_file(deployment_config_file_path)
-        deployment = Deployment(deployment_path, deployment_config)
-        return deployment
 
     def _load_config_file(config_file_path):
         with open(config_file_path) as config_file_stream:
-            deployment_config = json.load(config_file_stream)
-        deployment_path = config_file_path.parent
+            config = json.load(config_file_stream)
 
-        return DeploymentConfig(**deployment_config)
+        return DeploymentConfig(**config)
+
+    def load(config_file):
+        deployment = None
+        config_file_path = Path(config_file)
+        deployment_path = config_file_path.parent
+        config = Deployment._load_config_file(config_file_path)
+        deployment = Deployment(deployment_path, config)
+        return deployment
+
 
     def __init__(self, path, config):
         self.deployment_dir = DeploymentDirectory(path, config.roles_src)
