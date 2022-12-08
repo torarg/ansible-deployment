@@ -134,13 +134,15 @@ def lock(ctx):
     Encrypt all deployment files except the roles directory.
     """
     deployment = ctx.obj["DEPLOYMENT"]
+    if deployment.deployment_dir.vault.locked:
+        cli_helpers.err_exit("Deployment already locked")
     cli_helpers.check_environment(deployment)
     prompt = "Encrypt deployment with {}?".format(
         deployment.deployment_dir.vault.key_file
     )
     if click.confirm(prompt):
         deployment.deployment_dir.deployment_repo.update(
-            message="deployment was locked", force_commit=True
+            message="lock deployment", force_commit=True
         )
         deployment.deployment_dir.vault.lock()
 
@@ -152,6 +154,8 @@ def unlock(ctx):
     Decrypt all deployment files except the roles directory.
     """
     deployment = ctx.obj["DEPLOYMENT"]
+    if not deployment.deployment_dir.vault.locked:
+        cli_helpers.err_exit("Deployment already unlocked")
     prompt = "Decrypt deployment with {}?".format(
         deployment.deployment_dir.vault.key_file
     )
@@ -159,7 +163,7 @@ def unlock(ctx):
         deployment.deployment_dir.vault.unlock()
         deployment = Deployment.load(deployment_config_path)
         deployment.deployment_dir.deployment_repo.update(
-            message="deployment was unlocked", force_commit=True
+            message="unlock deployment", force_commit=True
         )
 
 
