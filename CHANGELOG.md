@@ -1,4 +1,5 @@
 # 0.8.0 (upcoming)
+- improve deployment encryption
 - fix deprecated usage of collections
 - multistage docker build
 - add custom ca support for vault plugins
