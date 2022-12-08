@@ -1,7 +1,6 @@
 # first stage: build all dependencies and install them inside venv
 FROM python:3.10.1-alpine3.15 as wheel-build
 
-
 RUN adduser -D app && apk update && apk upgrade && apk add git build-base \
   cairo \
   cairo-dev \
@@ -34,7 +33,7 @@ WORKDIR /home/app
 COPY ./requirements.txt ./requirements.txt
 
 ENV VIRTUAL_ENV=/home/app/venv
-RUN python -m venv $VIRTUAL_ENV && pip wheel -w wheels/ -r requirements.txt --use-feature=in-tree-build 
+RUN python -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 RUN pip install -r requirements.txt
 
@@ -44,9 +43,9 @@ FROM python:3.10.1-alpine3.15
 
 RUN adduser -D app && apk update && apk upgrade && apk add ansible git vault libcap openssh-client openssh-keygen && \
     setcap cap_ipc_lock= /usr/sbin/vault
-WORKDIR /home/app
 
 USER app
+WORKDIR /home/app
 
 COPY dist/*.tar.gz .
 COPY --from=wheel-build /home/app/venv /home/app/venv
