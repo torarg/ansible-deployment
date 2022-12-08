@@ -134,12 +134,11 @@ class DeploymentVault(AnsibleDeployment):
         Args:
             files (sequence): Sequence of Path objects.
         """
-        tar = tarfile.open(self.tar_path, 'w:gz')
-        for file_name in files:
-            file_path = Path(file_name)
-            if file_path.exists() and file_path.name != self.key_file.name:
-                tar.add(file_path)
-        tar.close()
+        with tarfile.open(self.tar_path, 'w:gz') as tar:
+            for file_name in files:
+                file_path = Path(file_name)
+                if file_path.exists() and file_path.name != self.key_file.name:
+                    tar.add(file_path)
         self._encrypt_file(self.tar_path)
         self.encrypted_tar_sha256sum = self._sha256sum(self.encrypted_tar_path)
 
