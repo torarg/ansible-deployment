@@ -5,6 +5,7 @@ This module represents the ansible-deployment cli.
 from pathlib import Path
 from pprint import pformat
 import click
+import subprocess
 from ansible_deployment import Deployment, cli_helpers, unlock_deployment, lock_deployment
 
 deployment_path = Path.cwd()
@@ -201,81 +202,7 @@ def ssh(ctx, host):
             raise click.ClickException(err)
 
 
-
-@cli.command()
-@click.pass_context
-@click.argument(
-    "scope",
-    type=click.Choice(
-        ("all", "playbook", "roles", "inventory", "group_vars", "ansible_cfg")
-    ),
-    required=False,
-    default="all",
-)
-@click.option(
-    "--non-interactive", is_flag=True, help="Apply all updates without asking."
-)
-def update(ctx, scope, non_interactive):
-    """
-    Updates all deployment files and directories.
-
-    This will pull new changes from the roles source repository and
-    update all deployment files accordingly. Also all inventory sources
-    will be queried for updates.
-    All changes will be shown as diff and the user needs to decide a
-    update strategy.
-
-    The update can be restricted in scope by specifying the SCOPE argument.
-
-    Args:
-        scope (str): Update scope. Defaults to 'all'.
-    """
-
-    with unlock_deployment(ctx.obj["DEPLOYMENT"], 'w') as deployment:
-        cli_helpers.check_environment(deployment)
-        try:
-            old_roles_repo_head = (
-                deployment.deployment_dir.roles_repo.repo.head.commit.hexsha
-            )
-            deployment.deployment_dir.update(deployment, scope)
-        except AttributeError:
-            deployment.deployment_dir.roles_repo.clone()
-            old_roles_repo_head = (
-                deployment.deployment_dir.roles_repo.repo.head.commit.hexsha
-            )
-            deployment.deployment_dir.update(deployment, scope)
-        except Exception as err:
-            if ctx.obj["DEBUG"]:
-                raise
-            else:
-                raise click.ClickException(err)
-        if non_interactive:
-            files_to_commit = deployment.deployment_dir.deployment_repo.changes["all"]
-        else:
-            files_to_commit = cli_helpers.prompt_for_update_choices(
-                deployment.deployment_dir
-            )
-        files_to_commit += deployment.deployment_dir.deployment_repo.changes["new"]
-        commit_message = "deployment update with scope: {}".format(scope)
-        if deployment.deployment_dir.deployment_repo.changes["new"]:
-            click.echo(
-                f"New files: {deployment.deployment_dir.deployment_repo.changes['new']}"
-            )
-        if (
-            deployment.deployment_dir.roles_repo.repo.head.commit.hexsha
-            != old_roles_repo_head
-        ):
-            click.echo("Updated roles repository.")
-            click.echo(f"Old HEAD: {old_roles_repo_head}")
-            click.echo(
-                f"New HEAD: {deployment.deployment_dir.roles_repo.repo.head.commit.hexsha}"
-            )
-        deployment.deployment_dir.deployment_repo.update(
-            files=files_to_commit, message=commit_message
-        )
-
-
-@cli.command()
+@cli.command(hidden=True)
 @click.option('--template-mode', is_flag=True,
               help='Run inventory writers without ssh and deployment keys.')
 @click.pass_context
@@ -310,9 +237,12 @@ def push(ctx, template_mode=False):
 
 @cli.command()
 @click.pass_context
-def pull(ctx):
+@click.option(
+    "--non-interactive", is_flag=True, help="Apply all updates without asking."
+)
+def pull(ctx, non_interactive):
     """
-    Pull encrypted git repo.
+    Pull encrypted git repo, update roles and apply inventory sources.
     """
     deployment = ctx.obj["DEPLOYMENT"]
     with lock_deployment(deployment) as locked_deployment:
@@ -325,21 +255,28 @@ def pull(ctx):
             else:
                 raise click.ClickException(err)
 
+    with unlock_deployment(deployment) as unlocked_deployment:
+        try:
+            cli_helpers.update_deployment(unlocked_deployment, 'all', non_interactive)
+        except Exception as err:
+            if ctx.obj["DEBUG"]:
+                raise
+            else:
+                raise click.ClickException(err)
+
+
 
 @cli.command()
 @click.pass_context
 def edit(ctx):
     """
-    Run deployment with ansible-playbook.
-
-    This will create a commit in the deployment repository
-    containing the executed command.
+    Edit deployment with vim.
     """
     deployment = ctx.obj["DEPLOYMENT"]
     try:
         with unlock_deployment(deployment, 'w') as unlocked_deployment:
             cli_helpers.check_environment(unlocked_deployment)
-            unlocked_deployment.edit()
+            subprocess.run(["vim", "."], check=True)
     except Exception as err:
         raise click.ClickException(err)
 
@@ -353,7 +290,21 @@ def commit(ctx):
     try:
         with unlock_deployment(deployment, 'w') as unlocked_deployment:
             cli_helpers.check_environment(unlocked_deployment, ignore_dirty_repo=True)
-            unlocked_deployment.commit()
+            subprocess.run(["git", "commit", "-a"], check=True)
+    except Exception as err:
+        raise click.ClickException(err)
+
+@cli.command()
+@click.pass_context
+def log(ctx):
+    """
+    Show deployment log.
+    """
+    deployment = ctx.obj["DEPLOYMENT"]
+    try:
+        with unlock_deployment(deployment, 'r') as unlocked_deployment:
+            cli_helpers.check_environment(unlocked_deployment, ignore_dirty_repo=True)
+            subprocess.run(["git", "log"], check=True)
     except Exception as err:
         raise click.ClickException(err)
 
