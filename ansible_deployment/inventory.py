@@ -28,11 +28,15 @@ class Inventory(AnsibleDeployment):
         group_vars (dict): Group variables.
         vars (dict): Variable lookup table.
     """
-    plugins = {
+
+    inventory_sources = {
         'terraform': Terraform,
-        'vault_reader': VaultReader,
-        'local': Local,
-        'vault_writer': VaultWriter
+        'vault': VaultReader,
+        'local': Local
+    }
+
+    inventory_writers = {
+        'vault': VaultWriter
     }
 
     filtered_attributes = ['vars']
@@ -44,7 +48,8 @@ class Inventory(AnsibleDeployment):
         self.host_vars = {}
         self.group_vars = {}
         self.plugin = InventoryPlugin(config)
-        self.loaded_plugins = {}
+        self.loaded_sources = []
+        self.loaded_writers = []
         self.config = config
         
         self.local_inventory = None
@@ -60,13 +65,19 @@ class Inventory(AnsibleDeployment):
             self.filtered_representation[host]['ansible_host'] = self.host_vars[host]['ansible_host']
 
     def _load_plugins(self, config):
-        for plugin_name in config.inventory_plugin:
-            if plugin_name in self.plugins:
-                plugin = self.plugins[plugin_name](config)
+        for plugin_name in config.inventory_sources:
+            if plugin_name in self.inventory_sources:
+                plugin = self.inventory_sources[plugin_name](config)
                 #self._update_plugin_inventory(plugin)
-                self.loaded_plugins[plugin_name] = plugin
+                self.loaded_sources.append(plugin)
                 if plugin_name == "local":
                     self.local_inventory = plugin
+
+        for plugin_name in config.inventory_writers:
+            if plugin_name in self.inventory_writers:
+                plugin = self.inventory_writers[plugin_name](config)
+                self.loaded_writers.append(plugin)
+                
 
 
     def _update_plugin_inventory(self, plugin):
@@ -94,15 +105,16 @@ class Inventory(AnsibleDeployment):
         self.group_vars = self.plugin.group_vars
 
     def run_reader_plugins(self):
-        for plugin_name, plugin in self.loaded_plugins.items():
-            if plugin.plugin_type == "reader":
-                plugin.update_inventory()
-                self._update_plugin_inventory(plugin)
+        for plugin in self.loaded_sources:
+            plugin.update_inventory()
+            self._update_plugin_inventory(plugin)
 
     def run_writer_plugins(self):
-        for plugin_name, plugin in self.loaded_plugins.items():
-            if plugin.plugin_type == "writer":
-                plugin.update_inventory(self.local_inventory.hosts, self.local_inventory.host_vars, self.local_inventory.group_vars)
+        for plugin in self.loaded_writers:
+            self.local_inventory.update_inventory()
+            plugin.update_inventory(self.local_inventory.hosts,
+                                    self.local_inventory.host_vars,
+                                    self.local_inventory.group_vars)
 
     def write(self):
         """
