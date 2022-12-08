@@ -8,17 +8,6 @@ import json
 import subprocess
 
 class Deployment:
-    ansible_cfg = [
-        '[defaults]',
-        'inventory = hosts.yml',
-        'host_key_checking = False']
-    directory_layout = ('host_vars', 'group_vars', 'roles', '.git')
-    temporary_directories = ('.roles',)
-    deployment_files = ['playbook.yml', 'hosts.yml',
-                        'ansible.cfg']
-    git_repo_content = deployment_files + ['host_vars', 'group_vars',
-                                           'deployment.json']
-
     def __init__(self, deployment_path, roles_src, roles, inventory_type):
         self.deployment_dir = DeploymentDirectory(deployment_path, roles_src)
         self.name = self.deployment_dir.path.name
