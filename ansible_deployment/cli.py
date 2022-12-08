@@ -220,6 +220,12 @@ def update(ctx, scope, non_interactive):
             deployment.deployment_dir.roles_repo.repo.head.commit.hexsha
         )
         deployment.deployment_dir.update(deployment, scope)
+    except AttributeError:
+        deployment.deployment_dir.roles_repo.clone()
+        old_roles_repo_head = (
+            deployment.deployment_dir.roles_repo.repo.head.commit.hexsha
+        )
+        deployment.deployment_dir.update(deployment, scope)
     except Exception as err:
         if ctx.obj["DEBUG"]:
             raise
