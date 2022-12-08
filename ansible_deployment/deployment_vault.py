@@ -32,7 +32,7 @@ class DeploymentVault(AnsibleDeployment):
 
     encryption_suffix = ".enc"
 
-    def __init__(self, vault_files, path, key_name='deployment.key'):
+    def __init__(self, vault_files, path, key_name="deployment.key"):
         self.new_key = False
         self.locked = False
         self.path = Path(path)

@@ -107,8 +107,9 @@ class Deployment(AnsibleDeployment):
         self.config = config
         self.roles = self._create_role_objects(config.roles)
         if not self.deployment_dir.vault.locked:
-            self.inventory = Inventory(self.deployment_dir.path, self.config,
-                                       self.deployment_dir.vault.key)
+            self.inventory = Inventory(
+                self.deployment_dir.path, self.config, self.deployment_dir.vault.key
+            )
             if self.inventory.deployment_key is not None:
                 self.deployment_dir.vault.key = self.inventory.deployment_key
                 self.deployment_dir.vault._save_key()
@@ -150,8 +151,9 @@ class Deployment(AnsibleDeployment):
         self.deployment_dir.create()
         self.roles = self._create_role_objects(role_names)
         self.deployment_dir.update(self)
-        self.inventory = Inventory(self.deployment_dir.path, self.config,
-                                   self.deployment_dir.vault.key)
+        self.inventory = Inventory(
+            self.deployment_dir.path, self.config, self.deployment_dir.vault.key
+        )
         # self.playbook.write()
         self.inventory.write()
         self.deployment_dir.deployment_repo.update(message="add deployment files")

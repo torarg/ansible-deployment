@@ -43,7 +43,7 @@ class DeploymentDirectory(AnsibleDeployment):
     deployment_files = ["playbook.yml", "hosts.yml", "ansible.cfg"]
     vault_files = deployment_files + list(directory_layout)
 
-    def __init__(self, path, roles_src, deployment_key_file='deployment.key'):
+    def __init__(self, path, roles_src, deployment_key_file="deployment.key"):
         self._roles_src = roles_src
 
         self.path = Path(path)

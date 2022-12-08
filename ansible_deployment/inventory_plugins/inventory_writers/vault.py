@@ -25,7 +25,7 @@ class VaultWriter(InventoryPlugin):
             path=f"{vault_base_path}/hosts", secret=hosts
         )
 
-        deployment_key = { 'data' : base64.encodebytes(deployment_key).decode('ascii') }
+        deployment_key = {"data": base64.encodebytes(deployment_key).decode("ascii")}
         response = vault_client.secrets.kv.v2.create_or_update_secret(
             path=f"{vault_base_path}/deployment_key", secret=deployment_key
         )

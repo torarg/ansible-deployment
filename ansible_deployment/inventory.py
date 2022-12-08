@@ -8,8 +8,9 @@ from ansible_deployment import AnsibleDeployment
 from ansible_deployment.inventory_plugins import (
     InventoryPlugin,
     inventory_sources,
-    inventory_writers
+    inventory_writers,
 )
+
 
 class Inventory(AnsibleDeployment):
     """
@@ -35,12 +36,10 @@ class Inventory(AnsibleDeployment):
     inventory_sources = {
         "terraform": inventory_sources.Terraform,
         "vault": inventory_sources.Vault,
-        "local": inventory_sources.Local
+        "local": inventory_sources.Local,
     }
 
-    inventory_writers = {
-        "vault": inventory_writers.Vault
-    }
+    inventory_writers = {"vault": inventory_writers.Vault}
 
     filtered_attributes = ["vars"]
 
@@ -65,17 +64,16 @@ class Inventory(AnsibleDeployment):
 
         self.filtered_representation = {}
 
-
         for host in self.host_vars:
             self.filtered_representation[host] = {}
             if "ansible_host" in self.host_vars[host]:
-                self.filtered_representation[host]["ansible_host"] = self.host_vars[host][
-                    "ansible_host"
-                ]
+                self.filtered_representation[host]["ansible_host"] = self.host_vars[
+                    host
+                ]["ansible_host"]
             if "ansible_user" in self.host_vars[host]:
-                self.filtered_representation[host]["ansible_user"] = self.host_vars[host][
-                    "ansible_user"
-                ]
+                self.filtered_representation[host]["ansible_user"] = self.host_vars[
+                    host
+                ]["ansible_user"]
 
     def _load_plugins(self, config):
         for plugin_name in config.inventory_sources:
@@ -141,7 +139,7 @@ class Inventory(AnsibleDeployment):
                 self.local_inventory.hosts,
                 self.local_inventory.host_vars,
                 self.local_inventory.group_vars,
-                self.deployment_key
+                self.deployment_key,
             )
 
     def write(self):
@@ -149,9 +147,7 @@ class Inventory(AnsibleDeployment):
         Writes inventory files to inventory_path.
         """
         for hostname, host in self.host_vars.items():
-            with open(
-                self.path / "host_vars" / hostname, "w"
-            ) as hostvars_file_stream:
+            with open(self.path / "host_vars" / hostname, "w") as hostvars_file_stream:
                 yaml.dump(host, hostvars_file_stream)
 
         for group in self.group_vars:
