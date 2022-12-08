@@ -319,6 +319,20 @@ def log(ctx):
     except Exception as err:
         raise click.ClickException(err)
 
+@cli.command()
+@click.pass_context
+def diff(ctx):
+    """
+    Show deployment diff.
+    """
+    deployment = ctx.obj["DEPLOYMENT"]
+    try:
+        with unlock_deployment(deployment, 'r') as unlocked_deployment:
+            cli_helpers.check_environment(unlocked_deployment, ignore_dirty_repo=True)
+            subprocess.run(["git", "diff"], check=True)
+    except Exception as err:
+        raise click.ClickException(err)
+
 
 def main():
     """
