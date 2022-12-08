@@ -56,6 +56,7 @@ class DeploymentDirectory(AnsibleDeployment):
         self.filtered_representation = {
             "path": str(self.path),
             "roles_repo": str(roles_repo_config),
+            "deployment_repo": str(deployment_repo_config),
         }
 
         self.roles_path = self.path / "roles"
