@@ -45,7 +45,7 @@ class DeploymentDirectory(AnsibleDeployment):
     deployment_files = ["playbook.yml", "hosts.yml", "ansible.cfg"]
     vault_files = deployment_files + list(directory_layout)
 
-    def __init__(self, path, roles_src, deployment_key_file="deployment.key"):
+    def __init__(self, path, roles_src, deployment_key_file="deployment.key", deployment_key=None):
         self._roles_src = roles_src
 
         self.path = Path(path)
@@ -68,7 +68,7 @@ class DeploymentDirectory(AnsibleDeployment):
         git_repo_content += [deployment_key_file]
         self.deployment_repo = DeploymentRepo(self.path, files=git_repo_content)
 
-        self.vault = DeploymentVault(self.vault_files, self.path)
+        self.vault = DeploymentVault(self.vault_files, self.path, deployment_key)
 
         if not self.vault.locked and self.deployment_repo.repo:
             self.deployment_repo.update_changed_files()

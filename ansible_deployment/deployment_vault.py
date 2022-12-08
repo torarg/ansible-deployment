@@ -32,16 +32,18 @@ class DeploymentVault(AnsibleDeployment):
     """
 
     encryption_suffix = ".enc"
+    key_file_name = "deployment.key"
+    tar_file_name = "deployment.tar.gz"
 
-    def __init__(self, vault_files, path, key_name="deployment.key"):
+    def __init__(self, vault_files, path, key=None):
         self.new_key = False
         self.locked = False
         self.path = Path(path)
         self.lock_file_path = self.path / "LOCKED"
-        self.tar_path = self.path / "deployment.tar.gz"
+        self.tar_path = self.path / self.tar_file_name
         self.encrypted_tar_path = Path(str(self.tar_path) + self.encryption_suffix)
-        self.key_file = self.path / key_name
-        self._load_key()
+        self.key_file = self.path / self.key_file_name
+        self._load_key(key)
         self.files = vault_files
         self.locked_files = list(
             self.path.glob("**/*{}".format(self.encryption_suffix))
@@ -50,7 +52,7 @@ class DeploymentVault(AnsibleDeployment):
             self.locked = True
             self.files = self.locked_files
 
-    def _load_key(self):
+    def _load_key(self, key=None):
         """
         Read or create `self.key_file` and update `self.key`.
 
@@ -58,7 +60,10 @@ class DeploymentVault(AnsibleDeployment):
             Key will be generated and written to `self.key_file` if
             `self.key_file` does not exist.
         """
-        if self.key_file.exists():
+        if key is not None:
+            self.key = key
+            self._save_key()
+        elif self.key_file.exists():
             with open(self.key_file, "rb") as fobj:
                 self.key = fobj.read()
         else:
