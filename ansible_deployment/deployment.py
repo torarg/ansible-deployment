@@ -120,7 +120,7 @@ class Deployment(AnsibleDeployment):
         role_names = (role.name for role in self.roles)
         self.deployment_dir.create()
         self.roles = self._create_role_objects(role_names)
-        self.deployment_dir.update(self.roles, self.playbook, self.inventory)
+        self.deployment_dir.update(self)
         self.playbook.write()
         self.inventory.write()
         self.deployment_dir.update_git(message="add deployment files")
@@ -166,8 +166,8 @@ class Deployment(AnsibleDeployment):
                 host_info['ansible_host']
             ])
 
-    def update(self):
+    def update(self, scope='all'):
         """
         Update `self.deploymentr_directory`.
         """
-        self.deployment_dir.update(self.roles, self.playbook, self.inventory)
+        self.deployment_dir.update(self, scope)
