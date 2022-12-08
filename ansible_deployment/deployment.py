@@ -147,8 +147,10 @@ class Deployment:
         self.roles = self._create_role_objects()
         self._write_role_defaults_to_group_vars()
         self.playbook.write()
+
+    def update_git(self, message="Automatic ansible-deployment update."):
         self._git_add()
-        self.repo.index.commit('Update of ansible roles and inventory.')
+        self._git_commit(message)
 
     def load(deployment_state_file):
         deployment = None
