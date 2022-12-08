@@ -18,11 +18,11 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = 'ansible_deployment'
-copyright = '2020, Michael Wilson'
+copyright = '2022, Michael Wilson'
 author = 'Michael Wilson'
 
 # The full version, including alpha/beta/rc tags
-release = '0.1'
+release = '1.0.0'
 
 
 # -- General configuration ---------------------------------------------------
