@@ -1,3 +1,6 @@
+# ansible-deployment
+
+## table of contens
 - [ansible-deployment](#ansible-deployment)
   * [overview](#overview)
   * [inventory sources](#inventory-sources)
@@ -13,7 +16,6 @@
       - [stateless vault inventory](#stateless-vault-inventory)
   * [usage](#usage)
 
-# ansible-deployment
 
 ## overview
 ansible-deployment is a cli application for managing ansible deployments.
