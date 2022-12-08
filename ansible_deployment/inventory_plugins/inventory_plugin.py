@@ -2,7 +2,6 @@
 Inventory class skeleton.
 """
 from pathlib import Path
-from pprint import pformat
 from ansible_deployment import SSHKeypair
 from ansible_deployment.class_skeleton import AnsibleDeployment
 from ansible_deployment.config import DEFAULT_OUTPUT_JSON_INDENT

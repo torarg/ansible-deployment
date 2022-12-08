@@ -2,9 +2,22 @@
 This module contains the AnsibleDeployment skeleton class.
 """
 
-from pprint import pformat
+import json
+from inspect import isclass
 from pathlib import Path
 from ansible_deployment.config import DEFAULT_OUTPUT_JSON_INDENT
+
+
+class CustomJSONEncoder(json.JSONEncoder):
+    def default(self, o):
+        result = None
+        if type(o) is dict:
+            result = o
+        elif isinstance(o, Path):
+            result = str(o)
+        elif isinstance(o, AnsibleDeployment):
+            result = o.__dict__
+        return result
 
 
 class AnsibleDeployment:
@@ -58,22 +71,21 @@ class AnsibleDeployment:
         """
 
         representation = {}
-        for attribute in self.__dict__:
+        for attribute, attr_obj in self.__dict__.items():
             if attribute in self.filtered_attributes:
                 continue
             if attribute in self.filtered_values:
-                representation[attribute] = self.__dict__[attribute][
+                representation[attribute] = attr_obj[
                     "filtered_representation"
                 ]
             elif attribute == "roles":
                 representation[attribute] = [
                     role["name"] for role in self.__dict__["roles"]
                 ]
-            elif isinstance(attribute, Path):
-                representation[attribute] = str(attribute)
             else:
-                representation[attribute] = self.__dict__[attribute]
-        return pformat(representation, indent=DEFAULT_OUTPUT_JSON_INDENT)
+                representation[attribute] = attr_obj
+        return json.dumps(representation, indent=DEFAULT_OUTPUT_JSON_INDENT,
+                          cls=CustomJSONEncoder)
 
     def startswith(self, substring):
         return self.name.startswith(substring)
