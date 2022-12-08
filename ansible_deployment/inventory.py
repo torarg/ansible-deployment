@@ -167,7 +167,6 @@ class Inventory(AnsibleDeployment):
         if self.deployment_key is None:
             raise DeploymentKeyError("Deployment key is missing")
         for plugin in self.loaded_writers:
-            print("delete plugin: ", plugin.name)
             plugin.delete(
                 self.local_inventory.hosts,
                 self.local_inventory.host_vars,
