@@ -98,6 +98,29 @@ drwxr-xr-x  26 mw  staff   832  9 Mär 00:18 roles
 -rw-r--r--   1 mw  staff   130 31 Jan 11:06 versions.tf
 ```
 
+To fetch updates from the configured roles repository and inventory sources
+the ``update`` subcommand is used inside an initialized deployment directory:
+
+```
+Usage: ansible-deployment update [OPTIONS] [[all|playbook|roles|inventory|grou
+                                 p_vars|ansible_cfg]]
+
+  Updates all deployment files and directories.
+
+  This will pull new changes from the roles source repository and update all
+  deployment files accordingly. Also all inventory sources will be queried
+  for updates. All changes will be shown as diff and the user needs to
+  decide a update strategy.
+
+  The update can be restricted in scope by specifying the SCOPE argument.
+
+  Args:     scope (str): Update scope. Defaults to 'all'.
+
+Options:
+  --non-interactive  Apply all updates without asking.
+  --help             Show this message and exit.
+```
+
 ## Inventory Sources
 Inventory sources specify where from and in which order the deployment
 inventory is created.
@@ -145,6 +168,14 @@ consisting of the following environment variables:
 - ``VAULT_ADDR``
 - ``VAULT_TOKEN``
 
+Additionally a vault template name may be specified which will be loaded prior
+to the actual deployment secrets. This is done by specifying the environment
+variable ``VAULT_TEMPLATE``.
+
+The template will be treated as additional data source and is expected to 
+reside in ``secret/ansible-deployment/TEMPLATE_NAME``.
+
+
 All hosts, host_vars and group vars specified in the path
 ``secret/ansible-deployment/DEPLOYMENT_NAME`` will be added to the inventory
 
@@ -155,6 +186,16 @@ in 'secret/'
 ## Inventory Writers
 Inventory writers persist the state of the deployment inventory and will be 
 executed when the ``persist`` subcommand is executed.
+
+```
+Usage: ansible-deployment persist [OPTIONS]
+
+  Run configured ``ìnventory_writers``.
+
+Options:
+  --template-mode  Persisting without ssh and deployment keys.
+  --help           Show this message and exit.
+```
 
 Currently ansible deployment supports the following ``inventory_writers``.
 
