@@ -73,19 +73,37 @@ class Inventory(AnsibleDeployment):
             self.local_inventory.update_inventory()
             self._update_plugin_inventory(self.local_inventory)
 
-        self.filtered_representation = {}
+        self.filtered_representation = _construct_filtered_representation()
 
-        for host in self.host_vars:
-            self.filtered_representation[host] = {}
+    def _construct_filtered_representation(self):
+        """
+        Constructs a dictionary with a filtered inventory representation.
+
+        Returns:
+            dict: Dictionary only containing ssh host, user and port.
+        """
+        filtered_representation = {}
+        for host in self.hosts["all"]["hosts"]:
+            filtered_representation[host] = {}
             if "ansible_host" in self.host_vars[host]:
-                self.filtered_representation[host]["ansible_host"] = self.host_vars[
+                filtered_representation[host]["ansible_host"] = self.host_vars[
                     host
                 ]["ansible_host"]
+            else:
+                filtered_representation[host]["ansible_host"] = host
             if "ansible_user" in self.host_vars[host]:
-                self.filtered_representation[host]["ansible_user"] = self.host_vars[
+                filtered_representation[host]["ansible_user"] = self.host_vars[
                     host
                 ]["ansible_user"]
-
+            else:
+                filtered_representation[host]["ansible_user"] = self.group_vars["all"]["ansible_user"]
+            if "ansible_port" in self.host_vars[host]:
+                filtered_representation[host]["ansible_port"] = self.host_vars[
+                    host
+                ]["ansible_port"]
+            else:
+                filtered_representation[host]["ansible_port"] = 22
+        return filtered_representation
 
     def _dict_merge(self, dct, merge_dct):
         """
