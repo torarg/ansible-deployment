@@ -169,9 +169,8 @@ class DeploymentDirectory(AnsibleDeployment):
         if scope in ('all', 'playbook'):
             deployment.playbook.write()
         if scope in ('all', 'inventory'):
-            deployment.inventory.write()
-        if scope in ('all', 'group_vars'):
             self._write_role_defaults_to_group_vars(deployment.roles)
+            deployment.inventory.write()
         if scope in ('all', 'ansible_cfg'):
             self._write_ansible_cfg()
         self.deployment_repo.update_changed_files()
