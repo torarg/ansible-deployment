@@ -4,10 +4,11 @@ import yaml
 
 class Inventory:
     inventory_types = [ 'terraform' ]
-    def __init__(self, inventory_type, inventory_path):
+    def __init__(self, inventory_type, inventory_path, ansible_user='ansible'):
         self.hosts = {}
         self.hosts['all'] = {}
         self.hosts['all']['hosts'] = {}
+        self.ansible_user= ansible_user
         self.inventory_type = inventory_type
         self.inventory_path = Path(inventory_path)
         if self.inventory_type == 'terraform':
@@ -25,7 +26,8 @@ class Inventory:
                 host = instance['attributes']
                 if resource['type'] == 'hcloud_server': 
                     host['ansible_host'] = host['ipv4_address']
-                    host['ansible_user'] = 'root'
+                    host['ansible_user'] = self.ansible_user
+                    host['bootstrap_user'] = 'root'
                     self.hosts['all']['hosts'][host['name']] = host
 
     def write(self):
