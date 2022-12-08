@@ -1,7 +1,11 @@
+# 0.8.0 (upcoming)
+- replace '-' with '_' in group names derived from role names
+
 # 0.7.0 (2021/03/31)
 - improve documentation
 - add roles/ directory to deployment repo
 - upstream roles repo is now stored in .roles.git inside deployment directory
+
 # 0.6.0 (2021/03/07)
 - add ``ansible_user`` to ``group_vars`` by default
 - add fetch and checkout of roles during update. this enables branch or tag changing
