@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="ansible-deployment", # Replace with your own username
-    version="0.7.0",
+    version="0.7.1",
     author="Michael Wilson",
     author_email="mw@1wilson.org",
     description="CLI application to manage ansible deployments.",
