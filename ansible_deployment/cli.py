@@ -59,13 +59,11 @@ def init(ctx, non_interactive):
     if non_interactive:
         deployment.deployment_dir.delete()
         deployment.initialize_deployment_directory()
-        deployment.inventory.run_writer_plugins()
     else:
         ctx.invoke(show)
         if click.confirm("(Re)Initialize Deployment?"):
             deployment.deployment_dir.delete()
             deployment.initialize_deployment_directory()
-            deployment.inventory.run_writer_plugins()
 
 
 @cli.command()
@@ -215,7 +213,19 @@ def update(ctx, scope, non_interactive):
     deployment.deployment_dir.deployment_repo.update(
         files=files_to_commit, message=commit_message
     )
-    deployment.inventory.run_writer_plugins()
+
+
+@cli.command()
+@click.pass_context
+def persist(ctx):
+    """
+    Run configured ``ìnventory_writers``.
+    """
+    deployment = ctx.obj["DEPLOYMENT"]
+    if deployment.inventory.loaded_writers:
+        deployment.inventory.run_writer_plugins()
+    else:
+        raise click.ClickException("No configured inventory writers")
 
 
 def main():
