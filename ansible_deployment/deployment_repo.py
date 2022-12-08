@@ -8,6 +8,9 @@ from git import Repo
 from git.exc import GitCommandError
 from ansible_deployment.class_skeleton import AnsibleDeployment
 
+class RepoOriginError(Exception):
+    pass
+
 
 class DeploymentRepo(AnsibleDeployment):
     """
@@ -129,6 +132,8 @@ class DeploymentRepo(AnsibleDeployment):
         """
         Pull changes from origin.
         """
+        if 'origin' not in self.repo.remotes:
+            raise RepoOriginError("Missing git remote origin")
         self.blobs = blobs
         self.repo.remotes.origin.fetch()
         if self.remote_config is not None:
@@ -141,6 +146,8 @@ class DeploymentRepo(AnsibleDeployment):
         """
         Push changes to origin.
         """
+        if 'origin' not in self.repo.remotes:
+            raise RepoOriginError("Missing git remote origin")
         self.repo.remotes.origin.fetch()
         if self.remote_config is not None:
             self.repo.git.checkout(self.remote_config.branch)

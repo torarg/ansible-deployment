@@ -260,7 +260,13 @@ def push(ctx, template_mode=False):
 
     deployment = Deployment(deployment.deployment_dir.path, deployment.config)
     with lock_deployment(deployment) as locked_deployment:
-        locked_deployment.deployment_dir.deployment_repo.push()
+        try:
+            locked_deployment.deployment_dir.deployment_repo.push()
+        except:
+            if ctx.obj["DEBUG"]:
+                raise
+            else:
+                raise click.ClickException(err)
 
 
 @cli.command()
@@ -272,7 +278,13 @@ def pull(ctx):
     deployment = ctx.obj["DEPLOYMENT"]
     with lock_deployment(deployment) as locked_deployment:
         blobs = { "deployment_data": "./deployment.tar.gz.enc" }
-        locked_deployment.deployment_dir.deployment_repo.pull(blobs=blobs)
+        try:
+            locked_deployment.deployment_dir.deployment_repo.pull(blobs=blobs)
+        except Exception as err:
+            if ctx.obj["DEBUG"]:
+                raise
+            else:
+                raise click.ClickException(err)
 
 
 def main():
