@@ -1,5 +1,5 @@
 # first stage: build all dependencies and install them inside venv
-FROM python:3.10.1-alpine3.15 as wheel-build
+FROM 3.12.0a3-alpine3.17 as wheel-build
 
 RUN adduser -D app && apk update && apk upgrade && apk add gcc musl-dev libffi-dev
 
@@ -14,7 +14,7 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 RUN pip install -r requirements.txt
 
 # second stage: install ansible-deployment
-FROM python:3.10.1-alpine3.15
+FROM 3.12.0a3-alpine3.17
 
 
 RUN adduser -D app && apk update && apk upgrade && apk add py3-passlib ansible git vault libcap openssh-client openssh-keygen && \
