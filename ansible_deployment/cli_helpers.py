@@ -99,6 +99,6 @@ def prompt_for_update_choices(deployment_dir):
                                      show_choices=False)
         if update_choice in prompt_actions:
             prompt_actions[update_choice](file_name)
-    click.clear()
+        click.clear()
 
     return files_to_commit
