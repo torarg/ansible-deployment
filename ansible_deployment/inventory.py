@@ -128,6 +128,7 @@ class Inventory(AnsibleDeployment):
         """
         for plugin in self.loaded_sources:
             plugin.update_inventory()
+            self.plugin.added_files += plugin.added_files
             self._update_plugin_inventory(plugin)
 
     def run_writer_plugins(self):
