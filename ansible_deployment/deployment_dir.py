@@ -136,7 +136,7 @@ class DeploymentDirectory(AnsibleDeployment):
         if self.roles_path.exists():
             shutil.rmtree(self.roles_path)
 
-    def update(self, roles, playbook, inventory):
+    def update(self, roles, playbook, inventory, scope='all'):
         """
         Update deployment directory.
 
@@ -147,12 +147,17 @@ class DeploymentDirectory(AnsibleDeployment):
         """
         if not self.roles_path.exists():
             return None
-        self.repo.git.subtree('pull', '--prefix', 'roles', '--squash',
-                              self.roles_src.repo, self.roles_src.branch)
-        playbook.write()
-        inventory.write()
-        self._write_role_defaults_to_group_vars(roles)
-        self._write_ansible_cfg()
+        if scope in ('all', 'roles'):
+            self.repo.git.subtree('pull', '--prefix', 'roles', '--squash',
+                                  self.roles_src.repo, self.roles_src.branch)
+        if scope in ('all', 'playbook'):
+            playbook.write()
+        if scope in ('all', 'inventory'):
+            inventory.write()
+        if scope in ('all', 'group_vars'):
+            self._write_role_defaults_to_group_vars(roles)
+        if scope in ('all', 'ansible_cfg'):
+            self._write_ansible_cfg()
         self._update_changed_files()
 
     def update_git(self,
