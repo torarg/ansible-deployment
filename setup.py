@@ -20,7 +20,7 @@ setuptools.setup(
         "Topic :: System :: Systems Administration",
         "Topic :: Utilities"
     ],
-    python_requires='>=3.6',
+    python_requires='>=3.9',
     entry_points={
         'console_scripts': ['ansible-deployment=ansible_deployment.cli:main']
     },
