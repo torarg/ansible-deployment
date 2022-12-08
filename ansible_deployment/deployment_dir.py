@@ -25,9 +25,7 @@ class DeploymentDirectory(AnsibleDeployment):
         roles_path (Path): Path to deployment roles directory.
         config_file (Path): Path to deployment config file.
         repo (git.Repo): Deployment git repository.
-        key (byte): Key used for encryption.
-                    Will be generated if `self.key_file`
-                    does not exist.
+        vault (DeploymentVault): Vault object for file encryption.
         unstaged_changes (list): List of unstaged files.
         staged_changes (list): List of staged files.
         changes (list): List of all changed files.
