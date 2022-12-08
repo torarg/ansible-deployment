@@ -68,10 +68,7 @@ class Deployment(AnsibleDeployment):
             ])
 
     def update(self):
-        self.playbook.write()
-        self.inventory.write()
-        self.deployment_dir.update_git("Update playbook and inventory.")
-        self.deployment_dir.update(self.roles)
+        self.deployment_dir.update(self.roles, self.playbook, self.inventory)
 
     def load(deployment_state_file):
         deployment = None

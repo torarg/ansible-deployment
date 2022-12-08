@@ -91,11 +91,13 @@ class DeploymentDirectory(AnsibleDeployment):
         if self.roles_path.exists():
             shutil.rmtree(self.roles_path)
 
-    def update(self, roles):
+    def update(self, roles, playbook, inventory):
         if not self.roles_path.exists():
             return None
         self.repo.git.subtree('pull', '--prefix', 'roles', '--squash',
                               self.roles_src['repo'], self.roles_src['branch'])
+        playbook.write()
+        inventory.write()
         self._write_role_defaults_to_group_vars(roles)
         self._write_ansible_cfg()
         self._update_changed_files()
