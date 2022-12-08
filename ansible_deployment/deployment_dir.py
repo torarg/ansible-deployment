@@ -166,7 +166,7 @@ class DeploymentDirectory(AnsibleDeployment):
                 p.unlink()
 
 
-    def update(self, deployment, scope="all", sources_override=None):
+    def update(self, deployment, scope="all", sources_override=()):
         """
         Update deployment directory.
 

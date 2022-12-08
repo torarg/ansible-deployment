@@ -175,14 +175,17 @@ class Deployment(AnsibleDeployment):
                 command += ["-e", extra_var]
         subprocess.run(command, check=True)
 
-    def update_inventory(self, sources_override=None):
+    def update_inventory(self, sources_override=()):
         """
         Updates inventory.
 
         Args:
             sources_override (sequence): Sequence of inventory_source names.
         """
-        if sources_override is not None:
+        if len(sources_override) > 0:
+            for override in sources_override:
+                if override not in self.config.inventory_sources:
+                    raise KeyError(f"Invalid inventory source override: {override}")
             self.config = DeploymentConfig(
                             name=self.config.name,
                             deployment_repo=self.config.deployment_repo,
