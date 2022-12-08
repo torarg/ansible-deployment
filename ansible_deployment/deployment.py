@@ -19,9 +19,9 @@ class Deployment:
 
     def __init__(self, deployment_path, roles_path, roles, inventory_type):
         self.path = Path(deployment_path)
+        self.roles_src = roles_path
         if '.git' in roles_path:
             self.roles_path = self.path / '.roles'
-            self._clone_ansible_roles_repo(roles_path)
         else:
             self.roles_path = Path(roles_path)
         self.name = self.path.name
@@ -42,8 +42,8 @@ class Deployment:
         return parsed_roles
 
     def _clone_ansible_roles_repo(self, git_path):
-        git_path = Path(git_path)
-        if not git_path.exists():
+        print('Cloning')
+        if not self.roles_path.exists():
             Repo.clone_from(git_path, self.roles_path)
 
     def _create_deployment_directories(self):
@@ -53,6 +53,7 @@ class Deployment:
                 directory_path.mkdir()
 
     def _copy_roles_to_deployment_directory(self):
+        self._clone_ansible_roles_repo(self.roles_src)
         for role in self.roles:
             role.copy_to(self.path / 'roles')
 
@@ -91,7 +92,7 @@ class Deployment:
             'name': self.name,
             'roles': self.role_names,
             'inventory_type': self.inventory.inventory_type,
-            'ansible_roles_dir': self.roles_path.__str__()
+            'ansible_roles_src': self.roles_src
         }
         with open(self.state_file, 'w') as state_file_stream:
             json.dump(deployment_state, state_file_stream, indent=4)

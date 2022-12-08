@@ -67,7 +67,7 @@ def load_deployment():
             deployment_path = deployment_state_file_path.parent
 
         return Deployment(deployment_path,
-                          deployment_state['ansible_roles_dir'],
+                          deployment_state['ansible_roles_src'],
                           deployment_state['roles'], 
                           deployment_state['inventory_type'])
     else:
