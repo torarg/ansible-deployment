@@ -7,6 +7,7 @@ Deployments can either be stateless or stateful depending on the configured
 ``inventory_sources`` and ``inventory_writers``.
 
 When initialized ansible-deployment will:
+
     - clone the configured roles repository into deployment directory
     - generate a playbook based on specified roles
     - write role defaults as group_vars/ROLE_NAME
