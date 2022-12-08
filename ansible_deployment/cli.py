@@ -246,7 +246,14 @@ def persist(ctx):
             writer.name for writer in deployment.inventory.loaded_writers
         ]
         commit_message = f"Running inventory writers: {inventory_writers}"
-        deployment.inventory.run_writer_plugins()
+        try:
+            deployment.inventory.run_writer_plugins()
+        except Exception as err:
+            if ctx.obj["DEBUG"]:
+                raise
+            else:
+                raise click.ClickException(err)
+
         deployment.deployment_dir.deployment_repo.update(
             files=[], message=commit_message, force_commit=True
         )
