@@ -1,5 +1,5 @@
 # CHANGELOG
-## 1.0.0 (upcoming)
+## 1.0.0 (2022/12/08)
 - generated ssh keys are now ed25519
 - `show` sub command now outputs proper json
 - add custom shell autocompletion for deployment types
