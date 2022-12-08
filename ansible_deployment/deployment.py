@@ -100,14 +100,14 @@ class Deployment(AnsibleDeployment):
         """
         role_names = (role.name for role in self.roles)
         self.deployment_dir.create()
+        self.inventory.write()
         self.roles = self._create_role_objects(role_names)
-        self.deployment_dir.write_role_defaults_to_group_vars(self.roles)
+        self.playbook.write()
         self.inventory = Inventory(
             self.deployment_dir.path, self.config, self.deployment_dir.vault.key
         )
-        self.playbook.write()
-        self.inventory.write()
-        self.deployment_dir.deployment_repo.update(message="add deployment files")
+        self.deployment_dir.write_role_defaults_to_group_vars(self.roles)
+        self.deployment_dir.deployment_repo.update(message="add deployment files", force_commit=True)
 
     def save(self):
         """
