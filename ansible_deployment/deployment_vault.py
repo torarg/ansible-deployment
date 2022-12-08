@@ -1,8 +1,9 @@
 from pathlib import Path
+from ansible_deployment.class_skeleton import AnsibleDeployment
 from cryptography.fernet import Fernet
 
 
-class DeploymentVault:
+class DeploymentVault(AnsibleDeployment):
     """
     Represents a deployment vault used for file encryption.
 
