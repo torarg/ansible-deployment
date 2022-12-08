@@ -22,7 +22,6 @@ class DeploymentDirectory(AnsibleDeployment):
 
     Attributes:
         path (Path): Path to deployment directory.
-        roles_src (RolesRepo): Namedtuple containing roles repo config.
         roles_path (Path): Path to deployment roles directory.
         config_file (Path): Path to deployment config file.
         repo (git.Repo): Deployment git repository.
@@ -41,7 +40,7 @@ class DeploymentDirectory(AnsibleDeployment):
 
     def __init__(self, path, roles_src, config_file='deployment.json', vault_files=vault_files):
         self.path = Path(path)
-        self.roles_src = roles_src
+        self._roles_src = roles_src
         self.roles_path = self.path / 'roles'
         self.config_file = self.path / 'deployment.json'
 
@@ -127,7 +126,7 @@ class DeploymentDirectory(AnsibleDeployment):
         self._create_deployment_directories()
         self.update_git('initial commit', force_commit=True)
         self.repo.git.subtree('add', '--prefix', 'roles', '--squash',
-                              self.roles_src.repo, self.roles_src.branch)
+                              self._roles_src.repo, self._roles_src.branch)
         self._write_ansible_cfg()
 
     def delete(self):
@@ -171,7 +170,7 @@ class DeploymentDirectory(AnsibleDeployment):
             return None
         if scope in ('all', 'roles'):
             self.repo.git.subtree('pull', '--prefix', 'roles', '--squash',
-                                  self.roles_src.repo, self.roles_src.branch)
+                                  self._roles_src.repo, self._roles_src.branch)
         if scope in ('all', 'playbook'):
             deployment.playbook.write()
         if scope in ('all', 'inventory'):
