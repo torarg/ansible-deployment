@@ -1,4 +1,5 @@
 import yaml
+import shutil
 from pathlib import Path
 
 class Role:
@@ -100,3 +101,13 @@ class Role:
             directory_files[file_path.name] = file_data
 
         return directory_files
+
+    def copy_to(self, destination_path):
+        """
+        Copies the source role directory to a given destination.
+
+        Args:
+            destination_path (str): destination path
+        """
+        destination = Path(destination_path) / self.name
+        shutil.copytree(self.path, destination)
