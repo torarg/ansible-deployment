@@ -82,7 +82,8 @@ def prompt_for_update_choices(deployment_dir):
         list: List of file names with update strategy 'apply'.
     """
     files_to_commit = []
-    prompt_message = 'Please select update strategy '
+    prompt_message = '\nNote: The final deployment inventory will be commited to all configured inventory writers.\n'
+    prompt_message += 'Please select update strategy '
     prompt_message += '([a]pply, [d]iscard, [k]eep unstaged)'
     prompt_choice = click.Choice(('a', 'd', 'k'))
     prompt_actions = {
