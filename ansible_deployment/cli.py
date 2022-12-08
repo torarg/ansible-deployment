@@ -2,8 +2,8 @@
 This module represents the ansible-deployment cli.
 """
 
-from pprint import pformat
 import click
+import json
 import subprocess
 from ansible_deployment import Deployment, cli_helpers, unlock_deployment, lock_deployment
 from ansible_deployment.cli_autocomplete import (
@@ -14,8 +14,10 @@ from ansible_deployment.cli_autocomplete import (
     ShowAttributeType
 )
 from ansible_deployment.config import (
-    DEFAULT_DEPLOYMENT_CONFIG_PATH
+    DEFAULT_DEPLOYMENT_CONFIG_PATH,
+    DEFAULT_OUTPUT_JSON_INDENT
 )
+from ansible_deployment.class_skeleton import CustomJSONEncoder
 
 
 @click.group()
@@ -103,7 +105,8 @@ def show(ctx, attribute):
                 output = cli_helpers.filter_output_by_attribute(output, attribute)
             except Exception as err:
                 raise click.ClickException(err)
-        click.echo(pformat(output))
+        click.echo(json.dumps(output, indent=DEFAULT_OUTPUT_JSON_INDENT,
+                              cls=CustomJSONEncoder))
 
 
 @cli.command()
