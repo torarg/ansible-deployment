@@ -82,8 +82,8 @@ def update():
 
 
 def err_exit(error_message):
-    print("Error: {}".format(error_message))
-    sys.exit(1)
+    cli_context = click.get_current_context()
+    cli_context.fail(error_message)
 
 def main():
     cli(auto_envvar_prefix='AD')
