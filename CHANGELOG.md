@@ -1,5 +1,6 @@
 # CHANGELOG
 ## 0.9.0 (upcoming)
+- fix usage of roles inside of sub directories
 - add update command again
 - add reset command
 - add diff command
