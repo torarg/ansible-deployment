@@ -143,10 +143,6 @@ class DeploymentVault(AnsibleDeployment):
     def unlock(self):
         """
         Unlock vault and decrypt all files.
-
-        Note:
-            To indicate vault status the lock file in
-            `self.lock_file` will be removed.
         """
         if self.locked:
             self._decrypt_files(self.files)
