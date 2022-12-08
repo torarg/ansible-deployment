@@ -1,4 +1,4 @@
-ansible_deployment.cli
+CLI Reference
 ======================
 
 .. click:: ansible_deployment.cli:cli

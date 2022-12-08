@@ -8,19 +8,8 @@ Welcome to ansible_deployment's documentation!
    :caption: Contents:
 
    README
-   AnsibleDeployment
-   RepoConfig
-   DeploymentConfig
-   Deployment
-   DeploymentDirectory
-   DeploymentRepo
-   DeploymentVault
-   Role
-   Playbook
-   Inventory
-   inventory_plugins
    cli
-   cli_helpers
+   api
 
 
 Indices and tables
