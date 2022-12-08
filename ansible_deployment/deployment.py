@@ -217,6 +217,11 @@ class Deployment(AnsibleDeployment):
         self.deployment_dir.vault._save_key()
 
 
+    def get_connection_details(self, host):
+        if host not in self.inventory.filtered_representation:
+            raise KeyError("Host not in inventory.")
+        return self.inventory.filtered_representation[host]
+
     def ssh(self, host):
         """
         Run ssh to connect to a given deployment host as `ansible_user`.
@@ -224,15 +229,11 @@ class Deployment(AnsibleDeployment):
         Args:
             host (str): Target host.
         """
-        if host in self.inventory.hosts["all"]["hosts"]:
-            if host in self.inventory.host_vars and "ansible_host" in self.inventory.host_vars[host]:
-                host_info = self.inventory.host_vars[host]
-            else:
-                host_info = { "ansible_host": host }
-
-            ansible_user = self.inventory.group_vars["all"]["ansible_user"]
-            ssh_key = self.deployment_dir.ssh_private_key
-            subprocess.run(
-                ["ssh", "-i", ssh_key, "-l", ansible_user, host_info["ansible_host"]],
-                check=True,
-            )
+        connection_details = self.get_connection_details(host)
+        ssh_key = self.deployment_dir.ssh_private_key
+        subprocess.run(
+            ["ssh", "-i", ssh_key, "-l", connection_details["ansible_user"],
+             "-p", connection_details["ansible_port"],
+             connection_details["ansible_host"]],
+            check=True,
+        )
