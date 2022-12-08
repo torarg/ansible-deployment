@@ -1,1 +1,330 @@
-sphinx/build/html/README.html
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ansible-deployment &mdash; ansible-deployment</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> ansible-deployment
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="index.html">ansible-deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">CLI Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ansible-deployment</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">ansible-deployment</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/README.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ansible-deployment">
+<h1>ansible-deployment<a class="headerlink" href="#ansible-deployment" title="Permalink to this heading"></a></h1>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading"></a></h2>
+<p>ansible-deployment is a cli application for creating, managing and updating
+deployment repositories which are seperated from your actual role development repositories.</p>
+<p>While having the management of roles in common with ansible-galaxy, ansible-deployment
+also aims to assist your workflow over the whole deployment’s lifecycle by
+supporting plugins called <code class="docutils literal notranslate"><span class="pre">inventory_sources</span></code> and <code class="docutils literal notranslate"><span class="pre">inventory_writers</span></code> to
+source and persist the deployment inventory from and to different endpoints.</p>
+</section>
+<section id="features">
+<h2>Features<a class="headerlink" href="#features" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>creates a ready to use ansible deployment directory from a json definition.</p></li>
+<li><p>fetch and update roles from a remote git repository</p></li>
+<li><p>generate local inventory from role defaults and inventory plugins</p>
+<ul>
+<li><p>source inventory from one or more sources with <code class="docutils literal notranslate"><span class="pre">inventory_sources</span></code></p></li>
+<li><p>write inventory to one or more destinations with <code class="docutils literal notranslate"><span class="pre">inventory_writers</span></code></p></li>
+</ul>
+</li>
+<li><p>supports fernet encryption for deployment repository</p></li>
+<li><p>push and pull support for encrypted deployment repository</p></li>
+</ul>
+</section>
+<section id="setup">
+<h2>Setup<a class="headerlink" href="#setup" title="Permalink to this heading"></a></h2>
+<section id="requirements">
+<h3>Requirements<a class="headerlink" href="#requirements" title="Permalink to this heading"></a></h3>
+<p>The following software is not part of the python package requirements
+and needs to be installed manually:</p>
+<ul class="simple">
+<li><p>python &gt;= 3.9</p></li>
+<li><p>ansible</p></li>
+<li><p>git</p></li>
+</ul>
+</section>
+<section id="install-as-python-package">
+<h3>Install as python package<a class="headerlink" href="#install-as-python-package" title="Permalink to this heading"></a></h3>
+<p>ansible-deployment is shipped as a python package and can be installed via pip:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install .
+</pre></div>
+</div>
+</section>
+</section>
+<section id="quick-start">
+<h2>Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this heading"></a></h2>
+<section id="creating-a-deployment-json-file">
+<h3>Creating a deployment.json file<a class="headerlink" href="#creating-a-deployment-json-file" title="Permalink to this heading"></a></h3>
+<p>ansible-deployment needs at least a <code class="docutils literal notranslate"><span class="pre">deployment.json</span></code> file to initialize
+a deployment directory:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ mkdir -p ~/deployments/my_deployment
+$ cat &lt;&lt;EOF &gt; deployment.json
+{
+    &quot;name&quot;: &quot;my-deployment&quot;,
+    &quot;deployment_repo&quot;: {
+            &quot;url&quot;: &quot;_gitea@git.example.org:user/my-deployment.git&quot;,
+            &quot;reference&quot;: &quot;master&quot;
+    },
+    &quot;roles_repo&quot;: {
+        &quot;url&quot;: &quot;git@github.com:user/ansible-roles.git&quot;,
+        &quot;reference&quot;: &quot;master&quot;
+    },
+    &quot;roles&quot;: [
+        &quot;hetzner/autoinstall&quot;,
+        &quot;linux/unlock_initramfs&quot;,
+        &quot;common/bootstrap&quot;,
+        &quot;linux/k3s/master&quot;,
+        &quot;linux/k3s/node&quot;,
+        &quot;linux/k3s/ansible_setup&quot;,
+        &quot;linux/k3s/hetzner_csi_driver&quot;,
+        &quot;linux/k3s/certmanager&quot;,
+        &quot;linux/k3s/prometheus&quot;,
+        &quot;linux/k3s/gitea&quot;,
+        &quot;linux/k3s/zammad&quot;
+    ],
+    &quot;inventory_sources&quot;: [
+        &quot;terraform&quot;,
+        &quot;vault&quot;
+    ],
+    &quot;inventory_writers&quot;: [
+        &quot;vault&quot;
+    ]
+}
+</pre></div>
+</div>
+<p>Theoretically we could already initialize our deployment at this point, but
+since we defined <code class="docutils literal notranslate"><span class="pre">vault</span></code> and <code class="docutils literal notranslate"><span class="pre">terraform</span></code> as <code class="docutils literal notranslate"><span class="pre">inventory_sources</span></code> we will
+need to make sure those are ready to use.</p>
+</section>
+<section id="configure-inventory-plugins">
+<h3>Configure inventory plugins<a class="headerlink" href="#configure-inventory-plugins" title="Permalink to this heading"></a></h3>
+<section id="vault">
+<h4>vault<a class="headerlink" href="#vault" title="Permalink to this heading"></a></h4>
+<p>The vault inventory source is configured via the same environment variables as the
+vault cli client:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ export VAULT_ADDR=https://vault.1wilson.home:8200
+$ export VAULT_TOKEN=someToken
+</pre></div>
+</div>
+</section>
+</section>
+<section id="terraform">
+<h3>terraform<a class="headerlink" href="#terraform" title="Permalink to this heading"></a></h3>
+<p>Currently the terraform inventory source only supports Hetzner Cloud resources,
+so we need a terraform state containing such resources to use it as our
+inventory source.
+The state file is expected to reside in <code class="docutils literal notranslate"><span class="pre">DEPLOYMENT_DIR/terraform.tfstate</span></code></p>
+</section>
+<section id="initialize-deployment">
+<h3>Initialize deployment<a class="headerlink" href="#initialize-deployment" title="Permalink to this heading"></a></h3>
+<p>Right now our deployment directory should at least contain the following files:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ls
+deployment.json  terraform.tfstate
+</pre></div>
+</div>
+<p>To initalize the deployment directory we use ansible-deployment’s <code class="docutils literal notranslate"><span class="pre">init</span></code> command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ansible-deployment init
+Deployment key written to: /home/mw/Deployments/my_deployment/deployment.key
+{   &#39;deployment_dir&#39;: {   &#39;path&#39;: &#39;/home/mw/Deployments/my_deployment&#39;,
+                          &#39;roles_src&#39;: &quot;RepoConfig(repo=&#39;_gitea@git.1wilson.org:mw/ansible-roles.git&#39;, &quot;
+                                       &quot;branch=&#39;master&#39;)&quot;},
+    &#39;inventory&#39;: {},
+    &#39;name&#39;: &#39;my_deployment&#39;,
+    &#39;roles&#39;: [   &#39;openbsd_install_from_rescue&#39;,
+                 &#39;sysupgrade&#39;,
+                 &#39;bootstrap&#39;,
+                 &#39;backup&#39;,
+                 &#39;wireguard&#39;,
+                 &#39;webserver&#39;,
+                 &#39;gitea&#39;,
+                 &#39;firewall&#39;,
+                 &#39;add_to_icinga2&#39;]}
+(Re)Initialize Deployment? [y/N]: y
+</pre></div>
+</div>
+<p>Now we have a ready to use deployment directory sourced from terraform.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[mw@mw-arch my_deployment]$ ls -la
+insgesamt 28
+drwxr-xr-x 1 mw mw  240 19. Jan 23:47 .
+drwxr-xr-x 1 mw mw  210 19. Jan 23:43 ..
+-rw-r--r-- 1 mw mw   91 19. Jan 23:47 ansible.cfg
+-rw-r--r-- 1 mw mw 1952 19. Jan 23:44 deployment.json
+-rw------- 1 mw mw   44 19. Jan 23:47 deployment.key
+drwxr-xr-x 1 mw mw  138 19. Jan 23:47 .git
+drwxr-xr-x 1 mw mw  200 19. Jan 23:47 group_vars
+-rw-r--r-- 1 mw mw  725 19. Jan 23:47 hosts.yml
+drwxr-xr-x 1 mw mw   18 19. Jan 23:47 host_vars
+-rw-r--r-- 1 mw mw 2643 19. Jan 23:47 playbook.yml
+drwxr-xr-x 1 mw mw  194 19. Jan 23:47 roles
+drwxr-xr-x 1 mw mw  596 19. Jan 23:47 .roles.git
+drwxr-xr-x 1 mw mw   32 19. Jan 23:47 .ssh
+-rw-r--r-- 1 mw mw 7000 19. Jan 23:44 terraform.tfstate
+</pre></div>
+</div>
+</section>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this heading"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ansible-deployment --help
+Usage: ansible-deployment [OPTIONS] COMMAND [ARGS]...
+
+  All available commands are listed below.
+
+  Each command has it&#39;s own help that can be shown by passing &#39;--help&#39;:
+
+      $ ansible-deployment COMMAND --help
+
+Options:
+  --version  Show the version and exit.
+  --debug    Enable debug output.
+  --help     Show this message and exit.
+
+Commands:
+  commit              Commit all changes.
+  delete              Delete deployment.
+  diff                Show deployment diff.
+  edit                Edit deployment with vim.
+  fetch-key           Fetch deployment key from given inventory source.
+  init                Initialize deployment directory.
+  lock                Encrypt all deployment files except the roles...
+  log                 Show deployment log.
+  pull                Pull encrypted deployment repo.
+  reset               Hard reset deployment to last commit.
+  run                 Run deployment with ansible-playbook.
+  show                Show deployment information.
+  ssh                 Run &#39;ssh&#39; command to connect to a inventory host.
+  unlock              Decrypt all deployment files except the roles...
+  update              Update deployment.
+  update-known-hosts  Force update of known_hosts file.
+</pre></div>
+</div>
+</section>
+<section id="shell-completion">
+<h2>Shell Completion<a class="headerlink" href="#shell-completion" title="Permalink to this heading"></a></h2>
+<p>To enable shell completion you need to register a special function depending
+on your shell. After following the steps listed below you will need to start
+a new shell session to use shell completion.</p>
+<section id="bash">
+<h3>Bash<a class="headerlink" href="#bash" title="Permalink to this heading"></a></h3>
+<p>Save shell completion script somewhere:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">_ANSIBLE_DEPLOYMENT_COMPLETE</span><span class="o">=</span><span class="n">bash_source</span> <span class="n">ansible</span><span class="o">-</span><span class="n">deployment</span> <span class="o">&gt;</span> <span class="o">~/.</span><span class="n">ansible</span><span class="o">-</span><span class="n">deployment</span><span class="o">-</span><span class="n">complete</span><span class="o">.</span><span class="n">bash</span>
+</pre></div>
+</div>
+<p>Source shell completion script in your <code class="docutils literal notranslate"><span class="pre">.bashrc</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">echo</span> <span class="s2">&quot;. ~/.foo-bar-complete.bash&quot;</span> <span class="o">&gt;&gt;</span> <span class="o">~/.</span><span class="n">bashrc</span>
+</pre></div>
+</div>
+</section>
+<section id="zsh">
+<h3>Zsh<a class="headerlink" href="#zsh" title="Permalink to this heading"></a></h3>
+<p>Save shell completion script somewhere:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">_ANSIBLE_DEPLOYMENT_COMPLETE</span><span class="o">=</span><span class="n">zsh_source</span> <span class="n">ansible</span><span class="o">-</span><span class="n">deployment</span> <span class="o">&gt;</span> <span class="o">~/.</span><span class="n">ansible</span><span class="o">-</span><span class="n">deployment</span><span class="o">-</span><span class="n">complete</span><span class="o">.</span><span class="n">zsh</span>
+</pre></div>
+</div>
+<p>Source shell completion script in your <code class="docutils literal notranslate"><span class="pre">.zshrc</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">echo</span> <span class="s2">&quot;. ~/.foo-bar-complete.zsh&quot;</span> <span class="o">&gt;&gt;</span> <span class="o">~/.</span><span class="n">zshrc</span>
+</pre></div>
+</div>
+</section>
+<section id="fish">
+<h3>Fish<a class="headerlink" href="#fish" title="Permalink to this heading"></a></h3>
+<p>Save shell completion script:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">_ANSIBLE_DEPLOYMENT_COMPLETE</span><span class="o">=</span><span class="n">fish_source</span> <span class="n">ansible</span><span class="o">-</span><span class="n">deployment</span> <span class="o">&gt;</span> <span class="o">~/.</span><span class="n">config</span><span class="o">/</span><span class="n">fish</span><span class="o">/</span><span class="n">completions</span><span class="o">/</span><span class="n">ansible</span><span class="o">-</span><span class="n">deployment</span><span class="o">-</span><span class="n">complete</span><span class="o">.</span><span class="n">fish</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Michael Wilson.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

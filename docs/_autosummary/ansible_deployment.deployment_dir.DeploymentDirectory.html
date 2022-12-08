@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ansible_deployment.deployment_dir.DeploymentDirectory &mdash; ansible-deployment</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ansible_deployment.deployment_repo" href="ansible_deployment.deployment_repo.html" />
+    <link rel="prev" title="ansible_deployment.deployment_dir" href="ansible_deployment.deployment_dir.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ansible-deployment
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">ansible-deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cli.html">CLI Reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="ansible_deployment.html">ansible_deployment</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="ansible_deployment.class_skeleton.html">ansible_deployment.class_skeleton</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansible_deployment.cli.html">ansible_deployment.cli</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansible_deployment.cli_autocomplete.html">ansible_deployment.cli_autocomplete</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansible_deployment.cli_helpers.html">ansible_deployment.cli_helpers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansible_deployment.config.html">ansible_deployment.config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansible_deployment.deployment.html">ansible_deployment.deployment</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="ansible_deployment.deployment_dir.html">ansible_deployment.deployment_dir</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">ansible_deployment.deployment_dir.DeploymentDirectory</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="ansible_deployment.deployment_repo.html">ansible_deployment.deployment_repo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansible_deployment.deployment_vault.html">ansible_deployment.deployment_vault</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansible_deployment.exceptions.html">ansible_deployment.exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansible_deployment.inventory.html">ansible_deployment.inventory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansible_deployment.inventory_plugins.html">ansible_deployment.inventory_plugins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansible_deployment.playbook.html">ansible_deployment.playbook</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansible_deployment.role.html">ansible_deployment.role</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansible_deployment.ssh.html">ansible_deployment.ssh</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ansible-deployment</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../api.html">API</a></li>
+          <li class="breadcrumb-item"><a href="ansible_deployment.html">ansible_deployment</a></li>
+          <li class="breadcrumb-item"><a href="ansible_deployment.deployment_dir.html">ansible_deployment.deployment_dir</a></li>
+      <li class="breadcrumb-item active">ansible_deployment.deployment_dir.DeploymentDirectory</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/_autosummary/ansible_deployment.deployment_dir.DeploymentDirectory.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ansible-deployment-deployment-dir-deploymentdirectory">
+<h1>ansible_deployment.deployment_dir.DeploymentDirectory<a class="headerlink" href="#ansible-deployment-deployment-dir-deploymentdirectory" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="ansible_deployment.deployment_dir.DeploymentDirectory">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansible_deployment.deployment_dir.</span></span><span class="sig-name descname"><span class="pre">DeploymentDirectory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">roles_repo_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deployment_repo_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deployment_key_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'deployment.key'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deployment_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansible_deployment.deployment_dir.DeploymentDirectory" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="ansible_deployment.class_skeleton.AnsibleDeployment.html#ansible_deployment.class_skeleton.AnsibleDeployment" title="ansible_deployment.class_skeleton.AnsibleDeployment"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnsibleDeployment</span></code></a></p>
+<p>Represents an ansible deployment directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>path</em>) – Path to deployment directory.</p></li>
+<li><p><strong>roles_repo</strong> (<a class="reference internal" href="ansible_deployment.config.RepoConfig.html#ansible_deployment.config.RepoConfig" title="ansible_deployment.config.RepoConfig"><em>RepoConfig</em></a>) – Namedtuple containing roles repo config.</p></li>
+<li><p><strong>config_file</strong> (<em>path</em>) – Path to deployment config file.</p></li>
+<li><p><strong>vault_files</strong> (<em>sequence</em>) – Sequence of files to put in vault.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ansible_deployment.deployment_dir.DeploymentDirectory.path">
+<span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#ansible_deployment.deployment_dir.DeploymentDirectory.path" title="Permalink to this definition"></a></dt>
+<dd><p>Path to deployment directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ansible_deployment.deployment_dir.DeploymentDirectory.roles_path">
+<span class="sig-name descname"><span class="pre">roles_path</span></span><a class="headerlink" href="#ansible_deployment.deployment_dir.DeploymentDirectory.roles_path" title="Permalink to this definition"></a></dt>
+<dd><p>Path to deployment roles directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ansible_deployment.deployment_dir.DeploymentDirectory.roles_repo">
+<span class="sig-name descname"><span class="pre">roles_repo</span></span><a class="headerlink" href="#ansible_deployment.deployment_dir.DeploymentDirectory.roles_repo" title="Permalink to this definition"></a></dt>
+<dd><p>Roles src repository.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="ansible_deployment.deployment_repo.DeploymentRepo.html#ansible_deployment.deployment_repo.DeploymentRepo" title="ansible_deployment.deployment_repo.DeploymentRepo">DeploymentRepo</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ansible_deployment.deployment_dir.DeploymentDirectory.deployment_repo">
+<span class="sig-name descname"><span class="pre">deployment_repo</span></span><a class="headerlink" href="#ansible_deployment.deployment_dir.DeploymentDirectory.deployment_repo" title="Permalink to this definition"></a></dt>
+<dd><p>Deployment git repository.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="ansible_deployment.deployment_repo.DeploymentRepo.html#ansible_deployment.deployment_repo.DeploymentRepo" title="ansible_deployment.deployment_repo.DeploymentRepo">DeploymentRepo</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ansible_deployment.deployment_dir.DeploymentDirectory.config_file">
+<span class="sig-name descname"><span class="pre">config_file</span></span><a class="headerlink" href="#ansible_deployment.deployment_dir.DeploymentDirectory.config_file" title="Permalink to this definition"></a></dt>
+<dd><p>Path to deployment config file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ansible_deployment.deployment_dir.DeploymentDirectory.vault">
+<span class="sig-name descname"><span class="pre">vault</span></span><a class="headerlink" href="#ansible_deployment.deployment_dir.DeploymentDirectory.vault" title="Permalink to this definition"></a></dt>
+<dd><p>Vault object for file encryption.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="ansible_deployment.deployment_vault.DeploymentVault.html#ansible_deployment.deployment_vault.DeploymentVault" title="ansible_deployment.deployment_vault.DeploymentVault">DeploymentVault</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ansible_deployment.deployment_dir.DeploymentDirectory.create" title="ansible_deployment.deployment_dir.DeploymentDirectory.create"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create</span></code></a></p></td>
+<td><p>Create deployment directory.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ansible_deployment.deployment_dir.DeploymentDirectory.delete" title="ansible_deployment.deployment_dir.DeploymentDirectory.delete"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delete</span></code></a></p></td>
+<td><p>Delete deployment directory.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ansible_deployment.deployment_dir.DeploymentDirectory.startswith" title="ansible_deployment.deployment_dir.DeploymentDirectory.startswith"><code class="xref py py-obj docutils literal notranslate"><span class="pre">startswith</span></code></a></p></td>
+<td><p>Wrapper for <cite>self.name.startswith()</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ansible_deployment.deployment_dir.DeploymentDirectory.update" title="ansible_deployment.deployment_dir.DeploymentDirectory.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a></p></td>
+<td><p>Update deployment directory.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ansible_deployment.deployment_dir.DeploymentDirectory.write_role_defaults_to_group_vars" title="ansible_deployment.deployment_dir.DeploymentDirectory.write_role_defaults_to_group_vars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_role_defaults_to_group_vars</span></code></a></p></td>
+<td><p>Writes role defaults from a list of roles to group_vars.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ansible_cfg</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">deployment_files</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">directory_layout</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">filtered_attributes</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">filtered_representation</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">filtered_values</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="ansible_deployment.deployment_dir.DeploymentDirectory.create">
+<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ansible_deployment.deployment_dir.DeploymentDirectory.create" title="Permalink to this definition"></a></dt>
+<dd><p>Create deployment directory.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansible_deployment.deployment_dir.DeploymentDirectory.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additional_paths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">full_delete</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansible_deployment.deployment_dir.DeploymentDirectory.delete" title="Permalink to this definition"></a></dt>
+<dd><p>Delete deployment directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>keep</strong> (<em>list</em>) – List of file system paths to exclude from deletion.</p></li>
+<li><p><strong>additional_paths</strong> (<em>list</em>) – List of file system paths for additional deletion.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansible_deployment.deployment_dir.DeploymentDirectory.startswith">
+<span class="sig-name descname"><span class="pre">startswith</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">substring</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansible_deployment.deployment_dir.DeploymentDirectory.startswith" title="Permalink to this definition"></a></dt>
+<dd><p>Wrapper for <cite>self.name.startswith()</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>substring</strong> – Substring to match against.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Whether or not a match was found.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansible_deployment.deployment_dir.DeploymentDirectory.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deployment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sources_override</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansible_deployment.deployment_dir.DeploymentDirectory.update" title="Permalink to this definition"></a></dt>
+<dd><p>Update deployment directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>deployment</strong> (<a class="reference internal" href="ansible_deployment.deployment.Deployment.html#ansible_deployment.deployment.Deployment" title="ansible_deployment.deployment.Deployment"><em>Deployment</em></a>) – Initialized deployment object.</p></li>
+<li><p><strong>scope</strong> (<em>str</em>) – Scope of update. May be:
+<cite>all</cite>
+<cite>roles</cite>
+<cite>playbook</cite>
+<cite>inventory</cite>
+<cite>group_vars</cite>
+<cite>ansible_cfg</cite></p></li>
+<li><p><strong>sources_override</strong> (<em>sequence</em>) – Sequence of inventory sources.</p></li>
+</ul>
+</dd>
+</dl>
+<p>The update will pull changes from the roles src repo and
+will update all deployment files.</p>
+<p>The update will NOT commit any deployment specific changes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansible_deployment.deployment_dir.DeploymentDirectory.write_role_defaults_to_group_vars">
+<span class="sig-name descname"><span class="pre">write_role_defaults_to_group_vars</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">roles</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansible_deployment.deployment_dir.DeploymentDirectory.write_role_defaults_to_group_vars" title="Permalink to this definition"></a></dt>
+<dd><p>Writes role defaults from a list of roles to group_vars.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>roles</strong> (<em>sequence</em>) – A sequence of Role objects.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ansible_deployment.deployment_dir.html" class="btn btn-neutral float-left" title="ansible_deployment.deployment_dir" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ansible_deployment.deployment_repo.html" class="btn btn-neutral float-right" title="ansible_deployment.deployment_repo" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Michael Wilson.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ansible_deployment.deployment_vault.DeploymentVault &mdash; ansible-deployment</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ansible_deployment.deployment_vault.DeploymentVaultError" href="ansible_deployment.deployment_vault.DeploymentVaultError.html" />
+    <link rel="prev" title="ansible_deployment.deployment_vault" href="ansible_deployment.deployment_vault.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ansible-deployment
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">ansible-deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cli.html">CLI Reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="ansible_deployment.html">ansible_deployment</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="ansible_deployment.class_skeleton.html">ansible_deployment.class_skeleton</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansible_deployment.cli.html">ansible_deployment.cli</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansible_deployment.cli_autocomplete.html">ansible_deployment.cli_autocomplete</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansible_deployment.cli_helpers.html">ansible_deployment.cli_helpers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansible_deployment.config.html">ansible_deployment.config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansible_deployment.deployment.html">ansible_deployment.deployment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansible_deployment.deployment_dir.html">ansible_deployment.deployment_dir</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansible_deployment.deployment_repo.html">ansible_deployment.deployment_repo</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="ansible_deployment.deployment_vault.html">ansible_deployment.deployment_vault</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">ansible_deployment.deployment_vault.DeploymentVault</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ansible_deployment.deployment_vault.DeploymentVaultError.html">ansible_deployment.deployment_vault.DeploymentVaultError</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="ansible_deployment.exceptions.html">ansible_deployment.exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansible_deployment.inventory.html">ansible_deployment.inventory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansible_deployment.inventory_plugins.html">ansible_deployment.inventory_plugins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansible_deployment.playbook.html">ansible_deployment.playbook</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansible_deployment.role.html">ansible_deployment.role</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ansible_deployment.ssh.html">ansible_deployment.ssh</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ansible-deployment</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../api.html">API</a></li>
+          <li class="breadcrumb-item"><a href="ansible_deployment.html">ansible_deployment</a></li>
+          <li class="breadcrumb-item"><a href="ansible_deployment.deployment_vault.html">ansible_deployment.deployment_vault</a></li>
+      <li class="breadcrumb-item active">ansible_deployment.deployment_vault.DeploymentVault</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/_autosummary/ansible_deployment.deployment_vault.DeploymentVault.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ansible-deployment-deployment-vault-deploymentvault">
+<h1>ansible_deployment.deployment_vault.DeploymentVault<a class="headerlink" href="#ansible-deployment-deployment-vault-deploymentvault" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="ansible_deployment.deployment_vault.DeploymentVault">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansible_deployment.deployment_vault.</span></span><span class="sig-name descname"><span class="pre">DeploymentVault</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vault_files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansible_deployment.deployment_vault.DeploymentVault" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="ansible_deployment.class_skeleton.AnsibleDeployment.html#ansible_deployment.class_skeleton.AnsibleDeployment" title="ansible_deployment.class_skeleton.AnsibleDeployment"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnsibleDeployment</span></code></a></p>
+<p>Represents a deployment vault used for file encryption.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vault_files</strong> (<em>sequence</em>) – Sequence of paths defining vault content.</p></li>
+<li><p><strong>path</strong> (<em>path</em>) – Vault root directory.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ansible_deployment.deployment_vault.DeploymentVault.path">
+<span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#ansible_deployment.deployment_vault.DeploymentVault.path" title="Permalink to this definition"></a></dt>
+<dd><p>Vault root directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ansible_deployment.deployment_vault.DeploymentVault.locked">
+<span class="sig-name descname"><span class="pre">locked</span></span><a class="headerlink" href="#ansible_deployment.deployment_vault.DeploymentVault.locked" title="Permalink to this definition"></a></dt>
+<dd><p>True if vault is currently locked.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ansible_deployment.deployment_vault.DeploymentVault.new_key">
+<span class="sig-name descname"><span class="pre">new_key</span></span><a class="headerlink" href="#ansible_deployment.deployment_vault.DeploymentVault.new_key" title="Permalink to this definition"></a></dt>
+<dd><p>True if a new key was created.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ansible_deployment.deployment_vault.DeploymentVault.key_file">
+<span class="sig-name descname"><span class="pre">key_file</span></span><a class="headerlink" href="#ansible_deployment.deployment_vault.DeploymentVault.key_file" title="Permalink to this definition"></a></dt>
+<dd><p>Path to key file.
+Defaults to <cite>self.path / ‘deployment.key’</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ansible_deployment.deployment_vault.DeploymentVault.key">
+<span class="sig-name descname"><span class="pre">key</span></span><a class="headerlink" href="#ansible_deployment.deployment_vault.DeploymentVault.key" title="Permalink to this definition"></a></dt>
+<dd><p>Key used for encryption.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>byte</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ansible_deployment.deployment_vault.DeploymentVault.files">
+<span class="sig-name descname"><span class="pre">files</span></span><a class="headerlink" href="#ansible_deployment.deployment_vault.DeploymentVault.files" title="Permalink to this definition"></a></dt>
+<dd><p>Sequence of paths defining vault content.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>sequence</p>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If <cite>key_file</cite> is not present at initialization, it will be created.</p>
+</div>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">delete</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ansible_deployment.deployment_vault.DeploymentVault.lock" title="ansible_deployment.deployment_vault.DeploymentVault.lock"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lock</span></code></a></p></td>
+<td><p>Encrypts all files stored in the vault and activates shadow repo.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ansible_deployment.deployment_vault.DeploymentVault.setup_shadow_repo" title="ansible_deployment.deployment_vault.DeploymentVault.setup_shadow_repo"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setup_shadow_repo</span></code></a></p></td>
+<td><p>Replaces deployment repo with a 'shadow repo'.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ansible_deployment.deployment_vault.DeploymentVault.startswith" title="ansible_deployment.deployment_vault.DeploymentVault.startswith"><code class="xref py py-obj docutils literal notranslate"><span class="pre">startswith</span></code></a></p></td>
+<td><p>Wrapper for <cite>self.name.startswith()</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ansible_deployment.deployment_vault.DeploymentVault.unlock" title="ansible_deployment.deployment_vault.DeploymentVault.unlock"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unlock</span></code></a></p></td>
+<td><p>Decrypts all vault files and restores the deployment repository.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">encryption_suffix</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">filtered_attributes</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">filtered_representation</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">filtered_values</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">key_file_name</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lock_file_name</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tar_file_name</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="ansible_deployment.deployment_vault.DeploymentVault.lock">
+<span class="sig-name descname"><span class="pre">lock</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ansible_deployment.deployment_vault.DeploymentVault.lock" title="Permalink to this definition"></a></dt>
+<dd><p>Encrypts all files stored in the vault and activates shadow repo.</p>
+<p>The git repository in <code class="docutils literal notranslate"><span class="pre">self.path</span></code> will be encrypted and replaced
+with a shadow repository containing all encrypted vault files as
+a single commit. If an old instance of the shadow repository
+had a custuom config this will be restored in the new shadow
+repository.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansible_deployment.deployment_vault.DeploymentVault.setup_shadow_repo">
+<span class="sig-name descname"><span class="pre">setup_shadow_repo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remote_config</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansible_deployment.deployment_vault.DeploymentVault.setup_shadow_repo" title="Permalink to this definition"></a></dt>
+<dd><p>Replaces deployment repo with a ‘shadow repo’.</p>
+<p>The deployment git repository in <code class="docutils literal notranslate"><span class="pre">self.path</span> <span class="pre">/</span> <span class="pre">'.git'</span></code>
+will be moved to <code class="docutils literal notranslate"><span class="pre">self.path</span> <span class="pre">/</span> <span class="pre">'.git.enc'</span></code> and if
+<code class="docutils literal notranslate"><span class="pre">self.path</span> <span class="pre">/</span> <span class="pre">'.git.shadow'</span></code> exists, it’s config will be moved
+to <code class="docutils literal notranslate"><span class="pre">self.path</span> <span class="pre">/</span> <span class="pre">'.git'</span></code>.
+A new repositoriy will be intialized and all files in <code class="docutils literal notranslate"><span class="pre">self.files</span></code>
+including the original deployment repository will be
+added and commited to this new repository.</p>
+<p>The purpose of the shadow repository is to have
+a pushable deployment state while the deployment
+is locked.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>remote_config</strong> (<a class="reference internal" href="ansible_deployment.config.RepoConfig.html#ansible_deployment.config.RepoConfig" title="ansible_deployment.config.RepoConfig"><em>RepoConfig</em></a>) – RepoConfig Namedtuple.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansible_deployment.deployment_vault.DeploymentVault.startswith">
+<span class="sig-name descname"><span class="pre">startswith</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">substring</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansible_deployment.deployment_vault.DeploymentVault.startswith" title="Permalink to this definition"></a></dt>
+<dd><p>Wrapper for <cite>self.name.startswith()</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>substring</strong> – Substring to match against.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Whether or not a match was found.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansible_deployment.deployment_vault.DeploymentVault.unlock">
+<span class="sig-name descname"><span class="pre">unlock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">force_unlock</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansible_deployment.deployment_vault.DeploymentVault.unlock" title="Permalink to this definition"></a></dt>
+<dd><p>Decrypts all vault files and restores the deployment repository.</p>
+<p>The shadow repository’s configuration file willl be saved
+to <code class="docutils literal notranslate"><span class="pre">self.path</span> <span class="pre">/</span> <span class="pre">'.git.shadow/config</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ansible_deployment.deployment_vault.html" class="btn btn-neutral float-left" title="ansible_deployment.deployment_vault" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ansible_deployment.deployment_vault.DeploymentVaultError.html" class="btn btn-neutral float-right" title="ansible_deployment.deployment_vault.DeploymentVaultError" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Michael Wilson.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
