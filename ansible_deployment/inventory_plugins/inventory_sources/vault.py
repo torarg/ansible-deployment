@@ -42,6 +42,8 @@ class VaultReader(InventoryPlugin):
     def update_inventory(self):
         self.hosts = self.read_secret("hosts", fallback_value=dict())
         self.deployment_key = self.read_secret("deployment_key")
+        if self.deployment_key is not None:
+            self.deployment_key = base64.decodebytes(self.deployment_key.encode("ascii")
         
         self.ssh_keypair.private_key = self.read_secret("ssh_private_key")
         self.ssh_keypair.public_key = self.read_secret("ssh_public_key")
