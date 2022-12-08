@@ -33,9 +33,6 @@ class Local(InventoryPlugin):
                 self.hosts = yaml.safe_load(f)
 
     def update_inventory(self):
-        self.hosts = {}
-        self.host_vars = {}
-        
         self._load_hosts()
         self._load_vars('host_vars')
         self._load_vars('group_vars')
