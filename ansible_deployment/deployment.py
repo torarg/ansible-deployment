@@ -58,6 +58,10 @@ class Deployment:
         for role in self.roles:
             role.symlink_to(self.path / 'roles')
 
+    def _unlink_roles_in_deployment_directory(self):
+        for role_dir in self.path.glob('roles/*'):
+            role_dir.unlink()
+
     def _write_role_defaults_to_group_vars(self):
         group_vars_path = self.path / 'group_vars' / 'all'
         group_vars_path_backup = self.path / 'group_vars' / 'all.BAK'
@@ -84,6 +88,7 @@ class Deployment:
         self._create_deployment_directories()
         self._clone_ansible_roles_repo(self.roles_src)
         self.roles = self._create_role_objects()
+        self._unlink_roles_in_deployment_directory()
         self._symlink_roles_in_deployment_directory()
         self.playbook.write()
         self.inventory.write()
@@ -124,5 +129,8 @@ class Deployment:
 
     def update(self):
         self._update_ansible_roles_repo()
+        self._unlink_roles_in_deployment_directory()
+        self._symlink_roles_in_deployment_directory()
         self.roles = self._create_role_objects()
         self._write_role_defaults_to_group_vars()
+        self.playbook.write()
