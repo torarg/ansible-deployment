@@ -41,9 +41,10 @@ class Role(AnsibleDeployment):
         "templates",
     ]
 
-    def __init__(self, role_directory):
-        self.path = Path(role_directory)
-        self.name = self.path.name
+    def __init__(self, name, path):
+        self.path = Path(path)
+        self.name = name
+        self.group_name = name.replace('/', '_').replace('-', '_')
         self.defaults = self._parse_role_sub_directory("defaults")
         self.vars = self._parse_role_sub_directory("vars")
         self.tasks = self._parse_role_sub_directory("tasks")

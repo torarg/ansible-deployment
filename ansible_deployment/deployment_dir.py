@@ -96,7 +96,7 @@ class DeploymentDirectory(AnsibleDeployment):
         shutil.rmtree(self.roles_path)
         self.roles_path.mkdir()
         for role_name in roles:
-            role = Role(self.roles_repo_path / role_name)
+            role = Role(name=role_name, path=self.roles_repo_path / role_name)
             role.copy_to(self.roles_path)
 
     def write_role_defaults_to_group_vars(self, roles):
