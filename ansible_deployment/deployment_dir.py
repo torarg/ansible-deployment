@@ -40,6 +40,7 @@ class DeploymentDirectory(AnsibleDeployment):
         "inventory = hosts.yml",
         "host_key_checking = False",
         "interpreter_python = auto_silent",
+        "stdout_callback = yaml"
     ]
     directory_layout = ("host_vars", "group_vars", "roles", ".ssh", ".roles.git", ".git")
     deployment_files = ["playbook.yml", "hosts.yml", "ansible.cfg"]
