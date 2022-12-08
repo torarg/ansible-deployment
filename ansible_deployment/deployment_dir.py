@@ -142,21 +142,22 @@ class DeploymentDirectory(AnsibleDeployment):
         self._copy_roles_to_deployment()
         self._write_ansible_cfg()
 
-    def delete(self):
+    def delete(self, keep_git=False):
         """
         Delete deployment directory.
         """
-        shadow_git = self.path / ".git.shadow"
-        if shadow_git.exists():
-            shutil.rmtree(shadow_git)
+        dir_whitelist = []
+        file_whitelist = []
+        if keep_git:
+            dir_whitelist.append(".git")
         for directory_name in self.directory_layout:
             directory_path = self.path / directory_name
-            if directory_path.exists():
+            if directory_path.exists() and directory_path.name not in dir_whitelist:
                 shutil.rmtree(directory_path)
 
         for file_name in self.deployment_files:
             file_path = self.path / file_name
-            if file_path.exists():
+            if file_path.exists() and file_path.name not in file_whitelist:
                 file_path.unlink()
 
         if self.roles_path.exists():

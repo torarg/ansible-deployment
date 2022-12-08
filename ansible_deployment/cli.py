@@ -145,7 +145,8 @@ def lock(ctx):
             message="lock deployment", force_commit=True
         )
         deployment.deployment_dir.vault.lock()
-        deployment.deployment_dir.delete()
+        deployment.deployment_dir.delete(keep_git=True)
+        deployment.deployment_dir.vault.setup_shadow_repo()
 
 
 @cli.command()
@@ -166,6 +167,7 @@ def unlock(ctx):
         deployment.deployment_dir.deployment_repo.update(
             message="unlock deployment", force_commit=True
         )
+
 
 
 @cli.command()

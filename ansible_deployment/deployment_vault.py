@@ -144,7 +144,7 @@ class DeploymentVault(AnsibleDeployment):
             fobj.write(cipher_suite.decrypt(encrypted_data))
         file_path.replace(str(file_path)[: -len(self.encryption_suffix)])
 
-    def _setup_shadow_repo(self):
+    def setup_shadow_repo(self):
         """
         Replaces deployment repo with a 'shadow repo'.
 
@@ -160,10 +160,18 @@ class DeploymentVault(AnsibleDeployment):
         a pushable deployment state while the deployment
         is locked.
         """
-        shadow_repo_files = list(
-            self.path.glob("**/*{}".format(self.encryption_suffix))
+        git_path = self.path / ".git"
+        git_config_path = git_path / "config"
+        with open(git_config_path) as f:
+            git_config_data = f.read()
+        shutil.rmtree(git_path)
+        deployment_files = list(
+            self.path.glob("*")
         )
-        shadow_repo_files.append("deployment.json")
+        shadow_repo_files = []
+        for file in deployment_files:
+            if 'deployment.key' not in file.name:
+                shadow_repo_files.append(file)
         shadow_repo = DeploymentRepo(self.path, files=shadow_repo_files)
         shadow_repo.init()
 
@@ -173,11 +181,18 @@ class DeploymentVault(AnsibleDeployment):
             files=shadow_repo_files,
         )
 
+        with open(git_config_path, 'w') as f:
+            f.write(git_config_data)
+
 
     def _restore_deployment_dir(self):
         """
         Restores deployment dir from tar archive.
         """
+        git_path = self.path / '.git'
+
+        if git_path.exists():
+            shutil.rmtree(git_path)
         if not self.tar_path.exists():
             raise FileNotFoundError(self.tar_path)
 
@@ -199,7 +214,6 @@ class DeploymentVault(AnsibleDeployment):
         """
         if not self.locked:
             self._encrypt_files(self.files)
-            self._setup_shadow_repo()
             self.locked = True
         else:
             raise EnvironmentError("Deployment already locked")
