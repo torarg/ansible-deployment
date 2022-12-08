@@ -11,7 +11,6 @@ def cli():
 
 
 @cli.command()
-#@click.argument('playbook_name', required=True)
 @click.option('--role', '-r', 'roles', multiple=True, required=True, 
               help="""Role(s) to include in deployment.
                       May be specified multiple times.""")
