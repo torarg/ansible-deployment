@@ -2,8 +2,8 @@
 Helper functions for cli module.
 """
 
-import click
 import textwrap
+import click
 
 
 def err_exit(error_message):
