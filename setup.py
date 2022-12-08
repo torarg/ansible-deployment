@@ -11,7 +11,7 @@ setuptools.setup(
     description="CLI application to manage ansible deployments.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/torarg/ansible-deployment",
+    url="https://github.com/torarg/ansible-deployment-cli",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
