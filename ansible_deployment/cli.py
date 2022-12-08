@@ -354,6 +354,20 @@ def reset(ctx):
 
 @cli.command()
 @click.pass_context
+def update_known_hosts(ctx):
+    """
+    Force update of known_hosts file.
+    """
+    deployment = ctx.obj["DEPLOYMENT"]
+    try:
+        with unlock_deployment(deployment, 'w') as unlocked_deployment:
+            cli_helpers.check_environment(unlocked_deployment, ignore_dirty_repo=True)
+            deployment.update_known_hosts()
+    except Exception as err:
+        raise click.ClickException(err)
+
+@cli.command()
+@click.pass_context
 @click.argument("inventory_source")
 def fetch_key(ctx, inventory_source):
     """

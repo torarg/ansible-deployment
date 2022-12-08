@@ -216,11 +216,28 @@ class Deployment(AnsibleDeployment):
         self.deployment_dir.vault.key = self.inventory.deployment_key
         self.deployment_dir.vault._save_key()
 
-
     def get_connection_details(self, host):
         if host not in self.inventory.filtered_representation:
             raise KeyError("Host not in inventory.")
         return self.inventory.filtered_representation[host]
+
+    def update_known_hosts(self):
+        """
+        Force update known_hosts update for inventory hosts.
+        """
+        known_hosts_file_path = Path.home() / ".ssh" / "known_hosts"
+        for host in self.inventory.hosts["all"]["hosts"]:
+            connection_details = self.get_connection_details(host)
+            subprocess.run(
+                ["ssh-keygen", "-R", connection_details["ansible_host"]],
+                check=True
+            )
+            keyscan = subprocess.run(
+                ["ssh-keyscan", "-H", connection_details["ansible_host"]],
+                check=True, capture_output=True
+            )
+            with open(known_hosts_file_path, "a") as known_hosts_file:
+                known_hosts_file.write(keyscan.stdout.decode())
 
     def ssh(self, host):
         """

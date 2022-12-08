@@ -1,4 +1,10 @@
 # CHANGELOG
+## 1.0.0 (upcoming)
+- add `update-known-hosts` command
+- add option to override inventory sources during update
+- add `fetch-key` command
+- fix group_vars not updating when new role defaults were defined
+- fix several bugs in deployment push&pull
 ## 0.9.0 (2022/07/08)
 - inventory writers now support deletion of written data
 - fix usage of roles inside of sub directories
