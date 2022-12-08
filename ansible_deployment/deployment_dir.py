@@ -92,10 +92,7 @@ class DeploymentDirectory:
         self._clone_ansible_roles_repo()
         self._unlink_roles_in_deployment_directory()
         self._symlink_roles_in_deployment_directory(roles)
-        self._write_role_defaults_to_group_vars(roles)
         self._write_ansible_cfg()
-        self._git_add()
-        self._git_commit('Initial commit.')
 
 
     def delete(self):
