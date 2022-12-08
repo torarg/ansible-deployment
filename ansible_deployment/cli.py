@@ -47,11 +47,13 @@ def init(ctx, non_interactive):
     deployment = ctx.obj['DEPLOYMENT']
 
     if non_interactive:
+        deployment.deployment_dir.delete()
         deployment.initialize_deployment_directory()
         deployment.inventory.run_writer_plugins()
     else:
         ctx.invoke(show)
         if click.confirm('(Re)Initialize Deployment?'):
+            deployment.deployment_dir.delete()
             deployment.initialize_deployment_directory()
             deployment.inventory.run_writer_plugins()
 
