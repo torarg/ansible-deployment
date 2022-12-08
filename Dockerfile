@@ -51,6 +51,7 @@ USER app
 COPY ./ansible_deployment/ ./ansible_deployment
 COPY ./setup.py ./
 COPY ./README.md ./
+COPY ./MANIFEST.in ./
 COPY --from=wheel-build /home/app/venv /home/app/venv
 
 ENV VIRTUAL_ENV=/home/app/venv
