@@ -92,8 +92,11 @@ def update():
     elif not deployment.deployment_dir.roles_path.exists():
         err_exit("Deployment directory not initialized.")
     deployment.update()
-    for file_name in deployment.deployment_dir.unstaged_changes:
-        click.echo(deployment.deployment_dir.repo.git.diff(file_name))
+    for file_name in deployment.deployment_dir.changes:
+        if file_name in deployment.deployment_dir.unstaged_changes:
+            click.echo(deployment.deployment_dir.repo.git.diff(file_name))
+        elif file_name in deployment.deployment_dir.staged_changes:
+            click.echo(deployment.deployment_dir.repo.git.diff('--staged', file_name))
         update_choice = click.prompt(
             'Please select update strategy ([a]pply, [d]iscard, [k]eep unstaged)',
             default='k',
