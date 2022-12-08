@@ -37,24 +37,20 @@
   pre_tasks:
   - name: connection setup
     block:
-    - name: test if disk is locked
-      raw: "[[ -x /usr/bin/cryptroot-unlock ]]"
-      notify: unlock_disk
-      ignore_errors: yes
-
-    - name: flush handlers if disk is locked
-      meta: flush_handlers
 
     - name: clear facts
       meta: clear_facts
+      ignore_errors: yes
 
     - name: gather facts
       setup:
+      ignore_errors: yes
 
     - name: set become_method to doas if running on openbsd
       set_fact:
         ansible_become_method: doas
       when: ansible_distribution == 'OpenBSD'
+      ignore_errors: yes
     tags:
       - always
 
