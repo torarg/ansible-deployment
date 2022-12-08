@@ -52,11 +52,11 @@ def show(attribute):
     custom_types = (Deployment, Playbook, Role, Inventory)
     if attribute:
         for attr in attribute:
-            if not attr in output: err_exit('Attribute not found')
+            if attr not in output:
+                err_exit('Attribute not found')
             output = output[attr]
     click.echo(pformat(output))
 
-    
 
 @cli.command(help='Run deployment with ansible-playbook.')
 @click.argument('role', required=False)

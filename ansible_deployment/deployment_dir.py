@@ -43,7 +43,8 @@ class DeploymentDirectory:
         return pformat(representation)
 
     def _git_update_unstaged_changes(self):
-        self.unstaged_changes = [ diff.a_path for diff in self.repo.index.diff(None)]
+        self.unstaged_changes = [
+            diff.a_path for diff in self.repo.index.diff(None)]
 
     def _git_add(self, files):
         for git_file in files:
@@ -104,7 +105,6 @@ class DeploymentDirectory:
         self._symlink_roles_in_deployment_directory(roles)
         self._write_ansible_cfg()
 
-
     def delete(self):
         self._delete_temporary_directories()
         for directory_name in self.directory_layout:
@@ -117,7 +117,6 @@ class DeploymentDirectory:
             if file_path.exists():
                 file_path.unlink()
 
-
     def update(self, roles):
         self._update_ansible_roles_repo()
         self._unlink_roles_in_deployment_directory()
@@ -125,7 +124,10 @@ class DeploymentDirectory:
         self._write_role_defaults_to_group_vars(roles)
         self._git_update_unstaged_changes()
 
-    def update_git(self, message="Automatic ansible-deployment update.", files=git_repo_content):
+    def update_git(
+            self,
+            message="Automatic ansible-deployment update.",
+            files=git_repo_content):
         self._git_add(files)
         self._git_commit(message)
         self._git_update_unstaged_changes()

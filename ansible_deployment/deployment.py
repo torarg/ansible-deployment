@@ -7,6 +7,7 @@ from ansible_deployment.deployment_dir import DeploymentDirectory
 import json
 import subprocess
 
+
 class Deployment:
     def __init__(self, deployment_path, roles_src, roles, inventory_type):
         self.deployment_dir = DeploymentDirectory(deployment_path, roles_src)
@@ -16,7 +17,11 @@ class Deployment:
             inventory_type,
             'hosts.yml',
             groups=roles)
-        self.playbook = Playbook(self.deployment_dir.path / 'playbook.yml', 'all', self.roles)
+        self.playbook = Playbook(
+            self.deployment_dir.path /
+            'playbook.yml',
+            'all',
+            self.roles)
 
     def __getitem__(self, attribute):
         return self.__dict__[attribute]
@@ -34,11 +39,13 @@ class Deployment:
         }
         return pformat(representation)
 
-
     def _create_role_objects(self, role_names):
         parsed_roles = []
         for role_name in role_names:
-            parsed_roles.append(Role(self.deployment_dir.roles_path / role_name))
+            parsed_roles.append(
+                Role(
+                    self.deployment_dir.roles_path /
+                    role_name))
         return parsed_roles
 
     def initialize_deployment_directory(self):
@@ -49,7 +56,6 @@ class Deployment:
         self.playbook.write()
         self.inventory.write()
         self.deployment_dir.update_git(message="initial commit")
-
 
     def save(self):
         role_names = []
@@ -64,7 +70,6 @@ class Deployment:
         }
         with open(self.deployment_dir.state_file, 'w') as state_file_stream:
             json.dump(deployment_state, state_file_stream, indent=4)
-
 
     def run(self, tags=None):
         command = ['ansible-playbook', 'playbook.yml']
