@@ -120,7 +120,6 @@ class DeploymentRepo(AnsibleDeployment):
 
     def _pull_blobs(self):
         for blob_name in self.blobs:
-            print(f"pulling blob '{blob_name}'")
             blob_path = self.blobs[blob_name]
             blob_data = self.repo.git.show(blob_name).split("\n")[5]
             with open(blob_path, "w") as blob_file:
