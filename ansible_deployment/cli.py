@@ -203,8 +203,9 @@ def update(ctx, scope, non_interactive):
     Updates all deployment files and directories.
 
     This will pull new changes from the roles source repository and
-    update all deployment files accordingly.
-    All changes will be shown as diff and the user needs to decide a.
+    update all deployment files accordingly. Also all inventory sources
+    will be queried for updates.
+    All changes will be shown as diff and the user needs to decide a
     update strategy.
 
     The update can be restricted in scope by specifying the SCOPE argument.
@@ -258,8 +259,10 @@ def update(ctx, scope, non_interactive):
 
 
 @cli.command()
+@click.option('--template-mode', is_flag=True,
+              help='Persisting without ssh and deployment keys.')
 @click.pass_context
-def persist(ctx):
+def persist(ctx, template_mode=False):
     """
     Run configured ``ìnventory_writers``.
     """
@@ -271,7 +274,7 @@ def persist(ctx):
         ]
         commit_message = f"Running inventory writers: {inventory_writers}"
         try:
-            deployment.inventory.run_writer_plugins()
+            deployment.inventory.run_writer_plugins(template_mode)
         except Exception as err:
             if ctx.obj["DEBUG"]:
                 raise

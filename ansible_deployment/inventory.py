@@ -5,7 +5,7 @@ This module contains the Inventory class.
 import yaml
 import collections
 from pathlib import Path
-from ansible_deployment import AnsibleDeployment
+from ansible_deployment import AnsibleDeployment, SSHKeypair
 from ansible_deployment.inventory_plugins import (
     InventoryPlugin,
     inventory_sources,
@@ -52,6 +52,7 @@ class Inventory(AnsibleDeployment):
         self.group_vars = {}
         self.plugin = InventoryPlugin(config, roles)
         self.config = config
+        self.ssh_keypair = SSHKeypair()
 
         self.local_inventory = inventory_sources.Local(config)
         self.loaded_sources = [self.local_inventory]
@@ -126,15 +127,16 @@ class Inventory(AnsibleDeployment):
             elif plugin.group_vars[group]:
                 self.plugin.group_vars[group] = plugin.group_vars[group]
 
+        self.plugin.ssh_keypair.update_with(plugin.ssh_keypair)
+
         self.hosts = self.plugin.hosts
         self.groups = self.plugin.groups
         self.host_vars = self.plugin.host_vars
         self.group_vars = self.plugin.group_vars
+        self.ssh_keypair = self.plugin.ssh_keypair
+
         if plugin.deployment_key is not None:
             self.deployment_key = plugin.deployment_key
-
-
-
 
     def run_reader_plugins(self):
         """
@@ -145,7 +147,7 @@ class Inventory(AnsibleDeployment):
             self.plugin.added_files += plugin.added_files
             self._update_plugin_inventory(plugin)
 
-    def run_writer_plugins(self):
+    def run_writer_plugins(self, template_mode=False):
         """
         Run loaded inventory writers.
         """
@@ -156,6 +158,7 @@ class Inventory(AnsibleDeployment):
                 self.local_inventory.host_vars,
                 self.local_inventory.group_vars,
                 self.deployment_key,
+                template_mode
             )
 
     def write(self):
@@ -172,3 +175,4 @@ class Inventory(AnsibleDeployment):
 
         with open(self.path / "hosts.yml", "w") as inventory_file_stream:
             yaml.dump(self.hosts, inventory_file_stream)
+        self.ssh_keypair.write()
