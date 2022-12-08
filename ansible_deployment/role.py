@@ -26,7 +26,9 @@ class Role(AnsibleDeployment):
         The attributes containing role sub directory information are 'None'
         if the corresponding sub directory does not exist.
     """
-    filtered_attributes = ['vars', 'defaults', 'tasks', 'handlers', 'meta', 'files', 'templates']
+    filtered_attributes = [
+        'vars', 'defaults', 'tasks', 'handlers', 'meta', 'files', 'templates'
+    ]
 
     def __init__(self, role_directory):
         self.path = Path(role_directory)

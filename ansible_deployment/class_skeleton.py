@@ -1,8 +1,10 @@
 from pprint import pformat
 
+
 class AnsibleDeployment:
     filtered_attributes = []
     filtered_values = []
+
     def __getitem__(self, attribute):
         return self.__dict__[attribute]
 
