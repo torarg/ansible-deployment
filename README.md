@@ -5,6 +5,7 @@
 ansible-deployment is a cli application managing ansible deployments.
 
 It features:
+
     - generating a deployment directory from:
         - an ansible roles git repository
         - an inventory plugin
