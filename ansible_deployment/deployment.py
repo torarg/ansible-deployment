@@ -1,5 +1,6 @@
 from pathlib import Path
 from pprint import pformat
+from ansible_deployment.class_skeleton import AnsibleDeployment
 from ansible_deployment.role import Role
 from ansible_deployment.inventory import Inventory
 from ansible_deployment.playbook import Playbook
@@ -8,7 +9,8 @@ import json
 import subprocess
 
 
-class Deployment:
+class Deployment(AnsibleDeployment):
+    filtered_values = ['playbook', 'inventory', 'roles']
     def __init__(self, deployment_path, roles_src, roles, inventory_type):
         self.deployment_dir = DeploymentDirectory(deployment_path, roles_src)
         self.name = self.deployment_dir.path.name
@@ -16,22 +18,6 @@ class Deployment:
         self.inventory = Inventory(inventory_type, 'hosts.yml', groups=roles)
         self.playbook = Playbook(self.deployment_dir.path / 'playbook.yml',
                                  'all', self.roles)
-
-    def __getitem__(self, attribute):
-        return self.__dict__[attribute]
-
-    def __contains__(self, attribute):
-        return attribute in self.__dict__
-
-    def __repr__(self):
-        representation = {
-            'name': self.name,
-            'roles': self.roles,
-            'inventory': self.inventory.hosts['all'],
-            'playbook': self.playbook,
-            'deployment_dir': self.deployment_dir
-        }
-        return pformat(representation)
 
     def _create_role_objects(self, role_names):
         parsed_roles = []

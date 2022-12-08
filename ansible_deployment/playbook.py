@@ -1,7 +1,8 @@
 from jinja2 import Environment, PackageLoader, select_autoescape
+from ansible_deployment.class_skeleton import AnsibleDeployment
 
 
-class Playbook:
+class Playbook(AnsibleDeployment):
     jinja2_env = Environment(loader=PackageLoader('ansible_deployment',
                                                   'templates'),
                              autoescape=select_autoescape(['html', 'xml']),
@@ -13,15 +14,6 @@ class Playbook:
         self.hosts = hosts
         self.roles = roles
         self.playbook_data = self._generate_playbook_data()
-
-    def __getitem__(self, attribute):
-        return self.__dict__[attribute]
-
-    def __contains__(self, attribute):
-        return attribute in self.__dict__
-
-    def __repr__(self):
-        return 'Playbook({})'.format(self.name)
 
     def _generate_playbook_data(self):
         playbook_template = self.jinja2_env.get_template('playbook.yml.j2')

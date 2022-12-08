@@ -1,9 +1,10 @@
 import yaml
 import shutil
 from pathlib import Path
+from ansible_deployment.class_skeleton import AnsibleDeployment
 
 
-class Role:
+class Role(AnsibleDeployment):
     """
     Represents an ansible role.
 
@@ -25,6 +26,7 @@ class Role:
         The attributes containing role sub directory information are 'None'
         if the corresponding sub directory does not exist.
     """
+    filtered_attributes = ['vars', 'defaults', 'tasks', 'handlers', 'meta', 'files', 'templates']
 
     def __init__(self, role_directory):
         self.path = Path(role_directory)
@@ -36,15 +38,6 @@ class Role:
         self.handlers = self._parse_role_sub_directory('handlers')
         self.templates = self._parse_role_sub_directory('templates')
         self.meta = self._parse_role_sub_directory('meta')
-
-    def __repr__(self):
-        return 'Role({})'.format(self.name)
-
-    def __getitem__(self, attribute):
-        return self.__dict__[attribute]
-
-    def __contains__(self, attribute):
-        return attribute in self.__dict__
 
     def _parse_yaml_file(self, file_path):
         """
