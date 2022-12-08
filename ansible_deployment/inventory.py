@@ -42,6 +42,12 @@ class Inventory:
             representation[attribute] = self.__dict__[attribute]
         return pformat(representation)
 
+    def __contains__(self, attribute):
+        return attribute in self.__dict__
+
+    def __getitem__(self, attribute):
+        return self.__dict__[attribute]
+
     def _generate_hosts_skeleton(self, groups):
         hosts = {
             'all': {

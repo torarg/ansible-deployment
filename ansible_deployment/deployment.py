@@ -18,6 +18,12 @@ class Deployment:
             groups=roles)
         self.playbook = Playbook(self.deployment_dir.path / 'playbook.yml', 'all', self.roles)
 
+    def __getitem__(self, attribute):
+        return self.__dict__[attribute]
+
+    def __contains__(self, attribute):
+        return attribute in self.__dict__
+
     def __repr__(self):
         representation = {
             'name': self.name,

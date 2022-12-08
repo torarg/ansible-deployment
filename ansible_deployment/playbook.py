@@ -15,6 +15,12 @@ class Playbook:
         self.roles = roles
         self.playbook_data = self._generate_playbook_data()
 
+    def __getitem__(self, attribute):
+        return self.__dict__[attribute]
+
+    def __contains__(self, attribute):
+        return attribute in self.__dict__
+
     def __repr__(self):
         return 'Playbook({})'.format(self.name)
 
