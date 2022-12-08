@@ -1,0 +1,17 @@
+{
+    "name": "stateless_deployment",
+    "roles": [
+        "bootstrap",
+        "webserver",
+        "gitea"
+    ],
+    "roles_src": {
+        "repo": "git@github.com:torarg/ansible-roles.git",
+        "branch": "master"
+    },
+    "inventory_sources": [
+        "vault"
+    ],
+    "inventory_writers": [
+    ]
+}
