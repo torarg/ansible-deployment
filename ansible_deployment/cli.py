@@ -90,7 +90,8 @@ def ssh(host):
 
 
 @cli.command()
-def update():
+@click.argument('scope', type=click.Choice(('all','playbook', 'roles','inventory', 'group_vars', 'ansible_cfg')), required=False, default='all')
+def update(scope):
     """
     Updates all deployment files and directories.
 
@@ -98,14 +99,20 @@ def update():
     update all deployment files accordingly.
     All changes will be shown as diff and the user needs to decide a.
     update strategy.
+
+    The update can be restricted in scope by specifying the SCOPE argument.
+
+    Args:
+        scope (str): Update scope. Defaults to 'all'.
     """
 
     deployment = Deployment.load(deployment_config_path)
     cli_helpers.check_environment(deployment)
-    deployment.update()
+    deployment.update(scope)
     files_to_commit = cli_helpers.prompt_for_update_choices(
         deployment.deployment_dir)
-    deployment.deployment_dir.update_git(files=files_to_commit)
+    commit_message="deployment update with scope: {}".format(scope)
+    deployment.deployment_dir.update_git(files=files_to_commit, message=commit_message)
 
 
 def main():
