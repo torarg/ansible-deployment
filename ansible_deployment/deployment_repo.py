@@ -118,14 +118,26 @@ class DeploymentRepo(AnsibleDeployment):
         self._cleanup_blobs()
         self._store_blobs()
 
-    def pull(self):
+    def _pull_blobs(self):
+        for blob_name in self.blobs:
+            print(f"pulling blob '{blob_name}'")
+            blob_path = self.blobs[blob_name]
+            blob_data = self.repo.git.show(blob_name).split("\n")[5]
+            with open(blob_path, "w") as blob_file:
+                blob_file.write(blob_data)
+
+    def pull(self, blobs=None):
         """
         Pull changes from origin.
         """
+        if self.blobs is not None:
+            self.blobs = blobs
         self.repo.remotes.origin.fetch()
-        self.repo.git.checkout(self.remote_config.branch)
+        if self.remote_config is not None:
+            self.repo.git.checkout(self.remote_config.branch)
         if not self.repo.head.is_detached:
             self.repo.remotes.origin.pull()
+            self._pull_blobs()
 
     def push(self):
         """

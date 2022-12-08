@@ -266,6 +266,18 @@ def push(ctx, template_mode=False):
         locked_deployment.deployment_dir.deployment_repo.push()
 
 
+@cli.command()
+@click.pass_context
+def pull(ctx):
+    """
+    Run configured ``ìnventory_sources`` and pull encrypted git repo.
+    """
+    deployment = ctx.obj["DEPLOYMENT"]
+    with lock_deployment(deployment) as locked_deployment:
+        blobs = { "deployment_data": "./deployment.tar.gz.enc" }
+        locked_deployment.deployment_dir.deployment_repo.pull(blobs=blobs)
+
+
 def main():
     """
     This function is only used to set ``auto_envvars_prefix``
