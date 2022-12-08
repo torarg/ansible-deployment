@@ -9,9 +9,11 @@ class InventoryPlugin:
         host_vars (dict): Host vars dict.
         group_vars (dict): Group vars dict.
     """
-    def __init__(self):
+    def __init__(self, config):
         self.all_hosts = {}
         self.deployment_group = {}
+        self.groups = config.roles
+        self.ansible_user = config.ansible_user
         self.hosts = {
             'all': {
                 'hosts': self.all_hosts,
@@ -24,6 +26,16 @@ class InventoryPlugin:
         }
         self.host_vars = {}
         self.group_vars = {}
+        self._set_groups()
+
+    def _set_groups(self):
+        """
+        Set initial inventory groups in self.hosts.
+        """
+        for group in self.groups:
+            group_data = {'children': {}}
+            group_data['children']['ansible_deployment'] = None
+            self.hosts['all']['children'][group] = group_data
 
     def update_inventory():
         """

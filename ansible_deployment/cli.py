@@ -33,7 +33,6 @@ def init(ctx):
     ctx.invoke(show)
     if click.confirm('(Re)Initialize Deployment?'):
         deployment.initialize_deployment_directory()
-        deployment.save()
 
 
 @cli.command()
