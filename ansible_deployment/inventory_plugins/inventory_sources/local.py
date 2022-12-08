@@ -37,6 +37,9 @@ class Local(InventoryPlugin):
                 self.hosts = yaml.safe_load(f)
 
     def update_inventory(self):
+        self.ssh_keypair.private_key_path = Path('./.ssh/id_rsa')
+        self.ssh_keypair.public_key_path = Path('./.ssh/id_rsa.pub')
+        self.ssh_keypair.read()
         self._load_hosts()
         self._load_vars("host_vars")
         self._load_vars("group_vars")

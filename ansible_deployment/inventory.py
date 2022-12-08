@@ -127,14 +127,17 @@ class Inventory(AnsibleDeployment):
             elif plugin.group_vars[group]:
                 self.plugin.group_vars[group] = plugin.group_vars[group]
 
+        self.plugin.ssh_keypair.update_with(plugin.ssh_keypair)
+
         self.hosts = self.plugin.hosts
         self.groups = self.plugin.groups
         self.host_vars = self.plugin.host_vars
         self.group_vars = self.plugin.group_vars
+        self.ssh_keypair = self.plugin.ssh_keypair
 
         if plugin.deployment_key is not None:
             self.deployment_key = plugin.deployment_key
-        self.ssh_keypair.update_with(plugin.ssh_keypair)
+
 
 
 
