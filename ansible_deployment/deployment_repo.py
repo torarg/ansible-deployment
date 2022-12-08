@@ -118,6 +118,12 @@ class DeploymentRepo(AnsibleDeployment):
             self.remote_config.repo, self.path, branch=self.remote_config.branch
         )
 
+    def write_changelog(self):
+        changelog_path = self.path / ".changes"
+        deployment_commits = self.repo.git.log("--prety=format:'%H'")
+        with open(changelog_path, "w") as f:
+            f.write(deployment_commits)
+
     def init(self):
         """
         Initialize empty repository.
