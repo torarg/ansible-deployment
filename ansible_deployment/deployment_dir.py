@@ -18,6 +18,7 @@ class DeploymentDirectory(AnsibleDeployment):
         path (path): Path to deployment directory.
         roles_src (RolesRepo): Namedtuple containing roles repo config.
         config_file (path): Path to deployment config file.
+        vault_files (sequence): Sequence of files to put in vault.
 
     Attributes:
         path (Path): Path to deployment directory.
@@ -25,6 +26,7 @@ class DeploymentDirectory(AnsibleDeployment):
         roles_path (Path): Path to deployment roles directory.
         config_file (Path): Path to deployment config file.
         repo (git.Repo): Deployment git repository.
+        git_repo_content (list): List of files describing repo content.
         vault (DeploymentVault): Vault object for file encryption.
         unstaged_changes (list): List of unstaged files.
         staged_changes (list): List of staged files.
@@ -35,21 +37,22 @@ class DeploymentDirectory(AnsibleDeployment):
     ]
     directory_layout = ('host_vars', 'group_vars', '.git')
     deployment_files = ['playbook.yml', 'hosts.yml', 'ansible.cfg']
-    git_repo_content = deployment_files + [
-        'host_vars', 'group_vars', 'deployment.json'
-    ]
     vault_files = deployment_files + list(directory_layout)
 
-    def __init__(self, path, roles_src, config_file='deployment.json'):
+    def __init__(self, path, roles_src, config_file='deployment.json', vault_files=vault_files):
         self.path = Path(path)
         self.roles_src = roles_src
         self.roles_path = self.path / 'roles'
         self.config_file = self.path / 'deployment.json'
+
+        self.git_repo_content = [] + self.deployment_files 
+        self.git_repo_content += self.directory_layout[:-1]
+        self.git_repo_content += [str(self.config_file)]
         self.unstaged_changes = []
 
         key_file = self.path / 'deployment.key'
         vault_lock = self.path / '.lock'
-        self.vault = DeploymentVault(key_file, self.vault_files, vault_lock)
+        self.vault = DeploymentVault(vault_files, self.path)
 
         if not self.vault.locked:
             self.repo = Repo.init(self.path)
@@ -181,7 +184,7 @@ class DeploymentDirectory(AnsibleDeployment):
 
     def update_git(self,
                    message="Automatic ansible-deployment update.",
-                   files=git_repo_content,
+                   files=None,
                    force_commit=False):
         """
         Updates the deployment git repository.
@@ -193,6 +196,8 @@ class DeploymentDirectory(AnsibleDeployment):
 
         The update will add the specified files and commit them.
         """
+        if files is None:
+            files = self.git_repo_content
         for git_file in files:
             if Path(git_file).exists():
                 self.repo.index.add(git_file)

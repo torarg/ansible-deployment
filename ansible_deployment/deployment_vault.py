@@ -8,28 +8,33 @@ class DeploymentVault(AnsibleDeployment):
     Represents a deployment vault used for file encryption.
 
     Args:
-        key_file (path): Path to key file.
         vault_files (sequence): Sequence of paths defining vault content.
-        lock_file (path): Path to lock file indicating vault state.
+        path (path): Vault root directory.
 
     Attributes:
+        path (Path): Vault root directory.
         locked (bool): True if vault is currently locked.
         new_key (bool): True if a new key was created.
-        key_file (Path): Path to key file.
+        key_file (Path): Path to key file. 
+                         Defaults to `self.path / 'deployment.key'`
         key (byte): Key used for encryption.
-        lock_file (Path): Path to lock file indicating vault state.
         files (sequence): Sequence of paths defining vault content.
 
     Note:
         If `key_file` is not present at initialization, it will be created.
     """
-    def __init__(self, key_file, vault_files, lock_file):
+    encryption_suffix = '.enc'
+    def __init__(self, vault_files, path):
         self.new_key = False
-        self.key_file = Path(key_file)
-        self.files = vault_files
-        self.lock_file = Path(lock_file)
-        self.locked = self.lock_file.exists()
+        self.locked = False
+        self.path = Path(path)
+        self.key_file = self.path / 'deployment.key'
         self._load_key()
+        self.files = vault_files
+        self.locked_files = list(self.path.glob('**/*{}'.format(self.encryption_suffix)))
+        if len(self.locked_files) > 0:
+            self.locked = True
+            self.files = self.locked_files
 
     def _load_key(self):
         """
@@ -78,6 +83,7 @@ class DeploymentVault(AnsibleDeployment):
             file_path.chmod(0o640)
         with open(file_path, 'wb') as fobj:
             fobj.write(cipher_suite.encrypt(plain_data))
+        file_path.replace(str(file_path) + self.encryption_suffix)
 
     def _encrypt_files(self, files):
         """
@@ -125,18 +131,14 @@ class DeploymentVault(AnsibleDeployment):
             encrypted_data = fobj.read()
         with open(file_path, 'wb') as fobj:
             fobj.write(cipher_suite.decrypt(encrypted_data))
+        file_path.replace(str(file_path)[:-len(self.encryption_suffix)])
 
     def lock(self):
         """
         Lock vault and encrypt all files.
-
-        Note:
-            To indicate vault status a lock file will be written to
-            `self.lock_file`.
         """
         if not self.locked:
             self._encrypt_files(self.files)
-            self.lock_file.touch()
 
     def unlock(self):
         """
@@ -148,4 +150,3 @@ class DeploymentVault(AnsibleDeployment):
         """
         if self.locked:
             self._decrypt_files(self.files)
-            self.lock_file.unlink()
