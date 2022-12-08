@@ -162,6 +162,7 @@ class DeploymentVault(AnsibleDeployment):
         """
         git_path = self.path / ".git"
         git_config_path = git_path / "config"
+
         with open(git_config_path) as f:
             git_config_data = f.read()
         shutil.rmtree(git_path)
@@ -190,6 +191,10 @@ class DeploymentVault(AnsibleDeployment):
         Restores deployment dir from tar archive.
         """
         git_path = self.path / '.git'
+        git_config_path = git_path / "config"
+
+        with open(git_config_path) as f:
+            git_config_data = f.read()
 
         if git_path.exists():
             shutil.rmtree(git_path)
@@ -198,6 +203,9 @@ class DeploymentVault(AnsibleDeployment):
 
         with tarfile.open(self.tar_path) as tar:
             tar.extractall(self.path)
+
+        with open(git_config_path, 'w') as f:
+            f.write(git_config_data)
 
         self.tar_path.unlink()
 
