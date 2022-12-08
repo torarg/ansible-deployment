@@ -76,12 +76,16 @@ def update():
     if not deployment:
         err_exit("Failed to load deployment.json")
     deployment.update()
-    print(deployment.repo.git.diff())
-    if click.confirm('Commit changes? (no discards the changes)'):
+    click.echo(deployment.repo.git.diff())
+    update_choice = click.prompt(
+        'Please select update strategy',
+        default='keep_unstaged',
+        type=click.Choice(['commit', 'keep_unstaged', 'discard'])
+    )
+    if update_choice == 'commit':
         deployment.update_git()
-    else:
+    elif update_choice == 'discard':
         deployment.repo.git.reset('--hard')
-
 
 def err_exit(error_message):
     cli_context = click.get_current_context()
