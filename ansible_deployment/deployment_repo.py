@@ -29,7 +29,7 @@ class DeploymentRepo(AnsibleDeployment):
         self.path = path
 
         self.content = files
-        self.changes = {'all': [], 'staged': [], 'unstaged': []}
+        self.changes = {'all': [], 'staged': [], 'unstaged': [], 'new': []}
         self._git_path = self.path / '.git'
         self._encrypted = (self._git_path / 'HEAD.enc').exists()
 
@@ -43,6 +43,15 @@ class DeploymentRepo(AnsibleDeployment):
         """
         Update `self.changes` dict to represent state of git repo.
         """
+        for untracked_file in self.repo.untracked_files:
+            watched_directories = ('host_vars/', 'group_vars/')
+            if untracked_file in self.changes['new']:
+                continue
+            elif 'host_vars/' in untracked_file:
+                self.changes['new'].append(untracked_file)
+            elif 'group_vars/' in untracked_file:
+                self.changes['new'].append(untracked_file)
+
         self.changes['unstaged'] = [
             diff.a_path for diff in self.repo.index.diff(None)
         ]
