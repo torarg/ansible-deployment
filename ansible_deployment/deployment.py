@@ -1,5 +1,6 @@
 from pathlib import Path
 from git import Repo
+from pprint import pformat
 from ansible_deployment.role import Role
 from ansible_deployment.inventory import Inventory
 from ansible_deployment.playbook import Playbook
@@ -33,7 +34,15 @@ class Deployment:
         self.repo = Repo.init(self.path)
 
     def __repr__(self):
-        return 'Deployment({})'.format(self.__dict__)
+        representation = {
+            'name': self.name,
+            'roles': self.roles,
+            'inventory': self.inventory.hosts['all'],
+            'playbook': self.playbook,
+            'state_file': self.state_file,
+            'repo': self.repo
+        }
+        return pformat(representation)
 
     def _git_add(self):
         for git_file in self.git_repo_content:

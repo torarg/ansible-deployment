@@ -1,22 +1,57 @@
 from pathlib import Path
+from pprint import pformat
 import json
 import yaml
 
 class Inventory:
     inventory_types = [ 'terraform' ]
     def __init__(self, inventory_type, inventory_path, ansible_user='ansible'):
-        self.hosts = {}
-        self.hosts['all'] = {}
-        self.hosts['all']['hosts'] = {}
-        self.ansible_user= ansible_user
-        self.inventory_type = inventory_type
+        self.hosts = {
+            'all': {
+                'hosts': {}
+            }
+        }
+
+        self.host_vars = {}
+        self.group_vars = {}
         self.inventory_path = Path(inventory_path)
         self.host_vars_path = self.inventory_path.parent / 'host_vars'
+        self.group_vars_path = self.inventory_path.parent / 'group_vars'
+        self.vars = {
+            'group_vars': {
+                'vars': self.group_vars,
+                'path': self.group_vars_path
+            },
+            'host_vars': {
+                'vars': self.host_vars,
+                'path': self.host_vars_path
+            },
+        }
+        self.ansible_user= ansible_user
+        self.inventory_type = inventory_type
         if self.inventory_type == 'terraform':
             self._parse_tfstate_file()
 
+        self._load_vars('host_vars')
+        self._load_vars('group_vars')
+
+
+        
     def __repr__(self):
-        return 'Inventory({})'.format(self.__dict__)
+        filtered_attributes = ('vars',)
+        representation = {}
+        for attribute in self.__dict__:
+            if attribute in filtered_attributes:
+                continue
+            representation[attribute] = self.__dict__[attribute]
+        return pformat(representation)
+
+    def _load_vars(self, vars_type):
+        vars_files = list(self.vars[vars_type]['path'].glob('*'))
+        for vars_file in vars_files:
+            vars_name = vars_file.stem
+            with open(vars_file) as vars_file_stream:
+                self.vars[vars_type]['vars'][vars_name] = yaml.safe_load(vars_file_stream)
 
     def _parse_tfstate_file(self, tfstate_file_name='terraform.tfstate'):
         tfstate_file_path = Path.cwd() / tfstate_file_name
@@ -29,15 +64,15 @@ class Inventory:
                     host['ansible_host'] = host['ipv4_address']
                     host['ansible_user'] = self.ansible_user
                     host['bootstrap_user'] = 'root'
-                    self.hosts['all']['hosts'][host['name']] = host
+                    self.hosts['all']['hosts'][host['name']] = None
+                    self.host_vars[host['name']] = host
 
     def write(self):
-        inventory_data = {}
-        inventory_data['all']  = {}
-        inventory_data['all']['hosts']  = {}
-        for host in self.hosts['all']['hosts'].values():
-            inventory_data['all']['hosts'][host['name']] = None
+        for host in self.host_vars.values():
             with open(self.host_vars_path / host['name'], 'w') as hostvars_file_stream:
                 yaml.dump(host, hostvars_file_stream)
+
         with open(self.inventory_path, 'w') as inventory_file_stream:
-            yaml.dump(inventory_data, inventory_file_stream)
+            yaml.dump(self.hosts, inventory_file_stream)
+
+
