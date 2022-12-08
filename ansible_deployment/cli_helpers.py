@@ -89,9 +89,6 @@ def prompt_for_update_choices(deployment_dir):
     """
     files_to_commit = []
     prompt_message = """
-        The final deployment inventory will be commited to all configured
-        inventory writers.
-
         Please select update strategy ([a]pply, [d]iscard, [k]eep unstaged)"""
     prompt_message = textwrap.dedent(prompt_message)
     prompt_choice = click.Choice(("a", "d", "k"))
