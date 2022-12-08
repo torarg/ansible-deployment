@@ -333,6 +333,20 @@ def diff(ctx):
     except Exception as err:
         raise click.ClickException(err)
 
+@cli.command()
+@click.pass_context
+def reset(ctx):
+    """
+    Hard reset deployment to last commit.
+    """
+    deployment = ctx.obj["DEPLOYMENT"]
+    try:
+        with unlock_deployment(deployment, 'w') as unlocked_deployment:
+            cli_helpers.check_environment(unlocked_deployment, ignore_dirty_repo=True)
+            subprocess.run(["git", "reset", "--hard"], check=True)
+    except Exception as err:
+        raise click.ClickException(err)
+
 
 def main():
     """
