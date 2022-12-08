@@ -124,8 +124,12 @@ def show(ctx, attribute):
 @click.option(
     "-e", "--extra-var", help="Set extra var for playbook execution.", multiple=True
 )
+@click.option(
+    "-d", "--disable-host-key-checking",
+    help="Disable ssh host key checking.", is_flag=True
+)
 @click.argument("role", required=False, nargs=-1, type=RoleType())
-def run(ctx, role, limit, extra_var):
+def run(ctx, role, limit, extra_var, disable_host_key_checking):
     """
     Run deployment with ansible-playbook.
     """
@@ -133,7 +137,8 @@ def run(ctx, role, limit, extra_var):
     try:
         with unlock_deployment(deployment, 'r') as unlocked_deployment:
             cli_helpers.check_environment(unlocked_deployment)
-            unlocked_deployment.run(role, limit=limit, extra_vars=extra_var)
+            unlocked_deployment.run(role, limit=limit, extra_vars=extra_var,
+                                    disable_host_key_checking=disable_host_key_checking)
     except Exception as err:
         raise click.ClickException(err)
 

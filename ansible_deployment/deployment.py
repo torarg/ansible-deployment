@@ -6,6 +6,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from collections import namedtuple
 import json
+import os
 import subprocess
 from ansible_deployment import (
     AnsibleDeployment,
@@ -176,7 +177,8 @@ class Deployment(AnsibleDeployment):
         with open(self.deployment_dir.config_file, "w") as config_file_stream:
             json.dump(json_dump, config_file_stream, indent=4)
 
-    def run(self, tags=None, limit=None, extra_vars=None):
+    def run(self, tags=None, limit=None, extra_vars=None,
+            disable_host_key_checking=False):
         """
         Run deployment with ansible-playbook.
 
@@ -184,8 +186,13 @@ class Deployment(AnsibleDeployment):
             tags (sequence): an optional sequence of playbook tags.
             limit (sequence): an optional sequence of playbook scope limits.
             extra_vars (sequence): an optional sequence of extra vars.
+            disable_host_key_checking (bool): Flag to disable host key checking.
         """
+        deployment_env = None
         command = ["ansible-playbook", "playbook.yml"]
+        if disable_host_key_checking:
+            deployment_env = os.environ.copy()
+            deployment_env["ANSIBLE_HOST_KEY_CHECKING"] = "False"
         if tags:
             command += ["--tags", ",".join(tags)]
         if limit:
@@ -193,7 +200,7 @@ class Deployment(AnsibleDeployment):
         if extra_vars:
             for extra_var in extra_vars:
                 command += ["-e", extra_var]
-        subprocess.run(command, check=True)
+        subprocess.run(command, check=True, env=deployment_env)
 
     def update_inventory(self, sources_override=()):
         """
