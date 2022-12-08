@@ -5,9 +5,13 @@
         "webserver",
         "gitea"
     ],
-    "roles_src": {
-        "repo": "git@github.com:torarg/ansible-roles.git",
-        "branch": "master"
+    "deployment_repo": {
+            "url": "_gitea@gitea.example.org:mw/example.git",
+            "reference": "master"
+    },
+    "roles_repo": {
+        "url": "git@github.com:torarg/ansible-roles.git",
+        "reference": "master"
     },
     "inventory_sources": [
         "terraform",

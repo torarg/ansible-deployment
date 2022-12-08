@@ -1,5 +1,5 @@
 {
-    "name": "stateless_deployment",
+    "name": "vault_deployment",
     "roles": [
         "bootstrap",
         "webserver",
@@ -8,6 +8,14 @@
     "roles_src": {
         "repo": "git@github.com:torarg/ansible-roles.git",
         "branch": "master"
+    },
+    "deployment_repo": {
+            "url": "_gitea@git.1wilson.org:mw/vault_deployment.git",
+            "reference": "master"
+    },
+    "roles_repo": {
+        "url": "git@github.com:torarg/ansible-roles.git",
+        "reference": "master"
     },
     "inventory_sources": [
         "vault"
