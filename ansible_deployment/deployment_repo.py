@@ -120,7 +120,7 @@ class DeploymentRepo(AnsibleDeployment):
 
     def write_changelog(self):
         changelog_path = self.path / ".changes"
-        deployment_commits = self.repo.git.log("--prety=format:'%H'")
+        deployment_commits = self.repo.git.log("--pretty=format:'%H'")
         with open(changelog_path, "w") as f:
             f.write(deployment_commits)
 
