@@ -31,7 +31,7 @@ class AnsibleDeployment:
         Returns:
             bool: True if attribute is in self.__dict__.
         """
-        
+
         return attribute in self.__dict__
 
     def __repr__(self):
@@ -45,7 +45,6 @@ class AnsibleDeployment:
             str: Formatted and filtered object representation.
         """
 
-        
         representation = {}
         for attribute in self.__dict__:
             if attribute in self.filtered_attributes:
