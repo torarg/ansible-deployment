@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ansible-deployment"
-version = "1.0.1"
+version = "1.0.2"
 description = "Manage ansible deployments"
 authors = ["torarg <mw@1wilson.org>"]
 homepage = "https://torarg.github.io/ansible-deployment/index.html"
