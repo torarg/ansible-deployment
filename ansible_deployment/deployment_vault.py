@@ -173,7 +173,7 @@ class DeploymentVault(AnsibleDeployment):
         with open(unencrypted_file_path, "wb") as fobj:
             fobj.write(cipher_suite.decrypt(encrypted_data))
 
-    def setup_shadow_repo(self):
+    def setup_shadow_repo(self, remote_config):
         """
         Replaces deployment repo with a 'shadow repo'.
 
@@ -188,13 +188,13 @@ class DeploymentVault(AnsibleDeployment):
         The purpose of the shadow repository is to have
         a pushable deployment state while the deployment
         is locked.
+
+        Args:
+            remote_config (RepoConfig): RepoConfig Namedtuple.
         """
         exclude_files = ('deployment.key', '.terraform', 'deployment.tar.gz.enc', '.ssh')
         include_files = ('.LOCKED', '.drone.yml', '.gitlab-ci', '.gitignore')
 
-        if self.encrypted_tar_sha256sum:
-            with open(self.encrypted_tar_sha256sum_path, 'w') as f:
-                f.write(self.encrypted_tar_sha256sum)
 
         shutil.rmtree(self.git_path)
         if self.shadow_git_path.exists():
@@ -210,7 +210,7 @@ class DeploymentVault(AnsibleDeployment):
         for file in deployment_files:
             if file.name not in exclude_files and file.exists():
                 shadow_repo_files.append(file)
-        shadow_repo = DeploymentRepo(self.path, files=shadow_repo_files)
+        shadow_repo = DeploymentRepo(self.path, files=shadow_repo_files, remote_config=remote_config)
         shadow_repo.blobs['deployment_data'] = self.encrypted_tar_path
         shadow_repo.init()
 
@@ -246,10 +246,18 @@ class DeploymentVault(AnsibleDeployment):
         """
         if not self.locked:
             self._encrypt_files(self.files)
+            self._write_hash()
             self.locked = True
             self.lock_file_path.touch()
         else:
             raise DeploymentVaultError("Deployment already locked")
+
+    def _write_hash(self):
+        """
+        Write sha256sum to file.
+        """
+        with open(self.encrypted_tar_sha256sum_path, 'w') as f:
+            f.write(self.encrypted_tar_sha256sum)
 
     def _verify_hash(self, file_path, expected_sha256sum):
         """Verify sha256 sum of file against an expected value."""

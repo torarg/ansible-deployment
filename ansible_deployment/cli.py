@@ -163,7 +163,7 @@ def lock(ctx):
         deployment.deployment_dir.vault.lock()
         deployment.inventory.plugin.delete_added_files()
         deployment.deployment_dir.delete(keep=['.git'])
-        deployment.deployment_dir.vault.setup_shadow_repo()
+        deployment.deployment_dir.vault.setup_shadow_repo(remote_config=deployment.config.deployment_repo)
 
 
 @cli.command()
@@ -223,8 +223,6 @@ def push(ctx, template_mode=False):
                     raise
                 else:
                     raise click.ClickException(err)
-        else:
-            raise click.ClickException("No configured inventory writers")
 
     deployment = Deployment(deployment.deployment_dir.path, deployment.config)
     with lock_deployment(deployment) as locked_deployment:
@@ -247,6 +245,7 @@ def pull(ctx):
     with lock_deployment(deployment) as locked_deployment:
         blobs = { "deployment_data": "./deployment.tar.gz.enc" }
         try:
+            locked_deployment.deployment_dir.delete(keep=['.git'])
             locked_deployment.deployment_dir.deployment_repo.pull(blobs=blobs)
         except Exception as err:
             if ctx.obj["DEBUG"]:
