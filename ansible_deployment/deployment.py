@@ -161,9 +161,7 @@ class Deployment(AnsibleDeployment):
 
         Args:
             tags (sequence): an optional sequence of playbook tags.
-
-        Every deployment run triggers a new git commit in
-        `self.deployment_dir.repo` containing the executed command.
+            extra_vars (sequence): an optional sequence of extra vars.
         """
         command = ["ansible-playbook", "playbook.yml"]
         if tags:
@@ -173,6 +171,20 @@ class Deployment(AnsibleDeployment):
         if extra_vars:
             for extra_var in extra_vars:
                 command += ["-e", extra_var]
+        subprocess.run(command, check=True)
+
+    def edit(self):
+        """
+        Edit deployment with vim.
+        """
+        command = ["vim", "."]
+        subprocess.run(command, check=True)
+
+    def commit(self):
+        """
+        Commit deployment files.
+        """
+        command = ["git", "commit", "-a"]
         subprocess.run(command, check=True)
 
 

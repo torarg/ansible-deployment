@@ -35,7 +35,7 @@ def filter_output_by_attribute(output, attribute):
     return output
 
 
-def check_environment(deployment):
+def check_environment(deployment, ignore_dirty_repo=False):
     """
     Check if deployment object is ready for further cli processing.
 
@@ -48,7 +48,7 @@ def check_environment(deployment):
         err_exit("Failed to load deployment.json")
     elif deployment.deployment_dir.deployment_repo.repo is None:
         err_exit("Deployment is not initialized")
-    elif deployment.deployment_dir.deployment_repo.repo.is_dirty():
+    elif deployment.deployment_dir.deployment_repo.repo.is_dirty() and not ignore_dirty_repo:
         err_exit(
             "Repo is dirty. Unstaged changes: {}".format(
                 deployment.deployment_dir.deployment_repo.changes["unstaged"]
