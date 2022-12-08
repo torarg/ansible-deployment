@@ -142,24 +142,36 @@ class DeploymentDirectory(AnsibleDeployment):
         self._copy_roles_to_deployment()
         self._write_ansible_cfg()
 
-    def delete(self, keep_git=False, file_whitelist=[], dir_whitelist=[]):
+    def delete(self, keep=[], additional_paths=[]):
         """
         Delete deployment directory.
+
+        Args:
+            keep (list): List of file system paths to exclude from deletion.
+            additional_paths (list): List of file system paths for additional deletion.
         """
-        if keep_git:
-            dir_whitelist.append(".git")
         for directory_name in self.directory_layout:
             directory_path = self.path / directory_name
-            if directory_path.exists() and directory_path.name not in dir_whitelist:
+            if directory_path.exists() and directory_path.name not in keep:
                 shutil.rmtree(directory_path)
 
         for file_name in self.deployment_files:
             file_path = self.path / file_name
-            if file_path.exists() and file_path.name not in file_whitelist:
+            if file_path.exists() and file_path.name not in keep:
                 file_path.unlink()
 
         if self.roles_path.exists():
             shutil.rmtree(self.roles_path)
+
+        for path_name in additional_paths:
+            p = Path(path_name)
+            if not p.exists() or p.name in keep:
+                continue
+            if p.is_dir():
+                shutil.rmtree(p)
+            else:
+                p.unlink()
+
 
     def update(self, deployment, scope="all"):
         """
