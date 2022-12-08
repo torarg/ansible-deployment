@@ -30,20 +30,27 @@ class Role(AnsibleDeployment):
         The attributes containing role sub directory information are 'None'
         if the corresponding sub directory does not exist.
     """
+
     filtered_attributes = [
-        'vars', 'defaults', 'tasks', 'handlers', 'meta', 'files', 'templates'
+        "vars",
+        "defaults",
+        "tasks",
+        "handlers",
+        "meta",
+        "files",
+        "templates",
     ]
 
     def __init__(self, role_directory):
         self.path = Path(role_directory)
         self.name = self.path.name
-        self.defaults = self._parse_role_sub_directory('defaults')
-        self.vars = self._parse_role_sub_directory('vars')
-        self.tasks = self._parse_role_sub_directory('tasks')
-        self.files = self._parse_role_sub_directory('files')
-        self.handlers = self._parse_role_sub_directory('handlers')
-        self.templates = self._parse_role_sub_directory('templates')
-        self.meta = self._parse_role_sub_directory('meta')
+        self.defaults = self._parse_role_sub_directory("defaults")
+        self.vars = self._parse_role_sub_directory("vars")
+        self.tasks = self._parse_role_sub_directory("tasks")
+        self.files = self._parse_role_sub_directory("files")
+        self.handlers = self._parse_role_sub_directory("handlers")
+        self.templates = self._parse_role_sub_directory("templates")
+        self.meta = self._parse_role_sub_directory("meta")
 
     @staticmethod
     def _parse_yaml_file(file_path):
@@ -72,7 +79,7 @@ class Role(AnsibleDeployment):
         Returns:
             dict: File information dictionary.
         """
-        return {'name': path_object.name, 'path': path_object, 'data': data}
+        return {"name": path_object.name, "path": path_object, "data": data}
 
     def _parse_role_sub_directory(self, sub_directory_name):
         """
@@ -90,9 +97,9 @@ class Role(AnsibleDeployment):
         if not sub_directory_path.exists:
             return None
 
-        all_files = list(sub_directory_path.glob('**/*'))
-        yaml_files = list(sub_directory_path.glob('**/*.yml'))
-        yaml_files += list(sub_directory_path.glob('**/*.yaml'))
+        all_files = list(sub_directory_path.glob("**/*"))
+        yaml_files = list(sub_directory_path.glob("**/*.yml"))
+        yaml_files += list(sub_directory_path.glob("**/*.yaml"))
 
         for file_path in all_files:
             file_data = None
