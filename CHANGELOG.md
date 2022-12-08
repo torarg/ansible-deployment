@@ -1,4 +1,8 @@
-# 0.6.0 (2020/03/07)
+# 0.7.0 (upcoming)
+- improve documentation
+- add roles/ directory to deployment repo
+- upstream roles repo is now stored in .roles.git inside deployment directory
+# 0.6.0 (2021/03/07)
 - add ``ansible_user`` to ``group_vars`` by default
 - add fetch and checkout of roles during update. this enables branch or tag changing
 - add persist command to run ``inventory_writers``
@@ -6,10 +10,10 @@
 - fix handling of added files from inventory plugins
 - add ``deployment.key`` to deployment repo and inventory
 
-# 0.5.1 (2020/03/05)
+# 0.5.1 (2021/03/05)
 - fix package requirements
 
-# 0.5.0 (2020/03/05)
+# 0.5.0 (2021/03/05)
 - move to semantic versioning
 - add local inventory source plugin
 - add vault inventory source plugin
@@ -20,5 +24,5 @@
 - clear screen before showing diff during update
 - display newly added files during update
 
-# 0.4 (2020/02/03)
+# 0.4 (2021/02/03)
 - Fixed a bug in inventory creation from terraform state files containing multiple instances of resources
