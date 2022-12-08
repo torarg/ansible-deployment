@@ -77,7 +77,10 @@ def run(ctx, role):
     """
     deployment = ctx.obj['DEPLOYMENT']
     cli_helpers.check_environment(deployment)
-    deployment.run(role)
+    try:
+        deployment.run(role)
+    except Exception as err:
+        raise click.ClickException(err)
 
 
 @cli.command()
