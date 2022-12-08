@@ -141,8 +141,11 @@ class Deployment:
             if file_path.exists():
                 file_path.unlink()
 
-    def run(self):
-        subprocess.run(['ansible-playbook', 'playbook.yml'])
+    def run(self, tags=None):
+        command = ['ansible-playbook', 'playbook.yml']
+        if tags:
+            command += ['--tags', tags]
+        subprocess.run(command)
 
     def ssh(self, host):
         if host in self.inventory.hosts['all']['hosts']:

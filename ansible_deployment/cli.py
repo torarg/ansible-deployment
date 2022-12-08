@@ -53,9 +53,10 @@ def show(attribute):
 
 
 @cli.command(help='Run deployment with ansible-playbook.')
-def run():
+@click.argument('role', required=False)
+def run(role):
     deployment = Deployment.load(deployment_state_path)
-    deployment.run()
+    deployment.run(role)
 
 
 @cli.command(help='Delete deployment.')
