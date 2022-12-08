@@ -283,7 +283,7 @@ def pull(ctx):
                                    May be specified multiple times.""",
     multiple=True
 )
-def update(ctx, non_interactive, source):
+def update(ctx, non_interactive, from_source):
     """
     Update deployment.
 
@@ -297,7 +297,7 @@ def update(ctx, non_interactive, source):
     with unlock_deployment(deployment) as unlocked_deployment:
         try:
             cli_helpers.update_deployment(unlocked_deployment, 'all', 
-                non_interactive, sources_override=source)
+                non_interactive, sources_override=from_source)
         except Exception as err:
             if ctx.obj["DEBUG"]:
                 raise
