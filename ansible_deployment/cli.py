@@ -12,7 +12,8 @@ from ansible_deployment.cli_autocomplete import (
     HostType,
     InventoryWriterType,
     InventorySourceType,
-    ShowAttributeType
+    ShowAttributeType,
+    GroupVarsType
 )
 from ansible_deployment.config import (
     DEFAULT_DEPLOYMENT_CONFIG_PATH,
@@ -122,7 +123,8 @@ def show(ctx, attribute):
     "-l", "--limit", help="Limit playbook execution.", type=HostType()
 )
 @click.option(
-    "-e", "--extra-var", help="Set extra var for playbook execution.", multiple=True
+    "-e", "--extra-var", help="Set extra var for playbook execution.", multiple=True,
+    type=GroupVarsType()
 )
 @click.option(
     "-d", "--disable-host-key-checking",

@@ -106,6 +106,26 @@ class InventorySourceType(CustomParamType):
         ]
 
 
+class GroupVarsType(CustomParamType):
+    """
+    Custom ParamType for `group_vars`.
+    """
+    name = "group_vars"
+
+    def shell_complete(self, ctx, param, incomplete):
+        deployment = self.try_to_load_deployment()
+        if deployment is None:
+            return []
+        group_vars = []
+        for group, variables in deployment.inventory.group_vars.items():
+            group_vars += list(variables.keys())
+        group_vars = [ f"{var_name}=" for var_name in group_vars ]
+        return [
+            CompletionItem(var_name)
+            for var_name in group_vars if var_name.startswith(incomplete)
+        ]
+
+
 class ShowAttributeType(CustomParamType):
     """
     Custom ParamType for any given attribute for `show` subcommand.
