@@ -41,7 +41,7 @@ class DeploymentDirectory(AnsibleDeployment):
         "host_key_checking = False",
         "interpreter_python = auto_silent",
     ]
-    directory_layout = ("host_vars", "group_vars", "roles", ".roles.git", ".git", ".ssh")
+    directory_layout = ("host_vars", "group_vars", "roles", ".ssh", ".roles.git", ".git")
     deployment_files = ["playbook.yml", "hosts.yml", "ansible.cfg"]
     vault_files = deployment_files + list(directory_layout)
 
