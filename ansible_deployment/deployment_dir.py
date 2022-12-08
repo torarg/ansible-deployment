@@ -22,7 +22,7 @@ class DeploymentDirectory(AnsibleDeployment):
 
     Args:
         path (path): Path to deployment directory.
-        roles_src (RepoConfig): Namedtuple containing roles repo config.
+        roles_repo (RepoConfig): Namedtuple containing roles repo config.
         config_file (path): Path to deployment config file.
         vault_files (sequence): Sequence of files to put in vault.
 
@@ -45,8 +45,8 @@ class DeploymentDirectory(AnsibleDeployment):
     directory_layout = ("host_vars", "group_vars", "roles", ".ssh", ".roles.git", ".git")
     deployment_files = ["playbook.yml", "hosts.yml", "ansible.cfg"]
 
-    def __init__(self, path, roles_src, deployment_key_file="deployment.key", deployment_key=None):
-        self._roles_src = roles_src
+    def __init__(self, path, roles_repo_config, deployment_key_file="deployment.key", deployment_key=None):
+        self._roles_repo_config = roles_repo_config
 
         self.path = Path(path)
         self.config_file = self.path / "deployment.json"
@@ -56,12 +56,12 @@ class DeploymentDirectory(AnsibleDeployment):
 
         self.filtered_representation = {
             "path": str(self.path),
-            "roles_src": str(roles_src),
+            "roles_repo": str(roles_repo_config),
         }
 
         self.roles_path = self.path / "roles"
         self.roles_repo_path = self.path / ".roles.git"
-        self.roles_repo = DeploymentRepo(self.roles_repo_path, remote_config=roles_src)
+        self.roles_repo = DeploymentRepo(self.roles_repo_path, remote_config=roles_repo_config)
 
         git_repo_content = [] + self.deployment_files
         git_repo_content += self.directory_layout[:-2]

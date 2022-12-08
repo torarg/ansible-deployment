@@ -94,7 +94,7 @@ class Deployment(AnsibleDeployment):
         self.inventory = Inventory(
             path, config, deployment_key=None, read_sources=read_sources
         )
-        self.deployment_dir = DeploymentDirectory(path, config.roles_src, deployment_key=self.inventory.deployment_key)
+        self.deployment_dir = DeploymentDirectory(path, config.roles_repo, deployment_key=self.inventory.deployment_key)
         self.inventory.deployment_key = self.deployment_dir.vault.key
         self.name = config.name
         self.config = config
@@ -151,7 +151,7 @@ class Deployment(AnsibleDeployment):
         Write config as json to `self.deployment_dir.config_file`.
         """
         json_dump = self.config._asdict()
-        json_dump["roles_src"] = self.config.roles_src._asdict()
+        json_dump["roles_repo"] = self.config.roles_repo._asdict()
         with open(self.deployment_dir.config_file, "w") as config_file_stream:
             json.dump(json_dump, config_file_stream, indent=4)
 
