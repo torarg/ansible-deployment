@@ -6,7 +6,7 @@ class Terraform(InventoryPlugin):
     def __init__(self, inventory_src='terraform.tfstate'):
         InventoryPlugin.__init__(self )
         self.name = 'terraform'
-        self.inventory_src = './terraform.tfstate'
+        self.inventory_src = inventory_src
         self.resource_functions = {
             "hcloud": self.parse_hcloud_servers,
         }
