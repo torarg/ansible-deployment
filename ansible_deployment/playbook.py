@@ -2,11 +2,10 @@ from jinja2 import Environment, PackageLoader, select_autoescape
 
 
 class Playbook:
-    jinja2_env = Environment(
-        loader=PackageLoader('ansible_deployment', 'templates'),
-        autoescape=select_autoescape(['html', 'xml']),
-        trim_blocks=True
-    )
+    jinja2_env = Environment(loader=PackageLoader('ansible_deployment',
+                                                  'templates'),
+                             autoescape=select_autoescape(['html', 'xml']),
+                             trim_blocks=True)
 
     def __init__(self, playbook_path, hosts, roles):
         self.path = playbook_path

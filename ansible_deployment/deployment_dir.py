@@ -7,15 +7,14 @@ import shutil
 
 class DeploymentDirectory:
     ansible_cfg = [
-        '[defaults]',
-        'inventory = hosts.yml',
-        'host_key_checking = False']
+        '[defaults]', 'inventory = hosts.yml', 'host_key_checking = False'
+    ]
     directory_layout = ('host_vars', 'group_vars', 'roles', '.git')
-    temporary_directories = ('.roles',)
-    deployment_files = ['playbook.yml', 'hosts.yml',
-                        'ansible.cfg']
-    git_repo_content = deployment_files + ['host_vars', 'group_vars',
-                                           'deployment.json']
+    temporary_directories = ('.roles', )
+    deployment_files = ['playbook.yml', 'hosts.yml', 'ansible.cfg']
+    git_repo_content = deployment_files + [
+        'host_vars', 'group_vars', 'deployment.json'
+    ]
 
     def __init__(self, path, roles_src, state_file='deployment.json'):
         self.path = Path(path)
@@ -44,7 +43,8 @@ class DeploymentDirectory:
 
     def _git_update_unstaged_changes(self):
         self.unstaged_changes = [
-            diff.a_path for diff in self.repo.index.diff(None)]
+            diff.a_path for diff in self.repo.index.diff(None)
+        ]
 
     def _git_add(self, files):
         for git_file in files:
@@ -55,7 +55,8 @@ class DeploymentDirectory:
 
     def _clone_ansible_roles_repo(self):
         if not self.roles_path.exists():
-            Repo.clone_from(self.roles_src['repo'], self.roles_path,
+            Repo.clone_from(self.roles_src['repo'],
+                            self.roles_path,
                             branch=self.roles_src['branch'])
 
     def _update_ansible_roles_repo(self):
@@ -124,10 +125,9 @@ class DeploymentDirectory:
         self._write_role_defaults_to_group_vars(roles)
         self._git_update_unstaged_changes()
 
-    def update_git(
-            self,
-            message="Automatic ansible-deployment update.",
-            files=git_repo_content):
+    def update_git(self,
+                   message="Automatic ansible-deployment update.",
+                   files=git_repo_content):
         self._git_add(files)
         self._git_commit(message)
         self._git_update_unstaged_changes()
