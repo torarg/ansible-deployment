@@ -24,9 +24,8 @@ def cli():
 @click.option('--inventory', '-i', 'inventory_type', required=True,
               help='Inventory type. Supported: terraform, static')
 def init(roles, ansible_roles, inventory_type):
-    ansible_roles_path = Path(ansible_roles)
     deployment_path = Path.cwd()
-    deployment = Deployment(deployment_path, ansible_roles_path, roles, inventory_type)
+    deployment = Deployment(deployment_path, ansible_roles, roles, inventory_type)
     deployment.initialize_deployment_directory()
     deployment.save()
 

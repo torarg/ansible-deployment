@@ -1,4 +1,5 @@
 from pathlib import Path
+from git import Repo
 from ansible_deployment.role import Role
 from ansible_deployment.inventory import Inventory
 from ansible_deployment.playbook import Playbook
@@ -11,13 +12,18 @@ class Deployment:
     ansible_cfg = [
         '[defaults]',
         'inventory = hosts.yml']
-    directory_layout = ['host_vars', 'group_vars', 'roles']
+    directory_layout = ('host_vars', 'group_vars', 'roles')
+    temporary_directories = ('.roles',)
     deployment_files = ['playbook.yml', 'deployment.json', 'hosts.yml', 
                         'ansible.cfg']
 
     def __init__(self, deployment_path, roles_path, roles, inventory_type):
         self.path = Path(deployment_path)
-        self.roles_path = Path(roles_path)
+        if '.git' in roles_path:
+            self.roles_path = self.path / '.roles'
+            self._clone_ansible_roles_repo(roles_path)
+        else:
+            self.roles_path = Path(roles_path)
         self.name = self.path.name
         self.role_names = roles
         self.roles = self._create_role_objects(roles)
@@ -35,6 +41,10 @@ class Deployment:
             parsed_roles.append(Role(self.roles_path / role_name))
         return parsed_roles
 
+    def _clone_ansible_roles_repo(self, git_path):
+        git_path = Path(git_path)
+        if not git_path.exists():
+            Repo.clone_from(git_path, self.roles_path)
 
     def _create_deployment_directories(self):
         for directory_name in self.directory_layout:
@@ -61,6 +71,12 @@ class Deployment:
         with open(ansible_cfg_path, 'w') as ansible_cfg_stream:
             ansible_cfg_stream.writelines('\n'.join(self.ansible_cfg))
 
+    def _delete_temporary_directories(self):
+        for directory in self.temporary_directories:
+            directory_path = self.path / directory
+            if directory_path.exists():
+                shutil.rmtree(directory_path)
+
     def initialize_deployment_directory(self):
         self._create_deployment_directories()
         self._copy_roles_to_deployment_directory()
@@ -68,6 +84,7 @@ class Deployment:
         self.inventory.write()
         self._write_role_defaults_to_group_vars()
         self._write_ansible_cfg()
+        self._delete_temporary_directories()
 
     def save(self):
         deployment_state = {
@@ -81,6 +98,7 @@ class Deployment:
 
 
     def delete(self):
+        self._delete_temporary_directories()
         for directory_name in self.directory_layout:
             directory_path = self.path / directory_name
             if directory_path.exists():
