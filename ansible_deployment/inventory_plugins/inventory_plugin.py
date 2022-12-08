@@ -49,6 +49,7 @@ class InventoryPlugin(AnsibleDeployment):
             self._load_role_defaults(roles)
         self.added_files = []
         self.vars = {"host_vars": self.host_vars, "group_vars": self.group_vars}
+        self.filtered_representation = self.name
 
     def _load_role_defaults(self, roles):
         """

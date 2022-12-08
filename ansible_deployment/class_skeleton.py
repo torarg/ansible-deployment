@@ -28,8 +28,8 @@ class AnsibleDeployment:
     for object lookup and representation.
     """
 
-    filtered_attributes = ["config", "playbook"]
-    filtered_values = ["playbook", "inventory", "deployment_dir"]
+    filtered_attributes = ["config"]
+    filtered_values = ["inventory", "deployment_dir"]
     filtered_representation = None
     name = "ansible_deployment_object"
 

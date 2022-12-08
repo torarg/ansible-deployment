@@ -94,12 +94,12 @@ class Deployment(AnsibleDeployment):
         return deployment
 
     def __init__(self, path, config, read_sources=False):
+        self.name = config.name
         self.inventory = Inventory(
             path, config, deployment_key=None, read_sources=read_sources
         )
         self.deployment_dir = DeploymentDirectory(path, config.roles_repo, config.deployment_repo, deployment_key=self.inventory.deployment_key)
         self.inventory.deployment_key = self.deployment_dir.vault.key
-        self.name = config.name
         self.config = config
         self.roles = self._create_role_objects(config.roles)
         if not self.deployment_dir.vault.locked:

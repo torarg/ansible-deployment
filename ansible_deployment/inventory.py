@@ -103,6 +103,9 @@ class Inventory(AnsibleDeployment):
                 ]["ansible_port"]
             else:
                 filtered_representation[host]["ansible_port"] = "22"
+        filtered_representation["groups"] = self.groups
+        filtered_representation["loaded_sources"] = self.loaded_sources
+        filtered_representation["loaded_writers"] = self.loaded_writers
         return filtered_representation
 
     def _dict_merge(self, dct, merge_dct):
