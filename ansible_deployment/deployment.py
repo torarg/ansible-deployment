@@ -145,7 +145,7 @@ class Deployment:
 
     def ssh(self, host):
         if host in self.inventory.hosts['all']['hosts']:
-            host_info = self.inventory.hosts['all']['hosts'][host]
+            host_info = self.inventory.host_vars[host]
             subprocess.run(['ssh', '-l', host_info['ansible_user'],
                             host_info['ansible_host']])
 
