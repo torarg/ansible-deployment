@@ -27,6 +27,7 @@ class Terraform(InventoryPlugin):
             return None
         with open(tfstate_file_path) as tfstate_file_stream:
             tfstate_data = json.load(tfstate_file_stream)
+            self.added_files += self.inventory_src
         return tfstate_data
 
     def update_inventory(self):
@@ -34,6 +35,7 @@ class Terraform(InventoryPlugin):
         instances = self._filter_instances(tfstate_data)
         for resource_type in instances:
             self.resource_functions[resource_type](instances[resource_type])
+        return self.added_files
 
     def parse_hcloud_servers(self, instances):
         for instance in instances:
