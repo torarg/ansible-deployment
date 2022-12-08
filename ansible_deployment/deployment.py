@@ -32,7 +32,7 @@ class Deployment:
 
     def _write_role_defaults_to_group_vars(self):
         group_vars_path = self.path / 'group_vars' / 'all'
-        if group_vars_path.exists:
+        if group_vars_path.exists():
             group_vars_path.unlink()
 
         for role in self.roles:
