@@ -71,6 +71,7 @@ class DeploymentRepo(AnsibleDeployment):
         message="Automatic ansible-deployment update.",
         files=None,
         force_commit=False,
+        assume_unchanged=[]
     ):
         """
         Updates the git repository.
@@ -92,6 +93,10 @@ class DeploymentRepo(AnsibleDeployment):
                     self.repo.index.remove(str(git_file))
                 except GitCommandError as e:
                     print(e)
+
+        for file_path in assume_unchanged:
+            self.repo.git.update_index("--assume-unchanged", file_path)
+
         self.update_changed_files()
         if len(self.changes["staged"]) > 0 or force_commit:
             self.repo.index.commit(
@@ -119,7 +124,7 @@ class DeploymentRepo(AnsibleDeployment):
         )
 
     def write_changelog(self):
-        changelog_path = self.path / ".changes"
+        changelog_path = self.path / "CHANGELOG"
         deployment_commits = self.repo.git.log("--pretty=format:'%H'")
         with open(changelog_path, "w") as f:
             f.write(deployment_commits)
