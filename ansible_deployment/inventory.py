@@ -11,6 +11,7 @@ class Inventory:
         self.ansible_user= ansible_user
         self.inventory_type = inventory_type
         self.inventory_path = Path(inventory_path)
+        self.host_vars_path = self.inventory_path.parent / 'host_vars'
         if self.inventory_type == 'terraform':
             self._parse_tfstate_file()
 
@@ -31,5 +32,12 @@ class Inventory:
                     self.hosts['all']['hosts'][host['name']] = host
 
     def write(self):
+        inventory_data = {}
+        inventory_data['all']  = {}
+        inventory_data['all']['hosts']  = {}
+        for host in self.hosts['all']['hosts'].values():
+            inventory_data['all']['hosts'][host['name']] = None
+            with open(self.host_vars_path / host['name'], 'w') as hostvars_file_stream:
+                yaml.dump(host, hostvars_file_stream)
         with open(self.inventory_path, 'w') as inventory_file_stream:
-            yaml.dump(self.hosts, inventory_file_stream)
+            yaml.dump(inventory_data, inventory_file_stream)
