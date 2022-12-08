@@ -12,11 +12,15 @@ def cli():
 
 @cli.command()
 #@click.argument('playbook_name', required=True)
-@click.option('--role', '-r', 'roles', multiple=True, required=True)
-@click.option('--ansible_roles_dir', required=True)
-@click.option('--inventory', '-i', 'inventory_type', required=True)
-def init(roles, ansible_roles_dir, inventory_type):
-    ansible_roles_path = Path(ansible_roles_dir)
+@click.option('--role', '-r', 'roles', multiple=True, required=True, 
+              help="""Role(s) to include in deployment.
+                      May be specified multiple times.""")
+@click.option('--ansible_roles', required=True,
+              help='Path or git url to ansible roles directory.')
+@click.option('--inventory', '-i', 'inventory_type', required=True,
+              help='Inventory type. Supported: terraform, static')
+def init(roles, ansible_roles, inventory_type):
+    ansible_roles_path = Path(ansible_roles)
     deployment_path = Path.cwd()
     deployment = Deployment(deployment_path, ansible_roles_path, roles, inventory_type)
     deployment.initialize_deployment_directory()
