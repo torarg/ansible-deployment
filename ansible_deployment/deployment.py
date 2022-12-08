@@ -71,9 +71,8 @@ class Deployment:
 
     def _write_role_defaults_to_group_vars(self):
         group_vars_path = self.path / 'group_vars' / 'all'
-        group_vars_path_backup = self.path / 'group_vars' / 'all.BAK'
         if group_vars_path.exists():
-            shutil.move(group_vars_path, group_vars_path_backup)
+            group_vars_path.unlink()
 
         for role in self.roles:
             for defaults_file in role.defaults.values():
