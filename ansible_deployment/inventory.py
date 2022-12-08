@@ -44,7 +44,7 @@ class Inventory(AnsibleDeployment):
 
     filtered_attributes = ["vars"]
 
-    def __init__(self, inventory_path, config):
+    def __init__(self, inventory_path, config, deployment_key):
         self.path = Path(inventory_path)
         self.hosts = {}
         self.groups = []
@@ -58,10 +58,13 @@ class Inventory(AnsibleDeployment):
 
         self.loaded_writers = []
 
+        self.deployment_key = deployment_key
+
         self._load_plugins(config)
         self.run_reader_plugins()
 
         self.filtered_representation = {}
+
 
         for host in self.host_vars:
             self.filtered_representation[host] = {}
@@ -116,6 +119,8 @@ class Inventory(AnsibleDeployment):
         self.groups = self.plugin.groups
         self.host_vars = self.plugin.host_vars
         self.group_vars = self.plugin.group_vars
+        if plugin.deployment_key is not None:
+            self.deployment_key = plugin.deployment_key
 
     def run_reader_plugins(self):
         """
@@ -135,6 +140,7 @@ class Inventory(AnsibleDeployment):
                 self.local_inventory.hosts,
                 self.local_inventory.host_vars,
                 self.local_inventory.group_vars,
+                self.deployment_key
             )
 
     def write(self):
