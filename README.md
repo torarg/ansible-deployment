@@ -79,9 +79,10 @@ consisting of the following environment variables:
     - VAULT_TOKEN
 
 All hosts, host_vars and group vars specified in the path
-``ansible-deployment/DEPLOYMENT_NAME`` will be added to the inventory
+``secret/ansible-deployment/DEPLOYMENT_NAME`` will be added to the inventory
 
-Currently only kv2 backends are supported.
+Currently only kv is supported as secrets engine. It's path is expected to be 
+in 'secret/' 
 
 
 ## inventory writers
@@ -98,7 +99,10 @@ consisting of the following environment variables:
     - VAULT_TOKEN
 
 The current deployment inventory will be written in the vault path
-``ansible-deployment/DEPLOYMENT_NAME``.
+``secret/ansible-deployment/DEPLOYMENT_NAME``.
+
+Currently only kv is supported as secrets engine. It's path is expected to be 
+in 'secret/' 
 
 
 ## setup
