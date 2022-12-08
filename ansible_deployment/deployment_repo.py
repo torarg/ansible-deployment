@@ -96,7 +96,8 @@ class DeploymentRepo(AnsibleDeployment):
         """
         self.repo.remotes.origin.fetch()
         self.repo.git.checkout(self.remote_config.branch)
-        self.repo.remotes.origin.pull()
+        if not self.repo.head.is_detached:
+            self.repo.remotes.origin.pull()
 
     def clone(self):
         """
