@@ -163,12 +163,12 @@ class DeploymentDirectory(AnsibleDeployment):
         """
         Updates the deployment git repository.
 
-        The update will add the specified files and commit them.
-
         Args:
             message (str): Commit message.
             files (sequence): Files to commit.
             force_commit (bool): Whether or not to force an empty commit.
+
+        The update will add the specified files and commit them.
         """
         for git_file in files:
             if Path(git_file).exists():

@@ -34,11 +34,10 @@ def check_environment(deployment):
     """
     Check if deployment object is ready for further cli processing.
 
-    If checking fails the program will be terminated by err_exit()
-
     Args:
         deployment (Deployment): deployment object to check
 
+    If checking fails the program will be terminated by err_exit()
     """
     if not deployment:
         err_exit("Failed to load deployment.json")
