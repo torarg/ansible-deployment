@@ -1,14 +1,11 @@
 from pathlib import Path
-from git import Repo
 from pprint import pformat
 from ansible_deployment.role import Role
 from ansible_deployment.inventory import Inventory
 from ansible_deployment.playbook import Playbook
-import yaml
+from ansible_deployment.deployment_dir import DeploymentDirectory
 import json
-import shutil
 import subprocess
-
 
 class Deployment:
     ansible_cfg = [
@@ -23,19 +20,14 @@ class Deployment:
                                            'deployment.json']
 
     def __init__(self, deployment_path, roles_src, roles, inventory_type):
-        self.path = Path(deployment_path)
-        self.roles_src = roles_src
-        self.roles_path = self.path / '.roles'
-        self.name = self.path.name
-        self.role_names = roles
-        self.roles = self._create_role_objects()
+        self.deployment_dir = DeploymentDirectory(deployment_path, roles_src)
+        self.name = self.deployment_dir.path.name
+        self.roles = self._create_role_objects(roles)
         self.inventory = Inventory(
             inventory_type,
             'hosts.yml',
-            groups=self.role_names)
-        self.playbook = Playbook(self.path / 'playbook.yml', 'all', self.roles)
-        self.state_file = self.path / 'deployment.json'
-        self.repo = Repo.init(self.path)
+            groups=roles)
+        self.playbook = Playbook(self.deployment_dir.path / 'playbook.yml', 'all', self.roles)
 
     def __repr__(self):
         representation = {
@@ -43,103 +35,37 @@ class Deployment:
             'roles': self.roles,
             'inventory': self.inventory.hosts['all'],
             'playbook': self.playbook,
-            'state_file': self.state_file,
-            'repo': self.repo
+            'deployment_dir': self.deployment_dir
         }
         return pformat(representation)
 
-    def _git_add(self):
-        for git_file in self.git_repo_content:
-            self.repo.index.add(git_file)
 
-    def _git_commit(self, message):
-        self.repo.index.commit(message)
-
-    def _create_role_objects(self):
+    def _create_role_objects(self, role_names):
         parsed_roles = []
-        for role_name in self.role_names:
-            parsed_roles.append(Role(self.roles_path / role_name))
+        for role_name in role_names:
+            parsed_roles.append(Role(self.deployment_dir.roles_path / role_name))
         return parsed_roles
 
-    def _clone_ansible_roles_repo(self, git_src):
-        if not self.roles_path.exists():
-            Repo.clone_from(git_src['repo'], self.roles_path,
-                            branch=git_src['branch'])
-
-    def _update_ansible_roles_repo(self):
-        if self.roles_path.exists():
-            roles_repo = Repo(self.roles_path)
-            roles_repo.remotes.origin.pull()
-
-    def _create_deployment_directories(self):
-        for directory_name in self.directory_layout:
-            directory_path = self.path / directory_name
-            if not directory_path.exists():
-                directory_path.mkdir()
-
-    def _symlink_roles_in_deployment_directory(self):
-        for role in self.roles:
-            role.symlink_to(self.path / 'roles')
-
-    def _unlink_roles_in_deployment_directory(self):
-        for role_dir in self.path.glob('roles/*'):
-            role_dir.unlink()
-
-    def _write_role_defaults_to_group_vars(self):
-        group_vars_path = self.path / 'group_vars'
-
-        for role in self.roles:
-            for defaults_file in role.defaults.values():
-                with open(group_vars_path / role.name, 'w') as group_vars_file:
-                    group_vars_file.write('# role: {}\n'.format(role.name))
-                    yaml.dump(defaults_file['data'], group_vars_file)
-                    group_vars_file.write('\n')
-
-    def _write_ansible_cfg(self):
-        ansible_cfg_path = self.path / 'ansible.cfg'
-        with open(ansible_cfg_path, 'w') as ansible_cfg_stream:
-            ansible_cfg_stream.writelines('\n'.join(self.ansible_cfg))
-
-    def _delete_temporary_directories(self):
-        for directory in self.temporary_directories:
-            directory_path = self.path / directory
-            if directory_path.exists():
-                shutil.rmtree(directory_path)
-
     def initialize_deployment_directory(self):
-        self._create_deployment_directories()
-        self._clone_ansible_roles_repo(self.roles_src)
-        self.roles = self._create_role_objects()
-        self._unlink_roles_in_deployment_directory()
-        self._symlink_roles_in_deployment_directory()
         self.playbook.write()
         self.inventory.write()
-        self._write_role_defaults_to_group_vars()
-        self._write_ansible_cfg()
-        self._git_add()
-        self._git_commit('Initial commit.')
+        self.deployment_dir.create(self.roles)
+
 
     def save(self):
+        role_names = []
+        for role in self.roles:
+            role_names.append(role.name)
+
         deployment_state = {
             'name': self.name,
-            'roles': self.role_names,
+            'roles': role_names,
             'inventory_type': self.inventory.inventory_type,
-            'ansible_roles_src': self.roles_src
+            'ansible_roles_src': self.deployment_dir.roles_src
         }
-        with open(self.state_file, 'w') as state_file_stream:
+        with open(self.deployment_dir.state_file, 'w') as state_file_stream:
             json.dump(deployment_state, state_file_stream, indent=4)
 
-    def delete(self):
-        self._delete_temporary_directories()
-        for directory_name in self.directory_layout:
-            directory_path = self.path / directory_name
-            if directory_path.exists():
-                shutil.rmtree(directory_path)
-
-        for file_name in self.deployment_files:
-            file_path = self.path / file_name
-            if file_path.exists():
-                file_path.unlink()
 
     def run(self, tags=None):
         command = ['ansible-playbook', 'playbook.yml']
@@ -154,17 +80,9 @@ class Deployment:
                             host_info['ansible_host']])
 
     def update(self):
-        self._update_ansible_roles_repo()
-        self._unlink_roles_in_deployment_directory()
-        self._symlink_roles_in_deployment_directory()
-        self.roles = self._create_role_objects()
-        self._write_role_defaults_to_group_vars()
         self.playbook.write()
         self.inventory.write()
-
-    def update_git(self, message="Automatic ansible-deployment update."):
-        self._git_add()
-        self._git_commit(message)
+        self.deployment_dir.update(self.roles)
 
     def load(deployment_state_file):
         deployment = None
