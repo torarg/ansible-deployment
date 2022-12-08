@@ -36,7 +36,8 @@ class InventoryPlugin:
         self.host_vars = {}
         self.group_vars = {}
         self.group_vars["all"] = {"ansible_user": "ansible",
-                                  "ansible_ssh_private_key_file": "./.ssh/id_rsa"}
+                                  "ansible_ssh_private_key_file": "./.ssh/id_rsa",
+                                  "ansible_ssh_public_key_file": "./.ssh/id_rsa.pub"}
         self._set_groups()
         self.added_files = []
         self.vars = {"host_vars": self.host_vars, "group_vars": self.group_vars}
