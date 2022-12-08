@@ -1,4 +1,5 @@
-FROM python:3.9.6-alpine
+# first stage: build all dependencies and install them inside venv
+FROM python:3.9.6-alpine as wheel-build
 
 
 RUN adduser -D app && apk update && apk upgrade && apk add git build-base \
@@ -26,17 +27,34 @@ RUN adduser -D app && apk update && apk upgrade && apk add git build-base \
   tiff-dev \
   tk-dev \
   zlib-dev
+
 USER app
 WORKDIR /home/app
+
+COPY ./ansible_deployment.egg-info/requires.txt ./requires.txt
+
+ENV VIRTUAL_ENV=/home/app/venv
+RUN python -m venv $VIRTUAL_ENV && pip wheel -w wheels/ -r requires.txt --use-feature=in-tree-build 
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+RUN pip install -r requires.txt
+
+# second stage: install ansible-deployment
+FROM python:3.9.6-alpine as venv-build
+
+
+RUN adduser -D app && apk update && apk upgrade && apk add git 
+WORKDIR /home/app
+
+USER app
 
 COPY ./ansible_deployment/ ./ansible_deployment
 COPY ./setup.py ./
 COPY ./README.md ./
+COPY --from=wheel-build /home/app/venv /home/app/venv
 
-RUN pip3 install pip --upgrade && pip3 install . --use-feature=in-tree-build --prefer-binary
+ENV VIRTUAL_ENV=/home/app/venv
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-ENV PATH=/home/app/.local/bin:$PATH
+RUN pip install --no-index . --use-feature=in-tree-build
 
-
-
-CMD [ "ansible-deployment" ]
+ENTRYPOINT ["ansible-deployment"]
