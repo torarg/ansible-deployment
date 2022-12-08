@@ -11,7 +11,7 @@ DeploymentConfig = namedtuple('DeploymentConfig',
 """
 Represents the deployment configuration.
 
-Attributes:
+Args:
     roles (sequence): A sequence of role names.
     roles_src (dict): Dictionary containing roles repo information.
                       The following keys need to be present:
