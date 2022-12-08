@@ -230,7 +230,7 @@ class Deployment(AnsibleDeployment):
             connection_details = self.get_connection_details(host)
             subprocess.run(
                 ["ssh-keygen", "-R", connection_details["ansible_host"]],
-                check=True
+                check=True, capture_output=True
             )
             keyscan = subprocess.run(
                 ["ssh-keyscan", "-H", connection_details["ansible_host"]],
