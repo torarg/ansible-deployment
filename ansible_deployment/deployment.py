@@ -184,7 +184,7 @@ class Deployment(AnsibleDeployment):
         """
         if len(sources_override) > 0:
             for override in sources_override:
-                if override not in self.config.inventory_sources:
+                if override not in self.config.inventory_sources and override != "local":
                     raise KeyError(f"Invalid inventory source override: {override}")
             self.config = DeploymentConfig(
                             name=self.config.name,
