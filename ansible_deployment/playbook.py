@@ -32,6 +32,7 @@ class Playbook(AnsibleDeployment):
         self.hosts = hosts
         self.roles = roles
         self.playbook_data = self._generate_playbook_data()
+        self.filtered_representation = "filtered"
 
     def _generate_playbook_data(self):
         """

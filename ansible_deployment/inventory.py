@@ -41,6 +41,13 @@ class Inventory(AnsibleDeployment):
         self._load_vars('host_vars')
         self._load_vars('group_vars')
         self.plugin.update_inventory()
+        self.filtered_representation = {}
+
+        for host in self.host_vars:
+            self.filtered_representation[host] = {}
+            self.filtered_representation[host]['ansible_host'] = self.host_vars[host]['ansible_host']
+            self.filtered_representation[host]['ansible_user'] = self.host_vars[host]['ansible_user']
+            self.filtered_representation[host]['ansible_host'] = self.host_vars[host]['ansible_host']
 
     def _load_vars(self, vars_type):
         """
@@ -58,6 +65,7 @@ class Inventory(AnsibleDeployment):
             with open(vars_file) as vars_file_stream:
                 self.vars[vars_type][vars_name] = yaml.safe_load(
                     vars_file_stream)
+
 
     def write(self):
         """
