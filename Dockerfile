@@ -42,7 +42,8 @@ RUN pip install -r requires.txt
 FROM python:3.9.6-alpine as venv-build
 
 
-RUN adduser -D app && apk update && apk upgrade && apk add git 
+RUN adduser -D app && apk update && apk upgrade && apk add git vault libcap && \
+    setcap cap_ipc_lock= /usr/sbin/vault
 WORKDIR /home/app
 
 USER app
