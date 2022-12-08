@@ -279,7 +279,9 @@ def pull(ctx):
     "--non-interactive", is_flag=True, help="Apply all updates without asking."
 )
 @click.option(
-    "-s", "--source", help="Override configured inventory source.", multiple=True
+    "-s", "--from-source", help="""Only query given inventory sources.
+                                   May be specified multiple times.""",
+    multiple=True
 )
 def update(ctx, non_interactive, source):
     """
@@ -287,6 +289,9 @@ def update(ctx, non_interactive, source):
 
     Updates deployment inventory from inventory_sources and pulls changes
     from roles repository.
+
+    If `--from-source` is specified the roles repository will still be updated
+    but only the given inventory sources will be queried for updates.
     """
     deployment = ctx.obj["DEPLOYMENT"]
     with unlock_deployment(deployment) as unlocked_deployment:
