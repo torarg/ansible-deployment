@@ -49,7 +49,7 @@ exclude_patterns = []
 # a list of builtin themes.
 #
 #html_theme = 'flask'
-html_theme = 'piccolo_theme'
+html_theme = 'sphinx_rtd_theme'
 html_title = 'ansible-deployment'
 
 # Add any paths that contain custom static files (such as style sheets) here,
