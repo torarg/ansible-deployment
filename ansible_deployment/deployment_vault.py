@@ -2,9 +2,11 @@
 Module containing the DeploymentVault class.
 """
 
+import shutil
 from pathlib import Path
 from cryptography.fernet import Fernet
 from ansible_deployment.class_skeleton import AnsibleDeployment
+from ansible_deployment.deployment_repo import DeploymentRepo
 
 
 class DeploymentVault(AnsibleDeployment):
@@ -140,18 +142,88 @@ class DeploymentVault(AnsibleDeployment):
             fobj.write(cipher_suite.decrypt(encrypted_data))
         file_path.replace(str(file_path)[:-len(self.encryption_suffix)])
 
+    def _setup_shadow_repo(self):
+        """
+        Replaces deployment repo with a 'shadow repo'.
+
+        The deployment git repository in ``self.path / '.git'``
+        will be moved to ``self.path / '.git.enc'`` and if
+        ``self.path / '.git.shadow'`` exists, it's config will be moved
+        to ``self.path / '.git'``.
+        A new repositoriy will be intialized and all files in ``self.files``
+        including the original deployment repository will be
+        added and commited to this new repository.
+
+        The purpose of the shadow repository is to have
+        a pushable deployment state while the deployment
+        is locked.
+        """
+        active_git_path = self.path / '.git'
+        shadow_git_path = self.path / '.git.shadow'
+        shadow_git_config = shadow_git_path / 'config'
+        encrypted_git_path = self.path / '.git.enc'
+
+        active_git_path.replace(encrypted_git_path)
+
+        shadow_repo_files = list(
+            self.path.glob('**/*{}'.format(self.encryption_suffix)))
+        shadow_repo = DeploymentRepo(self.path, files=shadow_repo_files)
+        shadow_repo.init()
+
+        if shadow_git_config.exists():
+            shadow_git_config.replace(active_git_path / 'config')
+            shutil.rmtree(shadow_git_path)
+
+        shadow_repo.update(message="Shadow repository activated.",
+                           force_commit=True,
+                           files=shadow_repo_files)
+
+    def _restore_deployment_repo(self):
+        """
+        Restore deployment repository after decryption.
+
+        Restores the original deployment repository and creates
+        a backup of the shadow repository's 'config' file
+        to ``self.path / '.git.shadow' / config``.
+        """
+        active_git_path = self.path / '.git'
+        active_git_config = active_git_path / 'config'
+        shadow_git_path = self.path / '.git.shadow'
+        shadow_git_config = shadow_git_path / 'config'
+        encrypted_git_path = self.path / '.git.enc'
+
+        shadow_repo = DeploymentRepo(self.path, files=[])
+        shadow_repo.update(message="Shadow repository deactivated.",
+                           force_commit=True)
+
+        shadow_git_path.mkdir()
+        active_git_config.replace(shadow_git_config)
+        shutil.rmtree(active_git_path)
+        encrypted_git_path.replace(active_git_path)
+
     def lock(self):
         """
-        Lock vault and encrypt all files.
+        Encrypts all files stored in the vault and activates shadow repo.
+
+        The git repository in ``self.path`` will be encrypted and replaced
+        with a shadow repository containing all encrypted vault files as
+        a single commit. If an old instance of the shadow repository
+        had a custuom config this will be restored in the new shadow
+        repository.
         """
         if not self.locked:
             self._encrypt_files(self.files)
+            self._setup_shadow_repo()
             self.locked = True
 
     def unlock(self):
         """
-        Unlock vault and decrypt all files.
+        Decrypts all vault files and restores the deployment repository.
+
+        The shadow repository's configuration file willl be saved
+        to ``self.path / '.git.shadow/config``.
         """
         if self.locked:
             self._decrypt_files(self.files)
+            self._restore_deployment_repo()
             self.locked = False
