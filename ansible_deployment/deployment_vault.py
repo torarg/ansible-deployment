@@ -163,13 +163,9 @@ class DeploymentVault(AnsibleDeployment):
         """
         git_path = self.path / ".git"
         shadow_git_path = self.path / '.git.shadow'
-        git_config_path = git_path / "config"
         exclude_files = ('deployment.key', '.terraform', 'deployment.tar.gz.enc')
 
         DeploymentRepo(self.path).write_changelog()
-
-        with open(git_config_path) as f:
-            git_config_data = f.read()
 
         shutil.rmtree(git_path)
         if shadow_git_path.exists():
@@ -192,29 +188,18 @@ class DeploymentVault(AnsibleDeployment):
             files=shadow_repo_files
         )
 
-        with open(git_config_path, 'w') as f:
-            f.write(git_config_data)
-
-
     def _restore_deployment_dir(self):
         """
         Restores deployment dir from tar archive.
         """
         git_path = self.path / '.git'
         shadow_git_path = self.path / '.git.shadow'
-        git_config_path = git_path / "config"
-
-        with open(git_config_path) as f:
-            git_config_data = f.read()
 
         if git_path.exists():
             shutil.move(git_path, shadow_git_path)
 
         with tarfile.open(self.tar_path) as tar:
             tar.extractall(self.path)
-
-        with open(git_config_path, 'w') as f:
-            f.write(git_config_data)
 
         self.tar_path.unlink()
 
