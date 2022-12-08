@@ -100,9 +100,10 @@ def run(ctx, role):
     containing the executed command.
     """
     deployment = ctx.obj["DEPLOYMENT"]
-    cli_helpers.check_environment(deployment)
     try:
-        deployment.run(role)
+        with unlock_deployment(deployment) as unlocked_deployment:
+            cli_helpers.check_environment(unlocked_deployment)
+            unlocked_deployment.run(role)
     except Exception as err:
         raise click.ClickException(err)
 
