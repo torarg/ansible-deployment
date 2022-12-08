@@ -1,5 +1,9 @@
-import gitdb.exc as git_exc
+"""
+Module containting the DeploymentRepo class.
+"""
+
 from pathlib import Path
+import gitdb.exc as git_exc
 from git import Repo
 from ansible_deployment.class_skeleton import AnsibleDeployment
 
@@ -20,8 +24,7 @@ class DeploymentRepo(AnsibleDeployment):
         changes (dict): Dictionary containing repository changes.
                         Valid keys are: 'all', 'staged' and 'unstaged'.
     """
-
-    def __init__(self, path, remote_config=None, files=[]):
+    def __init__(self, path, remote_config=None, files=None):
         self.remote_config = remote_config
         self.path = path
 
@@ -40,8 +43,6 @@ class DeploymentRepo(AnsibleDeployment):
         """
         Update `self.changes` dict to represent state of git repo.
         """
-        if not self.repo:
-            return None
         self.changes['unstaged'] = [
             diff.a_path for diff in self.repo.index.diff(None)
         ]

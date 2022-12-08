@@ -1,3 +1,7 @@
+"""
+This module contains the AnsibleDeployment skeleton class.
+"""
+
 from pprint import pformat
 
 
@@ -5,7 +9,8 @@ class AnsibleDeployment:
     """
     Represents the skeleton for all ansible_deployment classes.
 
-    The main purpose of this claass is to provide lookup and representation methods.
+    The main purpose of this class is to provide 'magic methods'
+    for object lookup and representation.
     """
     filtered_attributes = ['config']
     filtered_values = ['playbook', 'inventory', 'deployment_dir']
@@ -49,7 +54,7 @@ class AnsibleDeployment:
         for attribute in self.__dict__:
             if attribute in self.filtered_attributes:
                 continue
-            elif attribute in self.filtered_values:
+            if attribute in self.filtered_values:
                 representation[attribute] = "filtered"
             else:
                 representation[attribute] = self.__dict__[attribute]

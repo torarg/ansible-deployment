@@ -1,3 +1,8 @@
+"""
+Inventory class skeleton.
+"""
+
+
 class InventoryPlugin:
     """
     Represents the skeleton of an inventory plugin.
@@ -10,7 +15,6 @@ class InventoryPlugin:
         group_vars (dict): Group vars dict.
         added_files (list): List of files added to deployment.
     """
-
     def __init__(self, config):
         self.all_hosts = {}
         self.deployment_group = {}
@@ -40,7 +44,7 @@ class InventoryPlugin:
             group_data['children']['ansible_deployment'] = None
             self.hosts['all']['children'][group] = group_data
 
-    def update_inventory():
+    def update_inventory(self):
         """
         Update inventory.
 
@@ -50,4 +54,3 @@ class InventoryPlugin:
             upadate `self.added_files` with a list of plugin specific
             files to add to the deployment repository.
         """
-        pass

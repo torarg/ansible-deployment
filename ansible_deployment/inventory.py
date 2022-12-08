@@ -1,7 +1,11 @@
+"""
+This module contains the Inventory class.
+"""
+
 from pathlib import Path
+import yaml
 from ansible_deployment import AnsibleDeployment
 from ansible_deployment.inventory_plugins import Terraform
-import yaml
 
 
 class Inventory(AnsibleDeployment):
@@ -10,8 +14,7 @@ class Inventory(AnsibleDeployment):
 
     Args:
         inventory_path (str): Path to inventory.
-        inventory_plugin (str): Name of inventory plugin.
-        ansible_user (str): Ansible user.
+        config (DeploymentConfig): Deployment configuration.
 
     Attributes:
         plugins (dict): Available inventory plugins,

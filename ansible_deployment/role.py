@@ -1,6 +1,10 @@
-import yaml
+"""
+This module contains the Role class.
+"""
+
 import shutil
 from pathlib import Path
+import yaml
 from ansible_deployment import AnsibleDeployment
 
 
@@ -41,7 +45,8 @@ class Role(AnsibleDeployment):
         self.templates = self._parse_role_sub_directory('templates')
         self.meta = self._parse_role_sub_directory('meta')
 
-    def _parse_yaml_file(self, file_path):
+    @staticmethod
+    def _parse_yaml_file(file_path):
         """
         Parses a given yaml_file.
 
@@ -55,7 +60,8 @@ class Role(AnsibleDeployment):
             yaml_data = yaml.safe_load(file_stream)
         return yaml_data
 
-    def _generate_file_info(self, path_object, data):
+    @staticmethod
+    def _generate_file_info(path_object, data):
         """
         Generates a dictionary containing file information.
 

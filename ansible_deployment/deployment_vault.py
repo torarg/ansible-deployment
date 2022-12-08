@@ -1,6 +1,10 @@
+"""
+Module containing the DeploymentVault class.
+"""
+
 from pathlib import Path
-from ansible_deployment.class_skeleton import AnsibleDeployment
 from cryptography.fernet import Fernet
+from ansible_deployment.class_skeleton import AnsibleDeployment
 
 
 class DeploymentVault(AnsibleDeployment):
@@ -62,7 +66,8 @@ class DeploymentVault(AnsibleDeployment):
             fobj.write(self.key)
         self.key_file.chmod(0o400)
 
-    def _generate_key(self):
+    @staticmethod
+    def _generate_key():
         """
         Generate a new key.
 
