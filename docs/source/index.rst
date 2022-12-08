@@ -9,10 +9,11 @@ Welcome to ansible_deployment's documentation!
 
    README
    AnsibleDeployment
-   RolesRepo
+   RepoConfig
    DeploymentConfig
    Deployment
    DeploymentDirectory
+   DeploymentRepo
    DeploymentVault
    Role
    Playbook

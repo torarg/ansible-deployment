@@ -5,6 +5,21 @@ from git import Repo
 
 
 class DeploymentRepo:
+    """
+    Represents a git repository used with ansible_deployment.
+
+    Args:
+        path (Path): Local path to git repository.
+        remote_config (RepoConfig): Repository origin information.
+        files (list): List of files included in repository.
+
+    Attributes:
+        path (Path): Local path to git repository.
+        remote_config (RepoConfig): Repository origin information.
+        content (list): List of files included in repository.
+        changes (dict): Dictionary containing repository changes.
+                        Valid keys are: 'all', 'staged' and 'unstaged'.
+    """
     def __init__(self, path, remote_config=None, files=[]):
         self.remote_config = remote_config
         self.path = path
@@ -63,11 +78,23 @@ class DeploymentRepo:
                 message.capitalize()))
 
     def pull(self):
+        """
+        Pull changes from origin.
+        """
         self.repo.remotes.origin.pull()
 
     def clone(self):
+        """
+        Clone remote reopository.
+
+        Clones the repository specified in `self.remote_config` into
+        `self.path`
+        """
         self.repo = Repo.clone_from(self.remote_config.repo, self.path,
                                     branch=self.remote_config.branch)
 
     def init(self):
+        """
+        Initialize empty repository.
+        """
         self.repo = Repo.init(self.path)
