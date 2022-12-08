@@ -208,3 +208,10 @@ class Inventory(AnsibleDeployment):
         for group in self.group_vars:
             with open(self.path / "group_vars" / group, "w") as groupvars_file_stream:
                 yaml.dump(self.group_vars[group], groupvars_file_stream)
+
+    def write(self):
+        """
+        Write all inventory files.
+        """
+        self.write_inventory()
+        self.write_vars()

@@ -145,8 +145,7 @@ class Deployment(AnsibleDeployment):
         self.inventory = Inventory(
             self.deployment_dir.path, self.config, self.deployment_dir.vault.key
         )
-        self.inventory.write_inventory()
-        self.inventory.write_vars()
+        self.inventory.write()
         self.deployment_dir.deployment_repo.update(message="add deployment files", force_commit=True)
 
     def save(self):
