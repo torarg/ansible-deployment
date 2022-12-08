@@ -34,12 +34,13 @@ class DeploymentVault(AnsibleDeployment):
     encryption_suffix = ".enc"
     key_file_name = "deployment.key"
     tar_file_name = "deployment.tar.gz"
+    lock_file_name = ".LOCKED"
 
     def __init__(self, vault_files, path, key=None):
         self.new_key = False
         self.locked = False
         self.path = Path(path)
-        self.lock_file_path = self.path / "LOCKED"
+        self.lock_file_path = self.path / self.lock_file_name
         self.tar_path = self.path / self.tar_file_name
         self.encrypted_tar_path = Path(str(self.tar_path) + self.encryption_suffix)
         self.key_file = self.path / self.key_file_name
@@ -169,7 +170,8 @@ class DeploymentVault(AnsibleDeployment):
         """
         git_path = self.path / ".git"
         shadow_git_path = self.path / '.git.shadow'
-        exclude_files = ('deployment.key', '.terraform', 'deployment.tar.gz.enc')
+        exclude_files = ('deployment.key', '.terraform', 'deployment.tar.gz.enc', '.ssh')
+        include_files = ('.LOCKED', '.drone.yml', '.gitlab-ci', '.gitignore')
 
         DeploymentRepo(self.path).write_changelog()
 
@@ -180,9 +182,12 @@ class DeploymentVault(AnsibleDeployment):
         deployment_files = list(
             self.path.glob("[!.]*")
         )
+        for file_name in include_files:
+            deployment_files.append(self.path / file_name)
+
         shadow_repo_files = []
         for file in deployment_files:
-            if file.name not in exclude_files:
+            if file.name not in exclude_files and file.exists():
                 shadow_repo_files.append(file)
         shadow_repo = DeploymentRepo(self.path, files=shadow_repo_files)
         shadow_repo.blobs['deployment_data'] = self.encrypted_tar_path
