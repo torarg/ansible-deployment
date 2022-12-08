@@ -5,6 +5,7 @@ Module containting the DeploymentRepo class.
 from pathlib import Path
 import gitdb.exc as git_exc
 from git import Repo
+from git.exc import GitCommandError
 from ansible_deployment.class_skeleton import AnsibleDeployment
 
 
@@ -87,7 +88,10 @@ class DeploymentRepo(AnsibleDeployment):
             if Path(git_file).exists():
                 self.repo.index.add(str(git_file))
             else:
-                self.repo.index.remove(str(git_file))
+                try:
+                    self.repo.index.remove(str(git_file))
+                except GitCommandError as e:
+                    print(e)
         self.update_changed_files()
         if len(self.changes["staged"]) > 0 or force_commit:
             self.repo.index.commit(
