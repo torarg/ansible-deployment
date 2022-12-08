@@ -12,6 +12,7 @@ Welcome to ansible_deployment's documentation!
    DeploymentConfig
    Deployment
    DeploymentDirectory
+   DeploymentVault
    Role
    Playbook
    Inventory
