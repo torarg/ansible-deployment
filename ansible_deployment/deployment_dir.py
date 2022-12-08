@@ -3,6 +3,7 @@ from git import Repo
 import gitdb.exc as git_exc
 from pprint import pformat
 from ansible_deployment.class_skeleton import AnsibleDeployment
+from ansible_deployment.role import Role
 import yaml
 import shutil
 
@@ -84,6 +85,7 @@ class DeploymentDirectory(AnsibleDeployment):
         """
         group_vars_path = self.path / 'group_vars'
         for role in roles:
+            role = Role(role.path)
             group_vars_file_path = group_vars_path / role.name
             is_new = True
             if (group_vars_file_path).exists():
