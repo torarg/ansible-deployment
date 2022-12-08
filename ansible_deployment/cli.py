@@ -99,7 +99,10 @@ def show(ctx, attribute):
     Deployment information may be filtered by specifying attribute(s).
     """
     with unlock_deployment(ctx.obj["DEPLOYMENT"], 'r') as deployment:
-        deployment.inventory.run_reader_plugins()
+        try:
+            deployment.inventory.run_reader_plugins()
+        except Exception as err:
+            raise click.ClickException(err)
         output = deployment
         if attribute:
             try:
@@ -109,7 +112,7 @@ def show(ctx, attribute):
         output = json.dumps(output, indent=DEFAULT_OUTPUT_JSON_INDENT,
                               cls=CustomJSONEncoder)
         output = highlight(output, lexers.JsonLexer(),
-                           formatters.Terminal256Formatter(style="default"))
+                           formatters.Terminal256Formatter(style="github-dark"))
         click.echo(output)
 
 
