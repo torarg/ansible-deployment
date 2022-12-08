@@ -11,7 +11,8 @@ import subprocess
 class Deployment:
     ansible_cfg = [
         '[defaults]',
-        'inventory = hosts.yml']
+        'inventory = hosts.yml',
+        'host_key_checking = False' ]
     directory_layout = ('host_vars', 'group_vars', 'roles')
     temporary_directories = ('.roles',)
     deployment_files = ['playbook.yml', 'hosts.yml', 
