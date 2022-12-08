@@ -203,8 +203,9 @@ def update(ctx, scope, non_interactive):
     Updates all deployment files and directories.
 
     This will pull new changes from the roles source repository and
-    update all deployment files accordingly.
-    All changes will be shown as diff and the user needs to decide a.
+    update all deployment files accordingly. Also all inventory sources
+    will be queried for updates.
+    All changes will be shown as diff and the user needs to decide a
     update strategy.
 
     The update can be restricted in scope by specifying the SCOPE argument.
