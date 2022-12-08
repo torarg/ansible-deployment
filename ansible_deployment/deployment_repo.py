@@ -33,7 +33,7 @@ class DeploymentRepo(AnsibleDeployment):
         self._git_path = self.path / '.git'
         self._encrypted = (self._git_path / 'HEAD.enc').exists()
 
-        if self._git_path.exists() and not self._encrypted:
+        if (self._git_path / 'HEAD').exists() and not self._encrypted:
             self.repo = Repo(self.path)
             self.update_changed_files()
         else:
@@ -72,7 +72,7 @@ class DeploymentRepo(AnsibleDeployment):
             files = self.content
         for git_file in files:
             if Path(git_file).exists():
-                self.repo.index.add(git_file)
+                self.repo.index.add(str(git_file))
         self.update_changed_files()
         if len(self.changes['staged']) > 0 or force_commit:
             self.repo.index.commit("ansible-deployment: {}".format(

@@ -120,6 +120,9 @@ class DeploymentDirectory(AnsibleDeployment):
         """
         Delete deployment directory.
         """
+        shadow_git = self.path / '.git.shadow'
+        if shadow_git.exists():
+            shutil.rmtree(shadow_git)
         for directory_name in self.directory_layout:
             directory_path = self.path / directory_name
             if directory_path.exists():
