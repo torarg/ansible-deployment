@@ -1,55 +1,32 @@
 # ansible-deployment
 
-## Table Of Contents
-- [ansible-deployment](#ansible-deployment)
-  * [Overview](#overview)
-  * [Requirements](#requirements)
-  * [Quick Start](#quick-start)
-    + [Setup](#setup)
-    + [Configuration](#configuration)
-      - [Example 1: Locally managed terraform deployment](#example-1--locally-managed-terraform-deployment)
-      - [Example 2: Locally managed terraform deployment with local overwrite](#example-2--locally-managed-terraform-deployment-with-local-overwrite)
-  * [Inventory Sources](#inventory-sources)
-    + [local](#local)
-    + [terraform](#terraform)
-    + [vault](#vault)
-  * [Inventory Writers](#inventory-writers)
-    + [vault](#vault-1)
+- [Description](#description)
+- [Features](#features)
+- [Requirements](#requirements)
+- [Quick Start](#quick-start)
+  * [Setup](#setup)
+  * [Configuration](#configuration)
+    + [Example: Terraform inventory](#example--terraform-inventory)
+- [Inventory Sources](#inventory-sources)
+  * [local](#local)
+  * [terraform](#terraform)
+  * [vault](#vault)
+- [Inventory Writers](#inventory-writers)
+  * [vault](#vault-1)
 
-## Overview
-ansible-deployment is a cli application for managing ansible deployments.
 
-It will initialize a ready to use deployment directory from it's configuration
-file ``deployment.json```. 
+## Description
+ansible-deployment is a cli application for managing ansible deployments in
+an effective matter.
 
-This file specifies which ansible roles the deployment will use in it's
-playbook and from which git repository to get them from.
+## Features
+- creates a ready to use ansible deployment directory
+- roles fetched via git
+- git managed
+- inventory queried and merged from ``ìnventory_sources``
+- save command for persistation through ``inventory_writers``
+- update command to query for role or inventory changes
 
-The configuration also specifies ``inventory_sources`` and ``ìnventory_writers``.
-
-Deployment inventories can be sourced by multiple ``ìnventory_sources`` and
-will be merged in the specified order and produce the final deployment inventory.
-
-``ìnventory_writers`` persist the deployment inventory.
-
-When initialized ansible-deployment will:
-- clone the configured roles repository into deployment directory
-- generate a playbook based on specified roles
-- write role defaults as group_vars/ROLE_NAME
-- apply inventory sources
-    - if multiple inventory sources are used, they will be merged
-    - the last specified inventory plugin will overwrite previously specified keys
-- create a local git repository for the deployment directory
-
-The idea of this tool is to enforce structure on ansible role development
-and usage. All deployment roles' default variables will be written
-as group_vars into the deployment inventory. So ideally ansible roles
-used with ansible-deployment have all their variables that reflect
-deployment specific configuration declared as such.
-
-Each role will add an inventory group with the same name and will have 
-a group called 'ansible-deployment' as their child and all parsed hosts
-will be added to this 'ansible-deployment' group.
 
 ## Requirements
 - python >= 3.9
@@ -64,7 +41,7 @@ $ pip install .
 
 ### Configuration
 
-#### Example 1: Locally managed terraform deployment
+#### Example: Terraform inventory
 ```
 $ cat deployment.json 
 {
@@ -88,37 +65,38 @@ $ cat deployment.json
 
 This configuration example will source it's inventory from a
 ``terraform.tfstate`` file inside the deployment directory.
-Values supplied by the terraform ``ìnventory_source`` will alway overwrite
+Values supplied by the terraform ``ìnventory_source`` will always overwrite
 the local deployment inventory. Inventory variables that are not supplied
 by terraform still can be locally managed.
 
-#### Example 2: Locally managed terraform deployment with local overwrite
 ```
-$ cat deployment.json 
-{
-    "name": "locally managed terraform deployment with local overwrite",
-    "roles": [
-        "bootstrap",
-        "webserver",
-        "gitea"
-    ],
-    "roles_src": {
-        "repo": "git@github.com:torarg/ansible-roles.git",
-        "branch": "master"
-    },
-    "inventory_sources": [
-        "terraform",
-        "local"
-    ],
-    "inventory_writers": [
-    ]
-}
-```
+$ ls
+deployment.json         servers.tf              terraform.tfstate       versions.tf
 
-This configuration example will source it's inventory from a
-``terraform.tfstate`` file inside the deployment directory and then apply
-the local deployment inventory on top of it. This will allow the local
-deployment inventory to overwrite any terraform supplied inventory values.
+$ ansible-deployment init
+Deployment key written to: /Users/mw/Deployments/example/deployment.key
+{   'deployment_dir': {   'path': '/Users/mw/Deployments/example',
+                          'roles_src': "RepoConfig(repo='git@github.com:torarg/ansible-roles.git', "
+                                       "branch='master')"},
+    'inventory': {   'dev': {'ansible_host': 'XXX.XXX.XXX.XXX'},
+                     'www': {'ansible_host': 'XXX.XXX.XXX.XXX'}},
+    'name': 'locally managed terraform deployment',
+    'roles': ['bootstrap', 'webserver', 'gitea']}
+(Re)Initialize Deployment? [y/N]: y
+michaelwilson@mw-mac openbsd-disk-encryption-test % ls -l
+total 72
+-rw-r--r--   1 michaelwilson  staff    91  9 Mär 00:18 ansible.cfg
+-rw-r--r--   1 michaelwilson  staff   352  8 Mär 23:33 deployment.json
+-rw-------   1 michaelwilson  staff    44  9 Mär 00:18 deployment.key
+drwxr-xr-x   6 michaelwilson  staff   192  9 Mär 00:18 group_vars
+drwxr-xr-x   4 michaelwilson  staff   128  9 Mär 00:18 host_vars
+-rw-r--r--   1 michaelwilson  staff   183  9 Mär 00:18 hosts.yml
+-rw-r--r--   1 michaelwilson  staff  1616  9 Mär 00:18 playbook.yml
+drwxr-xr-x  26 michaelwilson  staff   832  9 Mär 00:18 roles
+-rw-r--r--   1 michaelwilson  staff   790  3 Feb 11:39 servers.tf
+-rw-r--r--   1 michaelwilson  staff  7338  7 Mär 23:36 terraform.tfstate
+-rw-r--r--   1 michaelwilson  staff   130 31 Jan 11:06 versions.tf
+```
 
 ## Inventory Sources
 Inventory sources specify where from and in which order the deployment
