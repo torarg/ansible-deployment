@@ -14,7 +14,7 @@ class CustomJSONEncoder(json.JSONEncoder):
         if type(o) is dict:
             result = o
         elif isinstance(o, AnsibleDeployment):
-            result = o.__dict__
+            result = o._get_filtered_dict()
         else:
             result = str(o)
         return result
@@ -69,7 +69,11 @@ class AnsibleDeployment:
         Returns:
             str: Formatted and filtered object representation.
         """
+        representation = self._get_filtered_dict()
+        return json.dumps(representation, indent=DEFAULT_OUTPUT_JSON_INDENT,
+                          cls=CustomJSONEncoder)
 
+    def _get_filtered_dict(self):
         representation = {}
         for attribute, attr_obj in self.__dict__.items():
             if attribute in self.filtered_attributes:
@@ -84,8 +88,7 @@ class AnsibleDeployment:
                 ]
             else:
                 representation[attribute] = attr_obj
-        return json.dumps(representation, indent=DEFAULT_OUTPUT_JSON_INDENT,
-                          cls=CustomJSONEncoder)
+        return representation
 
     def startswith(self, substring):
         return self.name.startswith(substring)
