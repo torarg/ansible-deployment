@@ -40,7 +40,6 @@
     - name: test if disk is locked
       raw: "[[ -x /usr/bin/cryptroot-unlock ]]"
       notify: unlock_disk
-      failed_when: false
       ignore_errors: yes
 
     - name: flush handlers if disk is locked
