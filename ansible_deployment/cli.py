@@ -10,7 +10,8 @@ from ansible_deployment.cli_autocomplete import (
     RoleType,
     HostType,
     InventoryWriterType,
-    InventorySourceType
+    InventorySourceType,
+    ShowAttributeType
 )
 from ansible_deployment.config import (
     DEFAULT_DEPLOYMENT_CONFIG_PATH
@@ -87,7 +88,7 @@ def init(ctx, non_interactive):
 
 @cli.command()
 @click.pass_context
-@click.argument("attribute", required=False, nargs=-1)
+@click.argument("attribute", required=False, nargs=-1, type=ShowAttributeType())
 def show(ctx, attribute):
     """
     Show deployment information.

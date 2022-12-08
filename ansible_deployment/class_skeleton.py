@@ -18,6 +18,7 @@ class AnsibleDeployment:
 
     def __init__(self):
         self.filtered_representation = "filtered"
+        self.name = "AnsibleDeployment Object"
 
     def __getitem__(self, attribute):
         """
@@ -69,3 +70,6 @@ class AnsibleDeployment:
             else:
                 representation[attribute] = self.__dict__[attribute]
         return pformat(representation, indent=4)
+
+    def startswith(self, substring):
+        return self.name.startswith(substring)

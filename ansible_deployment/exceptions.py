@@ -8,6 +8,20 @@ class DeploymentConfigNotFound(Exception):
     """
     def __init__(self, config_file_path):
         self.config_file_path = config_file_path
-        self.message = f"{self.config_file_path} does not exist."
-        super().__init__(self.message) 
+        self.message = f"Deployment config ({self.config_file_path}) doesn't exist."
+        super().__init__(self.message)
+
+
+class AttributeNotFound(Exception):
+    """
+    Exception raised when an deployment attribute doesn't exist.
+
+    Attributes:
+        attribute (str): Attribute tried to lookup.
+        message (str): Exception message
+    """
+    def __init__(self, attribute):
+        self.attribute = attribute
+        self.message = f"Deployment attrbute ({self.attribute}) doesn't exist."
+        super().__init__(self.message)
         

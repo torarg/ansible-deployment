@@ -4,6 +4,7 @@ Helper functions for cli module.
 
 import textwrap
 import click
+from ansible_deployment.exceptions import AttributeNotFound
 
 
 def err_exit(error_message):
@@ -29,8 +30,10 @@ def filter_output_by_attribute(output, attribute):
         dict: a dict only containing the nested attribute lookup.
     """
     for attr in attribute:
-        if attr not in output:
-            err_exit("Attribute not found")
+        if type(output) in (list, tuple):
+            output = {item.name: item for item in output}
+        if attr not in output or type(output) is str:
+            raise AttributeNotFound(attribute)
         output = output[attr]
     return output
 
