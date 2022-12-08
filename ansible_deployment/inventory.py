@@ -7,6 +7,22 @@ import yaml
 
 
 class Inventory(AnsibleDeployment):
+    """
+    Represents an ansible inventory.
+
+    Args:
+        inventory_path (str): Path to inventory.
+        inventory_plugin (str): Name of inventory plugin.
+        ansible_user (str): Ansible user.
+
+    Attributes:
+        plugins (dict): Available inventory plugins,
+        plugin (InventoryPlugin): Inventory plugin object.
+        hosts (dict): Hosts dictionary representing hosts.yml
+        host_vars (dict): Host variables.
+        group_vars (dict): Group variables.
+        vars (dict): Variable lookup table.
+    """
     plugins = {'terraform': Terraform}
     filtered_attributes = ['vars']
 
@@ -29,6 +45,12 @@ class Inventory(AnsibleDeployment):
         self.plugin.update_inventory()
 
     def _load_vars(self, vars_type):
+        """
+        Loads inventory variables from inventory path.
+
+        Args:
+            vars_type (str): Variable type. May be 'host_vars' or 'group_vars'.
+        """
         ignore_patterns = ('.swp', )
         vars_files = list((self.path / vars_type).glob('*'))
         for vars_file in vars_files:
@@ -40,6 +62,9 @@ class Inventory(AnsibleDeployment):
                     vars_file_stream)
 
     def write(self):
+        """
+        Writes inventory files to inventory_path.
+        """
         for host in self.host_vars.values():
             with open(self.path / 'host_vars' / host['name'],
                       'w') as hostvars_file_stream:
