@@ -1,7 +1,7 @@
 import hvac
 import os
-from ansible_deployment.inventory_plugins.inventory_plugin import (
-    InventoryPlugin)
+from ansible_deployment.inventory_plugins.inventory_plugin import InventoryPlugin
+
 
 class Vault(InventoryPlugin):
     """
@@ -17,15 +17,15 @@ class Vault(InventoryPlugin):
         """
         client = None
         error = None
-        vault_address = os.environ.get('VAULT_ADDR')
+        vault_address = os.environ.get("VAULT_ADDR")
         if vault_address == None:
-            error = 'VAULT_ADDR not set'
+            error = "VAULT_ADDR not set"
 
         client = hvac.Client(url=vault_address)
 
         try:
             if not client.is_authenticated():
-                error = 'Authentication error'
+                error = "Authentication error"
         except ConnectionError:
             error = "Connection error"
 

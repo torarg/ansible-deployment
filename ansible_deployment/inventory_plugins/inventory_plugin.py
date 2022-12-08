@@ -16,6 +16,7 @@ class InventoryPlugin:
         vars (dict): Combined dictionary for host and group vars.
         added_files (list): List of files added to deployment.
     """
+
     plugin_type = "reader"
 
     def __init__(self, config):
@@ -25,31 +26,24 @@ class InventoryPlugin:
         self.groups = config.roles
         self.ansible_user = config.ansible_user
         self.hosts = {
-            'all': {
-                'hosts': self.all_hosts,
-                'children': {
-                    'ansible_deployment': {
-                        'hosts': self.deployment_group
-                    }
-                }
+            "all": {
+                "hosts": self.all_hosts,
+                "children": {"ansible_deployment": {"hosts": self.deployment_group}},
             }
         }
         self.host_vars = {}
         self.group_vars = {}
         self._set_groups()
         self.added_files = []
-        self.vars = {
-            'host_vars': self.host_vars,
-            'group_vars': self.group_vars
-        }
+        self.vars = {"host_vars": self.host_vars, "group_vars": self.group_vars}
 
     def _set_groups(self):
         """
         Set initial inventory groups in self.hosts.
         """
         for group in self.groups:
-            group_data = {'hosts': {}}
-            self.hosts['all']['children'][group] = group_data
+            group_data = {"hosts": {}}
+            self.hosts["all"]["children"][group] = group_data
 
     def update_inventory(self):
         """

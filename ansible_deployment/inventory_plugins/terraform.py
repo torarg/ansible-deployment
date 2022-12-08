@@ -4,8 +4,7 @@ Terraform inventory plugin.
 
 from pathlib import Path
 import json
-from ansible_deployment.inventory_plugins.inventory_plugin import (
-    InventoryPlugin)
+from ansible_deployment.inventory_plugins.inventory_plugin import InventoryPlugin
 
 
 class Terraform(InventoryPlugin):
@@ -23,9 +22,10 @@ class Terraform(InventoryPlugin):
         group_vars (dict): Group vars dict.
         added_files (list): List of files added to deployment.
     """
-    def __init__(self, groups, inventory_src='terraform.tfstate'):
+
+    def __init__(self, groups, inventory_src="terraform.tfstate"):
         InventoryPlugin.__init__(self, groups)
-        self.name = 'terraform'
+        self.name = "terraform"
         self.inventory_src = inventory_src
         self.resource_functions = {
             "hcloud_server": self.parse_hcloud_servers,
@@ -40,14 +40,14 @@ class Terraform(InventoryPlugin):
         Returns:
             dict: instances by type.
         """
-        resources = tfstate_data['resources']
+        resources = tfstate_data["resources"]
         instances = {}
         for resource in resources:
-            if resource['type'] in self.resource_functions:
-                if resource['type'] not in instances:
-                    instances[resource['type']] = resource['instances']
+            if resource["type"] in self.resource_functions:
+                if resource["type"] not in instances:
+                    instances[resource["type"]] = resource["instances"]
                 else:
-                    instances[resource['type']] += resource['instances']
+                    instances[resource["type"]] += resource["instances"]
 
         return instances
 
@@ -85,12 +85,12 @@ class Terraform(InventoryPlugin):
         """
 
         for instance in instances:
-            host = instance['attributes']
-            host['ansible_host'] = host['ipv4_address']
-            host['ansible_user'] = self.ansible_user
-            host['bootstrap_user'] = 'root'
-            self.all_hosts[host['name']] = None
-            self.deployment_group[host['name']] = None
-            self.host_vars[host['name']] = host
+            host = instance["attributes"]
+            host["ansible_host"] = host["ipv4_address"]
+            host["ansible_user"] = self.ansible_user
+            host["bootstrap_user"] = "root"
+            self.all_hosts[host["name"]] = None
+            self.deployment_group[host["name"]] = None
+            self.host_vars[host["name"]] = host
             for group in self.groups:
-                self.hosts['all']['children'][group]['hosts'][host['name']] = None
+                self.hosts["all"]["children"][group]["hosts"][host["name"]] = None

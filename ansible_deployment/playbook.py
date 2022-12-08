@@ -21,10 +21,12 @@ class Playbook(AnsibleDeployment):
         hosts (str): Playbook target hosts.
         playbook_data (str): Rendered playbook from template.
     """
-    jinja2_env = Environment(loader=PackageLoader('ansible_deployment',
-                                                  'templates'),
-                             autoescape=select_autoescape(['html', 'xml']),
-                             trim_blocks=True)
+
+    jinja2_env = Environment(
+        loader=PackageLoader("ansible_deployment", "templates"),
+        autoescape=select_autoescape(["html", "xml"]),
+        trim_blocks=True,
+    )
 
     def __init__(self, playbook_path, hosts, roles):
         self.path = playbook_path
@@ -41,12 +43,12 @@ class Playbook(AnsibleDeployment):
         Returns:
             str: Rendered playbook data.
         """
-        playbook_template = self.jinja2_env.get_template('playbook.yml.j2')
+        playbook_template = self.jinja2_env.get_template("playbook.yml.j2")
         return playbook_template.render(playbook=self)
 
     def write(self):
         """
         Write playbook.
         """
-        with open(self.path, 'w') as playbook_file_stream:
+        with open(self.path, "w") as playbook_file_stream:
             playbook_file_stream.write(self.playbook_data)

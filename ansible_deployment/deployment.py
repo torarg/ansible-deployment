@@ -6,10 +6,15 @@ from pathlib import Path
 from collections import namedtuple
 import json
 import subprocess
-from ansible_deployment import (AnsibleDeployment, Role, Inventory, Playbook,
-                                DeploymentDirectory)
+from ansible_deployment import (
+    AnsibleDeployment,
+    Role,
+    Inventory,
+    Playbook,
+    DeploymentDirectory,
+)
 
-RepoConfig = namedtuple('RepoConfig', 'repo branch')
+RepoConfig = namedtuple("RepoConfig", "repo branch")
 """
 Represents a remote git repository configuration.
 
@@ -18,8 +23,10 @@ Args:
     branch (str): Git branch to checkout.
 """
 
-DeploymentConfig = namedtuple('DeploymentConfig',
-                              'name roles roles_src inventory_sources inventory_writers ansible_user')
+DeploymentConfig = namedtuple(
+    "DeploymentConfig",
+    "name roles roles_src inventory_sources inventory_writers ansible_user",
+)
 """
 Represents the deployment configuration.
 
@@ -55,6 +62,7 @@ class Deployment(AnsibleDeployment):
         inventory (Inventory): Inventory object.
         playbook (Playbook): Playbook object representing deployment playbook.
     """
+
     @staticmethod
     def _load_config_file(config_file_path):
         """
@@ -68,9 +76,10 @@ class Deployment(AnsibleDeployment):
         """
         with open(config_file_path) as config_file_stream:
             config = json.load(config_file_stream)
-        roles_src = RepoConfig(config["roles_src"]['repo'],
-                               config["roles_src"]['branch'])
-        config['roles_src'] = roles_src
+        roles_src = RepoConfig(
+            config["roles_src"]["repo"], config["roles_src"]["branch"]
+        )
+        config["roles_src"] = roles_src
 
         return DeploymentConfig(**config)
 
@@ -102,8 +111,9 @@ class Deployment(AnsibleDeployment):
             added_files = self.inventory.plugin.added_files
             self.deployment_dir.vault.files += added_files
             self.deployment_dir.deployment_repo.content += added_files
-            self.playbook = Playbook(self.deployment_dir.path / 'playbook.yml',
-                                     'all', self.roles)
+            self.playbook = Playbook(
+                self.deployment_dir.path / "playbook.yml", "all", self.roles
+            )
 
     def _create_role_objects(self, role_names):
         """
@@ -137,18 +147,17 @@ class Deployment(AnsibleDeployment):
         self.roles = self._create_role_objects(role_names)
         self.deployment_dir.update(self)
         self.inventory = Inventory(self.deployment_dir.path, self.config)
-        #self.playbook.write()
+        # self.playbook.write()
         self.inventory.write()
-        self.deployment_dir.deployment_repo.update(
-            message="add deployment files")
+        self.deployment_dir.deployment_repo.update(message="add deployment files")
 
     def save(self):
         """
         Write config as json to `self.deployment_dir.config_file`.
         """
         json_dump = self.config._asdict()
-        json_dump['roles_src'] = self.config.roles_src._asdict()
-        with open(self.deployment_dir.config_file, 'w') as config_file_stream:
+        json_dump["roles_src"] = self.config.roles_src._asdict()
+        with open(self.deployment_dir.config_file, "w") as config_file_stream:
             json.dump(json_dump, config_file_stream, indent=4)
 
     def run(self, tags=None):
@@ -161,11 +170,12 @@ class Deployment(AnsibleDeployment):
         Every deployment run triggers a new git commit in
         `self.deployment_dir.repo` containing the executed command.
         """
-        command = ['ansible-playbook', 'playbook.yml']
+        command = ["ansible-playbook", "playbook.yml"]
         if tags:
-            command += ['--tags', ','.join(tags)]
+            command += ["--tags", ",".join(tags)]
         self.deployment_dir.deployment_repo.update(
-            'Deployment run: {}'.format(command), files=[], force_commit=True)
+            "Deployment run: {}".format(command), files=[], force_commit=True
+        )
         subprocess.run(command, check=True)
 
     def ssh(self, host):
@@ -175,10 +185,9 @@ class Deployment(AnsibleDeployment):
         Args:
             host (str): Target host.
         """
-        if host in self.inventory.hosts['all']['hosts']:
+        if host in self.inventory.hosts["all"]["hosts"]:
             host_info = self.inventory.host_vars[host]
-            subprocess.run([
-                'ssh', '-l', host_info['ansible_user'],
-                host_info['ansible_host']
-            ],
-                           check=True)
+            subprocess.run(
+                ["ssh", "-l", host_info["ansible_user"], host_info["ansible_host"]],
+                check=True,
+            )
