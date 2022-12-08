@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ansible-deployment"
-version = "1.0.0"
+version = "1.0.1"
 description = "Manage ansible deployments"
 authors = ["Michael Wilson <mw@1wilson.org>"]
 
