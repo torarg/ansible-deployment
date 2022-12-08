@@ -19,7 +19,7 @@ class DeploymentDirectory(AnsibleDeployment):
     def __init__(self, path, roles_src, state_file='deployment.json'):
         self.path = Path(path)
         self.roles_src = roles_src
-        self.roles_path = self.path / '.roles'
+        self.roles_path = self.path / 'roles'
         self.state_file = self.path / 'deployment.json'
         self.repo = Repo.init(self.path)
         self.unstaged_changes = []
@@ -35,12 +35,6 @@ class DeploymentDirectory(AnsibleDeployment):
             directory_path = self.path / directory_name
             if not directory_path.exists():
                 directory_path.mkdir()
-
-    def _reset_role_symlinks(self, roles):
-        for role_dir in self.path.glob('roles/*'):
-            role_dir.unlink()
-        for role in roles:
-            role.symlink_to(self.path / 'roles')
 
     def _write_role_defaults_to_group_vars(self, roles):
         group_vars_path = self.path / 'group_vars'
@@ -60,7 +54,6 @@ class DeploymentDirectory(AnsibleDeployment):
         self.repo.create_submodule('roles', str(self.roles_path),
                                    url=self.roles_src['repo'],
                                    branch=self.roles_src['branch']) 
-        self._reset_role_symlinks(roles)
         self._write_ansible_cfg()
 
     def delete(self):
@@ -78,7 +71,6 @@ class DeploymentDirectory(AnsibleDeployment):
         if not self.roles_path.exists():
             return None
         self.repo.submodule_update()
-        self._reset_role_symlinks(roles)
         self._write_role_defaults_to_group_vars(roles)
         self._write_ansible_cfg()
         self._update_unstaged_changes()
