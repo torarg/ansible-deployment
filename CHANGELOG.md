@@ -1,5 +1,6 @@
 # CHANGELOG
 ## 1.0.0 (upcoming)
+- add `--from-writer` option to delete command
 - add `update-known-hosts` command
 - add option to override inventory sources during update
 - add `fetch-key` command
