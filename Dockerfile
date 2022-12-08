@@ -42,7 +42,7 @@ RUN pip install -r requires.txt
 FROM python:3.9.6-alpine as venv-build
 
 
-RUN adduser -D app && apk update && apk upgrade && apk add git vault libcap && \
+RUN adduser -D app && apk update && apk upgrade && apk add git vault libcap openssh-client openssh-keygen && \
     setcap cap_ipc_lock= /usr/sbin/vault
 WORKDIR /home/app
 
