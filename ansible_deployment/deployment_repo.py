@@ -42,9 +42,26 @@ class DeploymentRepo(AnsibleDeployment):
 
         if (self._git_path / "HEAD").exists() and not self._encrypted:
             self.repo = Repo(self.path)
+            self.update_remote_config(remote_config)
             self.update_changed_files()
         else:
             self.repo = None
+
+    def update_remote_config(self, remote_config):
+        """
+        Update remote repo config.
+
+        Sets or updates 'origin' according to remote_config namedtuple.
+
+        Args:
+            remote_config (RepoConfig): RepoConfig Namedtuple.
+        """
+        if remote_config is None:
+            pass
+        elif 'origin' not in self.repo.remotes:
+            self.repo.create_remote('origin', url=remote_config.url)
+        elif self.repo.remotes.origin.url != remote_config.url:
+            self.repo.remotes.origin.set_url(remote_config.url)
 
     def update_changed_files(self):
         """
@@ -137,7 +154,7 @@ class DeploymentRepo(AnsibleDeployment):
         self.blobs = blobs
         self.repo.remotes.origin.fetch()
         if self.remote_config is not None:
-            self.repo.git.checkout(self.remote_config.branch)
+            self.repo.git.checkout(self.remote_config.reference)
         if not self.repo.head.is_detached:
             self.repo.remotes.origin.pull()
             self._pull_blobs()
@@ -150,9 +167,9 @@ class DeploymentRepo(AnsibleDeployment):
             raise RepoOriginError("Missing git remote origin")
         self.repo.remotes.origin.fetch()
         if self.remote_config is not None:
-            self.repo.git.checkout(self.remote_config.branch)
+            self.repo.git.checkout(self.remote_config.reference)
         if not self.repo.head.is_detached:
-            self.repo.remotes.origin.push()
+            self.repo.remotes.origin.push(self.remote_config.reference)
             if self.blobs:
                 self.repo.git.push("-f", "--tags")
 
@@ -164,7 +181,7 @@ class DeploymentRepo(AnsibleDeployment):
         `self.path`
         """
         self.repo = Repo.clone_from(
-            self.remote_config.repo, self.path, branch=self.remote_config.branch
+            self.remote_config.url, self.path, branch=self.remote_config.reference
         )
 
     def init(self):

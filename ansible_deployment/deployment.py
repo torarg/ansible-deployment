@@ -94,7 +94,7 @@ class Deployment(AnsibleDeployment):
         self.inventory = Inventory(
             path, config, deployment_key=None, read_sources=read_sources
         )
-        self.deployment_dir = DeploymentDirectory(path, config.roles_repo, deployment_key=self.inventory.deployment_key)
+        self.deployment_dir = DeploymentDirectory(path, config.roles_repo, config.deployment_repo, deployment_key=self.inventory.deployment_key)
         self.inventory.deployment_key = self.deployment_dir.vault.key
         self.name = config.name
         self.config = config

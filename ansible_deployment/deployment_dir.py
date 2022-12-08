@@ -45,7 +45,7 @@ class DeploymentDirectory(AnsibleDeployment):
     directory_layout = ("host_vars", "group_vars", "roles", ".ssh", ".roles.git", ".git")
     deployment_files = ["playbook.yml", "hosts.yml", "ansible.cfg"]
 
-    def __init__(self, path, roles_repo_config, deployment_key_file="deployment.key", deployment_key=None):
+    def __init__(self, path, roles_repo_config, deployment_repo_config, deployment_key_file="deployment.key", deployment_key=None):
         self._roles_repo_config = roles_repo_config
 
         self.path = Path(path)
@@ -67,7 +67,7 @@ class DeploymentDirectory(AnsibleDeployment):
         git_repo_content += self.directory_layout[:-2]
         git_repo_content += [str(self.config_file)]
         git_repo_content += [deployment_key_file]
-        self.deployment_repo = DeploymentRepo(self.path, files=git_repo_content)
+        self.deployment_repo = DeploymentRepo(self.path, files=git_repo_content, remote_config=deployment_repo_config)
 
         self.vault_files = self.deployment_files + list(self.directory_layout)
         self.vault_files.remove('.roles.git')
