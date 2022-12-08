@@ -24,6 +24,7 @@ class DeploymentVault(AnsibleDeployment):
         If `key_file` is not present at initialization, it will be created.
     """
     encryption_suffix = '.enc'
+
     def __init__(self, vault_files, path):
         self.new_key = False
         self.locked = False
@@ -31,7 +32,8 @@ class DeploymentVault(AnsibleDeployment):
         self.key_file = self.path / 'deployment.key'
         self._load_key()
         self.files = vault_files
-        self.locked_files = list(self.path.glob('**/*{}'.format(self.encryption_suffix)))
+        self.locked_files = list(
+            self.path.glob('**/*{}'.format(self.encryption_suffix)))
         if len(self.locked_files) > 0:
             self.locked = True
             self.files = self.locked_files
