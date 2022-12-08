@@ -18,4 +18,4 @@ class AnsibleDeployment:
                 representation[attribute] = "filtered"
             else:
                 representation[attribute] = self.__dict__[attribute]
-        return pformat(representation)
+        return pformat(representation, indent=4)
