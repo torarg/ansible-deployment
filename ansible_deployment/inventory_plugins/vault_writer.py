@@ -1,6 +1,3 @@
-import hvac
-import os
-from ansible_deployment.inventory_plugins.inventory_plugin import InventoryPlugin
 from ansible_deployment.inventory_plugins.vault import Vault
 
 

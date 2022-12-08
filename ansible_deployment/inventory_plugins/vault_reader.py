@@ -1,7 +1,5 @@
-import hvac
-import os
-from ansible_deployment.inventory_plugins.inventory_plugin import InventoryPlugin
 from ansible_deployment.inventory_plugins.vault import Vault
+from hvac import exceptions as vault_exceptions
 
 
 class VaultReader(Vault):
@@ -21,7 +19,7 @@ class VaultReader(Vault):
             query_result = vault_client.secrets.kv.read_secret_version(path=vault_path)[
                 "data"
             ]["data"]
-        except hvac.exceptions.InvalidPath:
+        except vault_exceptions.InvalidPath:
             query_result = dict()
         self.hosts = query_result
 
@@ -31,7 +29,7 @@ class VaultReader(Vault):
                 query_result = vault_client.secrets.kv.read_secret_version(
                     path=vault_path
                 )["data"]["data"]
-            except hvac.exceptions.InvalidPath:
+            except vault_exceptions.InvalidPath:
                 query_result = dict()
             self.group_vars[group] = query_result
 
@@ -42,7 +40,7 @@ class VaultReader(Vault):
                     query_result = vault_client.secrets.kv.read_secret_version(
                         path=vault_path
                     )["data"]["data"]
-                except hvac.exceptions.InvalidPath:
+                except vault_exceptions.InvalidPath:
                     query_result = dict()
                 self.host_vars[host] = query_result
                 self.all_hosts[host] = query_result
