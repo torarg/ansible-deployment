@@ -1,3 +1,6 @@
+"""
+Vault inventory plugin.
+"""
 import hvac
 import os
 from ansible_deployment.inventory_plugins.inventory_plugin import InventoryPlugin

@@ -1,3 +1,6 @@
+"""
+Vault inventory reader plugin.
+"""
 from ansible_deployment.inventory_plugins.vault import Vault
 from hvac import exceptions as vault_exceptions
 

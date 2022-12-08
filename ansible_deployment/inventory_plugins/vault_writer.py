@@ -1,3 +1,6 @@
+"""
+Vault inventory writer plugin.
+"""
 from ansible_deployment.inventory_plugins.vault import Vault
 
 
