@@ -30,10 +30,9 @@ class AnsibleDeployment:
 
     filtered_attributes = ["config", "playbook"]
     filtered_values = ["playbook", "inventory", "deployment_dir"]
+    filtered_representation = None
+    name = "ansible_deployment_object"
 
-    def __init__(self):
-        self.filtered_representation = "filtered"
-        self.name = "AnsibleDeployment Object"
 
     def __getitem__(self, attribute):
         """
@@ -75,19 +74,22 @@ class AnsibleDeployment:
 
     def _get_filtered_dict(self):
         representation = {}
-        for attribute, attr_obj in self.__dict__.items():
-            if attribute in self.filtered_attributes:
-                continue
-            if attribute in self.filtered_values:
-                representation[attribute] = attr_obj[
-                    "filtered_representation"
-                ]
-            elif attribute == "roles":
-                representation[attribute] = [
-                    role["name"] for role in self.__dict__["roles"]
-                ]
-            else:
-                representation[attribute] = attr_obj
+        if self.filtered_representation is not None:
+            representation = self.filtered_representation
+        else:
+            for attribute, attr_obj in self.__dict__.items():
+                if attribute in self.filtered_attributes:
+                    continue
+                if attribute in self.filtered_values:
+                    representation[attribute] = attr_obj[
+                        "filtered_representation"
+                    ]
+                elif attribute == "roles":
+                    representation[attribute] = [
+                        role["name"] for role in self.__dict__["roles"]
+                    ]
+                else:
+                    representation[attribute] = attr_obj
         return representation
 
     def startswith(self, substring):
