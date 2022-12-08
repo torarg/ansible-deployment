@@ -60,7 +60,8 @@ class DeploymentDirectory(AnsibleDeployment):
             self.repo = Repo.init(self.path)
             self._update_changed_files()
             self.vault.files = self.repo.git.ls_files().split('\n')
-            self.vault.files.remove('deployment.json')
+            if 'deployment.json' in self.vault.files:
+                self.vault.files.remove('deployment.json')
         if (self.roles_path / '.git').exists():
             self.roles_repo = Repo(self.roles_path)
 
