@@ -40,7 +40,7 @@ def prompt_for_update_choices(deployment_dir):
         'd': deployment_dir.repo.git.checkout
     }
     for file_name in deployment_dir.changes:
-        _echo_file_diff(deployment_dir, file_name)
+        echo_file_diff(deployment_dir, file_name)
         update_choice = click.prompt(prompt_message,
                                      default='k',
                                      type=prompt_choice,
