@@ -205,7 +205,9 @@ def update(ctx, scope, non_interactive):
     deployment = ctx.obj["DEPLOYMENT"]
     cli_helpers.check_environment(deployment)
     try:
-        old_roles_repo_head = deployment.deployment_dir.roles_repo.repo.head.commit.hexsha
+        old_roles_repo_head = (
+            deployment.deployment_dir.roles_repo.repo.head.commit.hexsha
+        )
         deployment.deployment_dir.update(deployment, scope)
     except Exception as err:
         if ctx.obj["DEBUG"]:
@@ -224,10 +226,15 @@ def update(ctx, scope, non_interactive):
         click.echo(
             f"New files: {deployment.deployment_dir.deployment_repo.changes['new']}"
         )
-    if deployment.deployment_dir.roles_repo.repo.head.commit.hexsha != old_roles_repo_head:
+    if (
+        deployment.deployment_dir.roles_repo.repo.head.commit.hexsha
+        != old_roles_repo_head
+    ):
         click.echo("Updated roles repository.")
         click.echo(f"Old HEAD: {old_roles_repo_head}")
-        click.echo(f"New HEAD: {deployment.deployment_dir.roles_repo.repo.head.commit.hexsha}")
+        click.echo(
+            f"New HEAD: {deployment.deployment_dir.roles_repo.repo.head.commit.hexsha}"
+        )
     deployment.deployment_dir.deployment_repo.update(
         files=files_to_commit, message=commit_message
     )
