@@ -45,7 +45,6 @@ to be present in the current working directory.
 ```
 $ cd mydeployment/
 $ ls -l
-total 16
 -rw-r--r--  1 mw  staff   408  6 Sep 23:28 deployment.json
 -rw-r--r--  1 mw  staff  3472  6 Sep 23:29 terraform.tfstate
 $ cat deployment.json
@@ -70,15 +69,15 @@ $ cat deployment.json
 }
 $ ansible-deployment init
 $ ls -l
--rw-r--r--   1 mw  staff    58  7 Sep 00:22 ansible.cfg
--rw-r--r--   1 mw  staff   408  6 Sep 23:28 deployment.json
--r--------   1 mw  staff    44  5 Sep 16:11 deployment.key
-drwxr-xr-x  11 mw  staff   352  7 Sep 00:22 group_vars
-drwxr-xr-x   3 mw  staff    96  7 Sep 00:22 host_vars
--rw-r--r--   1 mw  staff   686  7 Sep 00:22 hosts.yml
--rw-r--r--   1 mw  staff  2544  7 Sep 00:22 playbook.yml
-drwxr-xr-x  22 mw  staff   704  7 Sep 00:22 roles
--rw-r--r--   1 mw  staff  3472  6 Sep 23:29 terraform.tfstate
+-rw-r--r--   1 michaelwilson  staff    58  7 Sep 00:27 ansible.cfg
+-rw-r--r--   1 michaelwilson  staff   408  6 Sep 23:28 deployment.json
+-r--------   1 michaelwilson  staff    44  7 Sep 00:27 deployment.key
+drwxr-xr-x  11 michaelwilson  staff   352  7 Sep 00:27 group_vars
+drwxr-xr-x   3 michaelwilson  staff    96  7 Sep 00:27 host_vars
+-rw-r--r--   1 michaelwilson  staff   686  7 Sep 00:27 hosts.yml
+-rw-r--r--   1 michaelwilson  staff  2544  7 Sep 00:27 playbook.yml
+drwxr-xr-x  22 michaelwilson  staff   704  7 Sep 00:27 roles
+-rw-r--r--   1 michaelwilson  staff  3472  6 Sep 23:29 terraform.tfstate
 ```
 
 ## usage
