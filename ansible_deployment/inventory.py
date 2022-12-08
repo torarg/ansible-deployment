@@ -62,15 +62,14 @@ class Inventory(AnsibleDeployment):
 
         for host in self.host_vars:
             self.filtered_representation[host] = {}
-            self.filtered_representation[host]["ansible_host"] = self.host_vars[host][
-                "ansible_host"
-            ]
-            self.filtered_representation[host]["ansible_user"] = self.host_vars[host][
-                "ansible_user"
-            ]
-            self.filtered_representation[host]["ansible_host"] = self.host_vars[host][
-                "ansible_host"
-            ]
+            if "ansible_host" in self.host_vars[host]:
+                self.filtered_representation[host]["ansible_host"] = self.host_vars[host][
+                    "ansible_host"
+                ]
+            if "ansible_user" in self.host_vars[host]:
+                self.filtered_representation[host]["ansible_user"] = self.host_vars[host][
+                    "ansible_user"
+                ]
 
     def _load_plugins(self, config):
         for plugin_name in config.inventory_sources:
@@ -139,9 +138,9 @@ class Inventory(AnsibleDeployment):
         """
         Writes inventory files to inventory_path.
         """
-        for host in self.host_vars.values():
+        for hostname, host in self.host_vars.items():
             with open(
-                self.path / "host_vars" / host["name"], "w"
+                self.path / "host_vars" / hostname, "w"
             ) as hostvars_file_stream:
                 yaml.dump(host, hostvars_file_stream)
 
