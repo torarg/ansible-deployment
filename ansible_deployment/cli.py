@@ -259,7 +259,10 @@ def pull(ctx):
 @click.option(
     "--non-interactive", is_flag=True, help="Apply all updates without asking."
 )
-def update(ctx, non_interactive):
+@click.option(
+    "-s", "--source", help="Override configured inventory source.", multiple=True
+)
+def update(ctx, non_interactive, source):
     """
     Update deployment.
 
@@ -269,7 +272,8 @@ def update(ctx, non_interactive):
     deployment = ctx.obj["DEPLOYMENT"]
     with unlock_deployment(deployment) as unlocked_deployment:
         try:
-            cli_helpers.update_deployment(unlocked_deployment, 'all', non_interactive)
+            cli_helpers.update_deployment(unlocked_deployment, 'all', 
+                non_interactive, sources_override=source)
         except Exception as err:
             if ctx.obj["DEBUG"]:
                 raise

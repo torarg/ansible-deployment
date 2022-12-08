@@ -108,19 +108,19 @@ def prompt_for_update_choices(deployment_dir):
 
     return files_to_commit
 
-def update_deployment(deployment, scope, non_interactive):
+def update_deployment(deployment, scope, non_interactive, sources_override):
     check_environment(deployment)
     try:
         old_roles_repo_head = (
             deployment.deployment_dir.roles_repo.repo.head.commit.hexsha
         )
-        deployment.deployment_dir.update(deployment, scope)
+        deployment.deployment_dir.update(deployment, scope, sources_override)
     except AttributeError:
         deployment.deployment_dir.roles_repo.clone()
         old_roles_repo_head = (
             deployment.deployment_dir.roles_repo.repo.head.commit.hexsha
         )
-        deployment.deployment_dir.update(deployment, scope)
+        deployment.deployment_dir.update(deployment, scope, sources_override)
     if non_interactive:
         files_to_commit = deployment.deployment_dir.deployment_repo.changes["all"]
     else:

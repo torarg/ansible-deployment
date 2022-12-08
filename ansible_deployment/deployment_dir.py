@@ -175,20 +175,20 @@ class DeploymentDirectory(AnsibleDeployment):
                 p.unlink()
 
 
-    def update(self, deployment, scope="all"):
+    def update(self, deployment, scope="all", sources_override=None):
         """
         Update deployment directory.
 
         Args:
             deployment (Deployment): Initialized deployment object.
             scope (str): Scope of update. May be:
-
                         `all`
                         `roles`
                         `playbook`
                         `inventory`
                         `group_vars`
                         `ansible_cfg`
+            sources_override (sequence): Sequence of inventory sources.
 
         The update will pull changes from the roles src repo and
         will update all deployment files.
@@ -203,7 +203,7 @@ class DeploymentDirectory(AnsibleDeployment):
         if scope in ("all", "playbook"):
             deployment.playbook.write()
         if scope in ("all", "inventory"):
-            deployment.update_inventory()
+            deployment.update_inventory(sources_override)
             deployment.inventory.write()
         if scope in ("all", "ansible_cfg"):
             self._write_ansible_cfg()

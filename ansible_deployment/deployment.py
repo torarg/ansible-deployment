@@ -14,7 +14,7 @@ from ansible_deployment import (
     Playbook,
     DeploymentDirectory,
 )
-from ansible_deployment.config import load_config_file
+from ansible_deployment.config import load_config_file, DeploymentConfig
 
 
 @contextmanager
@@ -175,10 +175,21 @@ class Deployment(AnsibleDeployment):
                 command += ["-e", extra_var]
         subprocess.run(command, check=True)
 
-    def update_inventory(self):
+    def update_inventory(self, sources_override=None):
         """
         Updates inventory.
+
+        Args:
+            sources_override (sequence): Sequence of inventory_source names.
         """
+        if sources_override is not None:
+            self.config = DeploymentConfig(
+                            name=self.config.name,
+                            deployment_repo=self.config.deployment_repo,
+                            roles_repo=self.config.roles_repo,
+                            roles=self.config.roles,
+                            inventory_sources=sources_override,
+                            inventory_writers=self.config.inventory_writers)
         self.inventory = Inventory(
             self.deployment_dir.path, self.config, self.deployment_dir.vault.key,
             self.roles
