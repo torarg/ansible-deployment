@@ -244,7 +244,7 @@ def ssh(ctx, host):
             raise click.ClickException(err)
 
 
-@cli.command(hidden=True)
+@cli.command()
 @click.option('--template-mode', is_flag=True,
               help='Run inventory writers without ssh and deployment keys.')
 @click.pass_context
