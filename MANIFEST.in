@@ -1,0 +1,2 @@
+include templates/playbook.yml.j2
+include README.md
