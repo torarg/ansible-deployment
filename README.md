@@ -6,11 +6,12 @@ ansible-deployment is a cli application for generating deployment
 directories from an inventory plugin and a set of roles.
 
 The deployment directory includes:
-    - a hosts.yml file containing all hosts and a group for every imported role
-    - a group_vars directory containing all role defaults as group vars
-    - a host_vars directory containing inventory plugin variables
-    - a playbook template which imports and tags used roles
-    - a git repository tracking the state of the deployment
+
+- a hosts.yml file containing all hosts and a group for every imported role
+- a group_vars directory containing all role defaults as group vars
+- a host_vars directory containing inventory plugin variables
+- a playbook template which imports and tags used roles
+- a git repository tracking the state of the deployment
 
 Currently the only supported inventory plugin is 'terraform' and so far
 it only supports the use of 'hcloud' resources since managing those
