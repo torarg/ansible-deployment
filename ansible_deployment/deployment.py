@@ -26,7 +26,7 @@ class Deployment:
             self.roles_path = Path(roles_path)
         self.name = self.path.name
         self.role_names = roles
-        self.roles = self._create_role_objects(roles)
+        self.roles = self._create_role_objects()
         self.inventory = Inventory(inventory_type, 'hosts.yml')
         self.playbook = Playbook(self.path / 'playbook.yml', 'all', self.roles)
         self.state_file = self.path / 'deployment.json'
@@ -35,10 +35,10 @@ class Deployment:
         return 'Deployment({})'.format(self.__dict__)
 
 
-    def _create_role_objects(self, roles):
+    def _create_role_objects(self):
         parsed_roles = []
-        for role_name in roles:
-            parsed_roles.append(Role(self.roles_path / role_name))
+        for role_name in self.role_names:
+            parsed_roles.append(Role(self.roles_path / role_name ))
         return parsed_roles
 
     def _clone_ansible_roles_repo(self, git_path):
@@ -52,7 +52,6 @@ class Deployment:
                 directory_path.mkdir()
 
     def _copy_roles_to_deployment_directory(self):
-        self._clone_ansible_roles_repo(self.roles_src)
         for role in self.roles:
             role.copy_to(self.path / 'roles')
 
@@ -75,16 +74,18 @@ class Deployment:
         for directory in self.temporary_directories:
             directory_path = self.path / directory
             if directory_path.exists():
+                print('deleting ', directory_path)
                 shutil.rmtree(directory_path)
 
     def initialize_deployment_directory(self):
         self._create_deployment_directories()
+        self._clone_ansible_roles_repo(self.roles_src)
+        self.roles = self._create_role_objects()
         self._copy_roles_to_deployment_directory()
         self.playbook.write()
         self.inventory.write()
         self._write_role_defaults_to_group_vars()
         self._write_ansible_cfg()
-        self._delete_temporary_directories()
 
     def save(self):
         deployment_state = {
