@@ -19,11 +19,12 @@ Args:
 """
 
 DeploymentConfig = namedtuple('DeploymentConfig',
-                              'roles roles_src inventory_plugin ansible_user')
+                              'name roles roles_src inventory_plugin ansible_user')
 """
 Represents the deployment configuration.
 
 Args:
+    name (String): Deployment name
     roles (sequence): A sequence of role names.
     roles_src (RepoConfig): Namedtuple containing roles repo information.
     inventory_plugin (str): Name of the inventory plugin to use.
@@ -86,7 +87,7 @@ class Deployment(AnsibleDeployment):
 
     def __init__(self, path, config):
         self.deployment_dir = DeploymentDirectory(path, config.roles_src)
-        self.name = self.deployment_dir.path.name
+        self.name = config.name
         self.config = config
         self.roles = self._create_role_objects(config.roles)
         if not self.deployment_dir.vault.locked:
