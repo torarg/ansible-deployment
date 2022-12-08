@@ -73,7 +73,7 @@ class Inventory(AnsibleDeployment):
             self.local_inventory.update_inventory()
             self._update_plugin_inventory(self.local_inventory)
 
-        self.filtered_representation = _construct_filtered_representation()
+        self.filtered_representation = self._construct_filtered_representation()
 
     def _construct_filtered_representation(self):
         """
@@ -102,7 +102,7 @@ class Inventory(AnsibleDeployment):
                     host
                 ]["ansible_port"]
             else:
-                filtered_representation[host]["ansible_port"] = 22
+                filtered_representation[host]["ansible_port"] = "22"
         return filtered_representation
 
     def _dict_merge(self, dct, merge_dct):
