@@ -189,9 +189,17 @@ class Inventory(AnsibleDeployment):
                 template_mode
             )
 
-    def write(self):
+    def write_inventory(self):
         """
-        Writes inventory files to inventory_path.
+        Writes inventory file to inventory_path.
+        """
+        with open(self.path / "hosts.yml", "w") as inventory_file_stream:
+            yaml.dump(self.hosts, inventory_file_stream)
+        self.ssh_keypair.write()
+
+    def write_vars(self):
+        """
+        Writes var files to inventory_path.
         """
         for hostname, host in self.host_vars.items():
             with open(self.path / "host_vars" / hostname, "w") as hostvars_file_stream:
@@ -200,7 +208,3 @@ class Inventory(AnsibleDeployment):
         for group in self.group_vars:
             with open(self.path / "group_vars" / group, "w") as groupvars_file_stream:
                 yaml.dump(self.group_vars[group], groupvars_file_stream)
-
-        with open(self.path / "hosts.yml", "w") as inventory_file_stream:
-            yaml.dump(self.hosts, inventory_file_stream)
-        self.ssh_keypair.write()

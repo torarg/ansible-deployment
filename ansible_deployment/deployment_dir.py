@@ -194,8 +194,10 @@ class DeploymentDirectory(AnsibleDeployment):
         if scope in ("all", "playbook"):
             deployment.playbook.write()
         if scope in ("all", "inventory"):
+            deployment.roles = deployment._create_role_objects(deployment.config.roles)
             deployment.update_inventory(sources_override)
-            deployment.inventory.write()
+            deployment.inventory.write_inventory()
+            deployment.inventory.write_vars()
         if scope in ("all", "ansible_cfg"):
             self._write_ansible_cfg()
         self.deployment_repo.update_changed_files()
