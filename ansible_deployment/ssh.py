@@ -48,6 +48,7 @@ class SSHKeypair:
             print(self.public_key_path)
         if self.private_key is not None and self.private_key_path is not None:
             self.private_key_path.write_text(self.private_key)
+            print("writing private key")
         else:
             print("could not write private key")
             print(self.private_key)
