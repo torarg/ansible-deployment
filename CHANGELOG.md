@@ -1,4 +1,4 @@
-# 0.6.0 (2020/03/06)
+# 0.6.0 (2020/03/07)
 - add ``ansible_user`` to ``group_vars`` by default
 - add fetch and checkout of roles during update. this enables branch or tag changing
 - add persist command to run ``inventory_writers``
