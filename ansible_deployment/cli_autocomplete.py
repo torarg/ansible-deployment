@@ -75,7 +75,7 @@ class InventorySourceType(CustomParamType):
         deployment = self.try_to_load_deployment()
         if deployment is None:
             return []
-        sources = deployment.config.inventory_sources
+        sources = deployment.config.inventory_sources + ["local"]
         return [
             CompletionItem(source)
             for source in sources if source.startswith(incomplete)
