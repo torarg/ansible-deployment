@@ -5,7 +5,7 @@ This module contains the Inventory class.
 import yaml
 import collections
 from pathlib import Path
-from ansible_deployment import AnsibleDeployment
+from ansible_deployment import AnsibleDeployment, SSHKeypair
 from ansible_deployment.inventory_plugins import (
     InventoryPlugin,
     inventory_sources,
@@ -52,6 +52,7 @@ class Inventory(AnsibleDeployment):
         self.group_vars = {}
         self.plugin = InventoryPlugin(config, roles)
         self.config = config
+        self.ssh_keypair = SSHKeypair()
 
         self.local_inventory = inventory_sources.Local(config)
         self.loaded_sources = [self.local_inventory]
@@ -130,8 +131,10 @@ class Inventory(AnsibleDeployment):
         self.groups = self.plugin.groups
         self.host_vars = self.plugin.host_vars
         self.group_vars = self.plugin.group_vars
+
         if plugin.deployment_key is not None:
             self.deployment_key = plugin.deployment_key
+        self.ssh_keypair.update_with(plugin.ssh_keypair)
 
 
 
@@ -172,3 +175,4 @@ class Inventory(AnsibleDeployment):
 
         with open(self.path / "hosts.yml", "w") as inventory_file_stream:
             yaml.dump(self.hosts, inventory_file_stream)
+        self.ssh_keypair.write()
