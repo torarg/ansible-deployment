@@ -52,3 +52,35 @@ class VaultWriter(InventoryPlugin):
         return vault_client.secrets.kv.v2.create_or_update_secret(
             path=vault_path, secret={'data': secret_value}
         )
+
+
+
+    def delete(self, hosts, host_vars, group_vars):
+        self.delete_secret("deployment_key")
+        self.delete_secret("ssh_private_key")
+        self.delete_secret("ssh_public_key")
+        self.delete_secret("hosts")
+        for group in group_vars:
+            self.delete_secret(f"group_vars/{group}")
+        for host in host_vars:
+            self.delete_secret(f"host_vars/{host}")
+        self.delete_secret("")
+
+
+    def delete_secret(self, secret_name):
+        """
+        Delete secret from vault.
+
+        Arguments:
+            secret_name (str): Secret name.
+        """
+        vault_path = f"ansible-deployment/{self.deployment_name}/{secret_name}"
+        print(f"deleting from vault: {vault_path}")
+        vault_client, error = vault_helpers.init_vault_client()
+
+        if error is not None:
+            raise Exception(error)
+
+        return vault_client.secrets.kv.v2.delete_metadata_and_all_versions(
+            path=vault_path
+        )

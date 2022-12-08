@@ -131,10 +131,12 @@ def delete(ctx, non_interactive):
     """
     deployment = ctx.obj["DEPLOYMENT"]
     if non_interactive:
+        deployment.inventory.delete_from_writers()
         deployment.deployment_dir.delete(full_delete=True)
     else:
         ctx.invoke(show)
         if click.confirm("Delete deployment?"):
+            deployment.inventory.delete_from_writers()
             deployment.deployment_dir.delete(full_delete=True)
 
 
