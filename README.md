@@ -13,7 +13,6 @@ When initialized ansible-deployment will:
 - apply inventory sources
     - if multiple inventory sources are used, they will be merged
     - the last specified inventory plugin will overwrite previously specified keys
-- write the final deployment inventory to all ``inventory_writers``
 - create a local git repository for the deployment directory
 
 The idea of this tool is to enforce structure on ansible role development
@@ -86,7 +85,7 @@ in 'secret/'
 
 ## inventory writers
 Inventory writers persist the state of the deployment inventory and will be 
-executed after updates and deployment initialization.
+executed when the ``persist`` subcommand is executed.
 
 Currently ansible deployment supports the following ``inventory_writers``.
 
