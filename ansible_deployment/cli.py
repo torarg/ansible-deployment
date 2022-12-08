@@ -14,24 +14,42 @@ def cli():
 #@click.argument('playbook_name', required=True)
 @click.option('--role', '-r', 'roles', multiple=True, required=True)
 @click.option('--ansible_roles_dir', required=True)
-def init(roles, ansible_roles_dir):
+@click.option('--inventory', '-i', 'inventory_type', required=True)
+def init(roles, ansible_roles_dir, inventory_type):
     ansible_roles_path = Path(ansible_roles_dir)
     deployment_path = Path.cwd()
-    deployment = Deployment(deployment_path, ansible_roles_path, roles)
+    deployment = Deployment(deployment_path, ansible_roles_path, roles, inventory_type)
     deployment.initialize_deployment_directory()
     save_object(deployment, deployment_path / '.deployment.state')
 
 @cli.command()
-def show():
+@click.argument('attribute', required=False)
+def show(attribute):
     deployment_state_path = Path.cwd() / '.deployment.state'
     deployment = load_object(deployment_state_path)
-    pprint(deployment.__dict__)
+    if attribute:
+        pprint(deployment.__dict__[attribute].__dict__)
+    else:
+        pprint(deployment.__dict__)
+
+@cli.command()
+def run():
+    deployment_state_path = Path.cwd() / '.deployment.state'
+    deployment = load_object(deployment_state_path)
+    deployment.run()
 
 @cli.command()
 def delete():
     deployment_state_path = Path.cwd() / '.deployment.state'
     deployment = load_object(deployment_state_path)
     deployment.delete()
+
+@cli.command()
+@click.argument('host')
+def ssh(host):
+    deployment_state_path = Path.cwd() / '.deployment.state'
+    deployment = load_object(deployment_state_path)
+    deployment.ssh(host)
     
 
 def main():
