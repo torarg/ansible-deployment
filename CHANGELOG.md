@@ -1,6 +1,8 @@
 # CHANGELOG
 ## 1.0.0 (upcoming)
-- add custom autocompletion for hosts, roles, inventory sources and inventory writers
+- generated ssh keys are now ed25519
+- `show` sub command now outputs proper json
+- add custom shell autocompletion for deployment types
 - add `--from-writer` option to delete command
 - add `update-known-hosts` command
 - add option to override inventory sources during update
