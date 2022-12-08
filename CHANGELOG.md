@@ -1,4 +1,9 @@
 # CHANGELOG
+## 0.9.0 (upcoming)
+- add update command again
+- add reset command
+- add diff command
+- fix host lookup for ssh subcommand if host has host_vars defined
 
 ## 0.8.0 (2022/01/22)
 - improve delete workflow
