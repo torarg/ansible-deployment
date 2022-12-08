@@ -24,7 +24,14 @@ setuptools.setup(
     entry_points={
         'console_scripts': ['ansible-deployment=ansible_deployment.cli:main']
     },
-    install_requires=['jinja2', 'PyYAML', 'click', 'ansible', 'GitPython',
-                      'cryptography', 'hvac'],
+    install_requires=[
+                        'jinja2==2.11.3',
+                        'PyYAML==5.4.1',
+                        'click==8.0.1',
+                        'ansible==4.3.0',
+                        'GitPython==3.1.18',
+                        'cryptography==3.4.7',
+                        'hvac==0.11.0'
+                    ],
     include_package_data=True
 )
