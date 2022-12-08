@@ -6,6 +6,15 @@ from ansible_deployment import (AnsibleDeployment, Role, Inventory, Playbook,
 import json
 import subprocess
 
+RolesRepo = namedtuple('RolesRepo', 'repo branch')
+"""
+Represents the roles git repository configuration.
+
+Args:
+    repo (str): A clonable git repository path or url.
+    branch (str): Git branch to checkout.
+"""
+
 DeploymentConfig = namedtuple('DeploymentConfig',
                               'roles roles_src inventory_plugin ansible_user')
 """
@@ -13,12 +22,7 @@ Represents the deployment configuration.
 
 Args:
     roles (sequence): A sequence of role names.
-    roles_src (dict): Dictionary containing roles repo information.
-                      The following keys need to be present:
-
-                      `repo` is a git clonable url.
-
-                      `branch` is branch name of that repo.
+    roles_src (RolesRepo): Namedtuple containing roles repo information.
     inventory_plugin (str): Name of the inventory plugin to use.
     ansible_user (str): Name of the default ansible user.
 """
@@ -56,6 +60,9 @@ class Deployment(AnsibleDeployment):
         """
         with open(config_file_path) as config_file_stream:
             config = json.load(config_file_stream)
+        roles_src = RolesRepo(config["roles_src"]['repo'],
+                              config["roles_src"]['branch'])
+        config['roles_src'] = roles_src
 
         return DeploymentConfig(**config)
 
@@ -124,8 +131,10 @@ class Deployment(AnsibleDeployment):
         """
         Write config as json to `self.deployment_dir.config_file`.
         """
+        json_dump = self.config._asdict()
+        json_dump['roles_src'] = self.config.roles_src._asdict()
         with open(self.deployment_dir.config_file, 'w') as config_file_stream:
-            json.dump(self.config._asdict(), config_file_stream, indent=4)
+            json.dump(json_dump, config_file_stream, indent=4)
 
     def run(self, tags=None):
         """
