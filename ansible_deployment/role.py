@@ -120,6 +120,7 @@ class Role(AnsibleDeployment):
         destination = Path(destination_path) / self.name
         if destination.exists():
             shutil.rmtree(destination)
+        shutil.copytree(self.path, destination)
 
     def symlink_to(self, destination_path):
         """
