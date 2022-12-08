@@ -124,11 +124,6 @@ def update_deployment(deployment, scope, non_interactive):
             deployment.deployment_dir.roles_repo.repo.head.commit.hexsha
         )
         deployment.deployment_dir.update(deployment, scope)
-    except Exception as err:
-        if ctx.obj["DEBUG"]:
-            raise
-        else:
-            raise click.ClickException(err)
     if non_interactive:
         files_to_commit = deployment.deployment_dir.deployment_repo.changes["all"]
     else:
