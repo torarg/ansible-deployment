@@ -63,12 +63,24 @@ class Inventory(AnsibleDeployment):
             self.filtered_representation[host]['ansible_host'] = self.host_vars[host]['ansible_host']
 
     def _update_plugin_inventory(self, plugin):
-        self.plugin.hosts = self.hosts | plugin.hosts
         self.plugin.groups = self.groups + list(set(plugin.groups) - set(self.groups))
-        self.plugin.host_vars = self.host_vars | plugin.host_vars
-        for group in self.plugin.group_vars:
-            if group in plugin.group_vars:
-                self.plugin.group_vars[group] = self.group_vars[group] | plugin.group_vars[group]
+
+        if 'all' in plugin.hosts:
+            self.plugin.hosts['all']['hosts'] = self.plugin.hosts['all']['hosts'] | plugin.hosts['all']['hosts']
+            self.plugin.hosts['all']['children'] = self.plugin.hosts['all']['children'] | plugin.hosts['all']['children']
+
+        for host in plugin.host_vars:
+            if host in self.plugin.host_vars:
+                self.plugin.host_vars[host] = self.plugin.host_vars[host] | plugin.host_vars[host]
+            elif plugin.host_vars[host]:
+                self.plugin.host_vars[host] = plugin.host_vars[host]
+
+        for group in plugin.group_vars:
+            if group in self.plugin.group_vars:
+                self.plugin.group_vars[group] = self.plugin.group_vars[group] | plugin.group_vars[group]
+            elif plugin.group_vars[group]:
+                self.plugin.group_vars[group] = plugin.group_vars[group]
+
         self.hosts = self.plugin.hosts
         self.groups = self.plugin.groups
         self.host_vars = self.plugin.host_vars
@@ -108,7 +120,7 @@ class Inventory(AnsibleDeployment):
 
         for plugin in self.loaded_plugins:
             if isinstance(plugin, Vault):
-                plugin.update_vault(self.group_vars)
+                plugin.update_vault(self.hosts, self.host_vars, self.group_vars)
 
         with open(self.path / 'hosts.yml', 'w') as inventory_file_stream:
             yaml.dump(self.hosts, inventory_file_stream)
