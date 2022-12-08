@@ -163,6 +163,7 @@ def update(ctx, scope):
         deployment.deployment_dir)
     files_to_commit += deployment.deployment_dir.deployment_repo.changes['new']
     commit_message = "deployment update with scope: {}".format(scope)
+    click.echo(f"New files: {deployment.deployment_dir.deployment_repo.changes['new']}")
     deployment.deployment_dir.deployment_repo.update(files=files_to_commit,
                                                      message=commit_message)
 
