@@ -21,7 +21,7 @@ from ansible_deployment.config import load_config_file
 def unlock_deployment(deployment):
     was_locked = False
     if deployment.deployment_dir.vault.locked:
-        deployment.deployment_dir.unlock()
+        deployment.deployment_dir.vault.unlock()
         was_locked = True
     unlocked_deployment = Deployment(deployment.deployment_dir.path, deployment.config)
     try:
@@ -30,7 +30,7 @@ def unlock_deployment(deployment):
         if was_locked:
             unlocked_deployment.deployment_dir.vault.lock()
             unlocked_deployment.deployment_dir.delete(keep_git=True)
-            unlocked_deployment_dir.vault.setup_shadow_repo()
+            unlocked_deployment.deployment_dir.vault.setup_shadow_repo()
 
 class Deployment(AnsibleDeployment):
     """
@@ -85,8 +85,6 @@ class Deployment(AnsibleDeployment):
             self.playbook = Playbook(
                 self.deployment_dir.path / "playbook.yml", "all", self.roles
             )
-
-        return self
 
 
     def _create_role_objects(self, role_names):
