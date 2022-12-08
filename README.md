@@ -1,6 +1,6 @@
 # ansible-deployment
 
-## table of contens
+## table of contents
 - [ansible-deployment](#ansible-deployment)
   * [overview](#overview)
   * [inventory sources](#inventory-sources)
