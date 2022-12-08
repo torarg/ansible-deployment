@@ -112,7 +112,7 @@ def show(ctx, attribute):
         output = json.dumps(output, indent=DEFAULT_OUTPUT_JSON_INDENT,
                               cls=CustomJSONEncoder)
         output = highlight(output, lexers.JsonLexer(),
-                           formatters.Terminal256Formatter(style="github-dark"))
+                           formatters.Terminal256Formatter(style="default"))
         click.echo(output)
 
 
