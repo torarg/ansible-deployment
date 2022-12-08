@@ -12,11 +12,11 @@ import subprocess
 class Deployment(AnsibleDeployment):
     filtered_values = ['playbook', 'inventory']
 
-    def __init__(self, deployment_path, roles_src, roles, inventory_type):
+    def __init__(self, deployment_path, roles_src, roles, inventory_plugin):
         self.deployment_dir = DeploymentDirectory(deployment_path, roles_src)
         self.name = self.deployment_dir.path.name
         self.roles = self._create_role_objects(roles)
-        self.inventory = Inventory(inventory_type, 'hosts.yml', groups=roles)
+        self.inventory = Inventory(self.deployment_dir.path, inventory_plugin)
         self.playbook = Playbook(self.deployment_dir.path / 'playbook.yml',
                                  'all', self.roles)
 
@@ -31,7 +31,7 @@ class Deployment(AnsibleDeployment):
         role_names = (role.name for role in self.roles)
         self.deployment_dir.create(self.roles)
         self.roles = self._create_role_objects(role_names)
-        self.deployment_dir.update(self.roles)
+        self.deployment_dir.update(self.roles, self.playbook, self.inventory)
         self.playbook.write()
         self.inventory.write()
         self.deployment_dir.update_git(message="add deployment files")
@@ -44,7 +44,7 @@ class Deployment(AnsibleDeployment):
         deployment_state = {
             'name': self.name,
             'roles': role_names,
-            'inventory_type': self.inventory.inventory_type,
+            'inventory_plugin': self.inventory.plugin.name,
             'ansible_roles_src': self.deployment_dir.roles_src
         }
         with open(self.deployment_dir.state_file, 'w') as state_file_stream:
@@ -82,6 +82,6 @@ class Deployment(AnsibleDeployment):
             deployment = Deployment(deployment_path,
                                     deployment_state['ansible_roles_src'],
                                     deployment_state['roles'],
-                                    deployment_state['inventory_type'])
+                                    deployment_state['inventory_plugin'])
 
         return deployment
