@@ -25,14 +25,17 @@ class Terraform(InventoryPlugin):
 
     name = "terraform"
 
-    def __init__(self, groups, inventory_src="terraform.tfstate"):
+    def __init__(self, groups, statefile_name="terraform.tfstate"):
         InventoryPlugin.__init__(self, groups)
         self.name = "terraform"
-        self.inventory_src = inventory_src
+        self.inventory_src = statefile_name
         self.resource_functions = {
             "hcloud_server": self.parse_hcloud_servers,
         }
-        self.added_files.append(inventory_src)
+        terraform_files = list(Path().cwd().glob("**/*.tf"))
+        self.added_files.append(statefile_name)
+        self.added_files.append(statefile_name + ".backup")
+        self.added_files += terraform_files
 
     def _filter_instances(self, tfstate_data):
         """
