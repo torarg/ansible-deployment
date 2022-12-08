@@ -148,6 +148,24 @@ class Deployment(AnsibleDeployment):
         with open(self.deployment_dir.config_file, "w") as config_file_stream:
             json.dump(json_dump, config_file_stream, indent=4)
 
+    def run(self, tags=None):
+        """
+        Run deployment with ansible-playbook.
+
+        Args:
+            tags (sequence): an optional sequence of playbook tags.
+
+        Every deployment run triggers a new git commit in
+        `self.deployment_dir.repo` containing the executed command.
+        """
+        command = ["ansible-playbook", "playbook.yml"]
+        if tags:
+            command += ["--tags", ",".join(tags)]
+        self.deployment_dir.deployment_repo.update(
+            "Deployment run: {}".format(command), files=[], force_commit=True
+        )
+        subprocess.run(command, check=True)
+
 
     def update_inventory(self):
         """

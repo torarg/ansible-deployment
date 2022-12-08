@@ -91,6 +91,24 @@ def show(ctx, attribute):
 
 @cli.command()
 @click.pass_context
+@click.argument("role", required=False, nargs=-1)
+def run(ctx, role):
+    """
+    Run deployment with ansible-playbook.
+
+    This will create a commit in the deployment repository
+    containing the executed command.
+    """
+    deployment = ctx.obj["DEPLOYMENT"]
+    cli_helpers.check_environment(deployment)
+    try:
+        deployment.run(role)
+    except Exception as err:
+        raise click.ClickException(err)
+
+
+@cli.command()
+@click.pass_context
 @click.option(
     "--non-interactive", is_flag=True, help="Don't ask before deleting deployment."
 )
