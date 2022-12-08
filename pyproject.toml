@@ -5,7 +5,7 @@ description = "Manage ansible deployments"
 authors = ["Michael Wilson <mw@1wilson.org>"]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.9"
 Jinja2 = "^3.0.3"
 PyYAML = "^6.0"
 click = "^8.0.3"
