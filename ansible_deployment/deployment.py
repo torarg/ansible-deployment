@@ -39,6 +39,9 @@ class Deployment:
         for git_file in self.git_repo_content:
             self.repo.index.add(git_file)
 
+    def _git_commit(self, message):
+        self.repo.index.commit(message)
+
     def _create_role_objects(self):
         parsed_roles = []
         for role_name in self.role_names:
@@ -103,7 +106,7 @@ class Deployment:
         self._write_role_defaults_to_group_vars()
         self._write_ansible_cfg()
         self._git_add()
-        self.repo.index.commit('Initial commit.')
+        self._git_commit('Initial commit.')
 
     def save(self):
         deployment_state = {
