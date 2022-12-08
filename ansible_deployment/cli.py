@@ -258,8 +258,10 @@ def update(ctx, scope, non_interactive):
 
 
 @cli.command()
+@click.option('--template-mode', is_flag=True,
+              help='Persisting without ssh and deployment keys.')
 @click.pass_context
-def persist(ctx):
+def persist(ctx, template_mode=False):
     """
     Run configured ``ìnventory_writers``.
     """
@@ -271,7 +273,7 @@ def persist(ctx):
         ]
         commit_message = f"Running inventory writers: {inventory_writers}"
         try:
-            deployment.inventory.run_writer_plugins()
+            deployment.inventory.run_writer_plugins(template_mode)
         except Exception as err:
             if ctx.obj["DEBUG"]:
                 raise

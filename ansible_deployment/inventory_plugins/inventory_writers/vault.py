@@ -15,19 +15,19 @@ class VaultWriter(InventoryPlugin):
     name = "vault"
     plugin_type = "writer"
 
-    def update_inventory(self, hosts, host_vars, group_vars, deployment_key):
+    def update_inventory(self, hosts, host_vars, group_vars, deployment_key,
+                         template_mode=False):
         self.ssh_keypair.private_key_path = Path(".ssh/id_rsa")
         self.ssh_keypair.public_key_path = Path(".ssh/id_rsa.pub")
         self.ssh_keypair.read()
 
         self.write_secret("hosts", hosts)
 
-        deployment_key = {"data": base64.encodebytes(deployment_key).decode("ascii")}
-        self.write_secret("deployment_key", deployment_key)
-
-        self.write_secret("ssh_private_key", self.ssh_keypair.private_key)
-        self.write_secret("ssh_public_key", self.ssh_keypair.public_key)
-        print(self.ssh_keypair.private_key)
+        if not template_mode:
+            deployment_key = {"data": base64.encodebytes(deployment_key).decode("ascii")}
+            self.write_secret("deployment_key", deployment_key)
+            self.write_secret("ssh_private_key", self.ssh_keypair.private_key)
+            self.write_secret("ssh_public_key", self.ssh_keypair.public_key)
 
         for group in group_vars:
             self.write_secret(f"group_vars/{group}", group_vars[group])
