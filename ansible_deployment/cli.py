@@ -78,6 +78,26 @@ def delete(ctx):
     if click.confirm('Delete deployment?'):
         deployment.deployment_dir.delete()
 
+@cli.command()
+def lock():
+    """
+    Encrypt all deployment files except the roles directory.
+    """
+    deployment = Deployment.load(deployment_config_path)
+    prompt = "Encrypt deployment with {}?".format(deployment.deployment_dir.vault.key_file)
+    if click.confirm(prompt):
+        deployment.deployment_dir.vault.lock()
+
+@cli.command()
+def unlock():
+    """
+    Decrypt all deployment files except the roles directory.
+    """
+    deployment = Deployment.load(deployment_config_path)
+    prompt = "Decrypt deployment with {}?".format(deployment.deployment_dir.vault.key_file)
+    if click.confirm(prompt):
+        deployment.deployment_dir.vault.unlock()
+
 
 @cli.command()
 @click.argument('host')
