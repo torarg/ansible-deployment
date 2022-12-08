@@ -5,7 +5,7 @@ This module contains the Inventory class.
 from pathlib import Path
 import yaml
 from ansible_deployment import AnsibleDeployment
-from ansible_deployment.inventory_plugins import Terraform
+from ansible_deployment.inventory_plugins import Terraform, Vault, InventoryPlugin
 
 
 class Inventory(AnsibleDeployment):
@@ -18,29 +18,42 @@ class Inventory(AnsibleDeployment):
 
     Attributes:
         plugins (dict): Available inventory plugins,
-        plugin (InventoryPlugin): Inventory plugin object.
         hosts (dict): Hosts dictionary representing hosts.yml
         host_vars (dict): Host variables.
         group_vars (dict): Group variables.
         vars (dict): Variable lookup table.
     """
-    plugins = {'terraform': Terraform}
+    plugins = {
+        'terraform': Terraform,
+        'vault': Vault
+    }
     filtered_attributes = ['vars']
 
     def __init__(self, inventory_path, config):
         self.path = Path(inventory_path)
-        self.plugin = self.plugins[config.inventory_plugin](config)
-        self.hosts = self.plugin.hosts
-        self.groups = self.plugin.groups
-        self.host_vars = self.plugin.host_vars
-        self.group_vars = self.plugin.group_vars
+        self.hosts = {}
+        self.groups = []
+        self.host_vars = {}
+        self.group_vars = {}
+        self.plugin = InventoryPlugin(config)
+        self.loaded_plugins = []
+        for plugin_name in config.inventory_plugin:
+            if plugin_name in self.plugins:
+                plugin = self.plugins[plugin_name](config)
+                self._update_plugin_inventory(plugin)
+                self.loaded_plugins.append(plugin)
+
+            
         self.vars = {
             'host_vars': self.host_vars,
             'group_vars': self.group_vars
         }
         self._load_vars('host_vars')
         self._load_vars('group_vars')
-        self.plugin.update_inventory()
+        for plugin in self.loaded_plugins:
+            plugin.update_inventory()
+            self._update_plugin_inventory(plugin)
+
         self.filtered_representation = {}
 
         for host in self.host_vars:
@@ -48,6 +61,18 @@ class Inventory(AnsibleDeployment):
             self.filtered_representation[host]['ansible_host'] = self.host_vars[host]['ansible_host']
             self.filtered_representation[host]['ansible_user'] = self.host_vars[host]['ansible_user']
             self.filtered_representation[host]['ansible_host'] = self.host_vars[host]['ansible_host']
+
+    def _update_plugin_inventory(self, plugin):
+        self.plugin.hosts = self.hosts | plugin.hosts
+        self.plugin.groups = self.groups + list(set(plugin.groups) - set(self.groups))
+        self.plugin.host_vars = self.host_vars | plugin.host_vars
+        for group in self.plugin.group_vars:
+            if group in plugin.group_vars:
+                self.plugin.group_vars[group] = self.group_vars[group] | plugin.group_vars[group]
+        self.hosts = self.plugin.hosts
+        self.groups = self.plugin.groups
+        self.host_vars = self.plugin.host_vars
+        self.group_vars = self.plugin.group_vars
 
     def _load_vars(self, vars_type):
         """
@@ -75,6 +100,15 @@ class Inventory(AnsibleDeployment):
             with open(self.path / 'host_vars' / host['name'],
                       'w') as hostvars_file_stream:
                 yaml.dump(host, hostvars_file_stream)
+
+        for group in self.group_vars:
+            with open(self.path / 'group_vars' / group,
+                      'w') as groupvars_file_stream:
+                yaml.dump(self.group_vars[group], groupvars_file_stream)
+
+        for plugin in self.loaded_plugins:
+            if isinstance(plugin, Vault):
+                plugin.update_vault(self.group_vars)
 
         with open(self.path / 'hosts.yml', 'w') as inventory_file_stream:
             yaml.dump(self.hosts, inventory_file_stream)
