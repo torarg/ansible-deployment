@@ -45,6 +45,7 @@ def cli(ctx, debug):
         click.echo(new_key_message)
     ctx.ensure_object(dict)
     ctx.obj["DEPLOYMENT"] = deployment
+    ctx.obj["DEBUG"] = debug
 
 
 @cli.command()
@@ -203,7 +204,13 @@ def update(ctx, scope, non_interactive):
 
     deployment = ctx.obj["DEPLOYMENT"]
     cli_helpers.check_environment(deployment)
-    deployment.deployment_dir.update(deployment, scope)
+    try:
+        deployment.deployment_dir.update(deployment, scope)
+    except Exception as err:
+        if ctx.obj["DEBUG"]:
+            raise
+        else:
+            raise click.ClickException(err)
     if non_interactive:
         files_to_commit = deployment.deployment_dir.deployment_repo.changes["all"]
     else:

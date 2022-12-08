@@ -94,6 +94,8 @@ class DeploymentRepo(AnsibleDeployment):
         """
         Pull changes from origin.
         """
+        self.repo.remotes.origin.fetch()
+        self.repo.git.checkout(self.remote_config.branch)
         self.repo.remotes.origin.pull()
 
     def clone(self):
