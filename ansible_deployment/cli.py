@@ -52,7 +52,7 @@ def delete():
     deployment = load_deployment()
     deployment.delete()
 
-@cli.command('SSH into a given host of deployment inventory.')
+@cli.command(help='SSH into a given host of deployment inventory.')
 @click.argument('host')
 def ssh(host):
     deployment = load_deployment()
