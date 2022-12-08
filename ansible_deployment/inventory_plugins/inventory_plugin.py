@@ -16,6 +16,7 @@ class InventoryPlugin:
         added_files (list): List of files added to deployment.
     """
     def __init__(self, config):
+        self.deployment_name = config.name
         self.all_hosts = {}
         self.deployment_group = {}
         self.groups = config.roles
