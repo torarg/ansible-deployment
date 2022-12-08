@@ -10,7 +10,7 @@ import subprocess
 
 
 class Deployment(AnsibleDeployment):
-    filtered_values = ['playbook', 'inventory', 'roles']
+    filtered_values = ['playbook', 'inventory']
     def __init__(self, deployment_path, roles_src, roles, inventory_type):
         self.deployment_dir = DeploymentDirectory(deployment_path, roles_src)
         self.name = self.deployment_dir.path.name
