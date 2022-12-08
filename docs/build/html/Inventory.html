@@ -1,0 +1,188 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ansible_deployment.Inventory &#8212; ansible_deployment 0.0.1 documentation</title>
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="ansible_deployment.inventory_plugins" href="inventory_plugins.html" />
+    <link rel="prev" title="ansible_deployment.Playbook" href="Playbook.html" />
+     
+    
+    <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head><body>
+    
+    
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="inventory_plugins.html" title="ansible_deployment.inventory_plugins"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Playbook.html" title="ansible_deployment.Playbook"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">ansible_deployment 0.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">ansible_deployment.Inventory</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="ansible-deployment-inventory">
+<h1>ansible_deployment.Inventory<a class="headerlink" href="#ansible-deployment-inventory" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="ansible_deployment.Inventory">
+<em class="property">class </em><code class="sig-prename descclassname">ansible_deployment.</code><code class="sig-name descname">Inventory</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inventory_path</span></em>, <em class="sig-param"><span class="n">inventory_plugin</span></em>, <em class="sig-param"><span class="n">ansible_user</span><span class="o">=</span><span class="default_value">'ansible'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansible_deployment.Inventory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents an ansible inventory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>inventory_path</strong> (<em>str</em>) – Path to inventory.</p></li>
+<li><p><strong>inventory_plugin</strong> (<em>str</em>) – Name of inventory plugin.</p></li>
+<li><p><strong>ansible_user</strong> (<em>str</em>) – Ansible user.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="ansible_deployment.Inventory.plugins">
+<code class="sig-name descname">plugins</code><a class="headerlink" href="#ansible_deployment.Inventory.plugins" title="Permalink to this definition">¶</a></dt>
+<dd><p>Available inventory plugins,</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ansible_deployment.Inventory.plugin">
+<code class="sig-name descname">plugin</code><a class="headerlink" href="#ansible_deployment.Inventory.plugin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inventory plugin object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>InventoryPlugin</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ansible_deployment.Inventory.hosts">
+<code class="sig-name descname">hosts</code><a class="headerlink" href="#ansible_deployment.Inventory.hosts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hosts dictionary representing hosts.yml</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ansible_deployment.Inventory.host_vars">
+<code class="sig-name descname">host_vars</code><a class="headerlink" href="#ansible_deployment.Inventory.host_vars" title="Permalink to this definition">¶</a></dt>
+<dd><p>Host variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ansible_deployment.Inventory.group_vars">
+<code class="sig-name descname">group_vars</code><a class="headerlink" href="#ansible_deployment.Inventory.group_vars" title="Permalink to this definition">¶</a></dt>
+<dd><p>Group variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ansible_deployment.Inventory.vars">
+<code class="sig-name descname">vars</code><a class="headerlink" href="#ansible_deployment.Inventory.vars" title="Permalink to this definition">¶</a></dt>
+<dd><p>Variable lookup table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ansible_deployment.Inventory.write">
+<code class="sig-name descname">write</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ansible_deployment.Inventory.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes inventory files to inventory_path.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="Playbook.html" title="previous chapter">ansible_deployment.Playbook</a></li>
+      <li>Next: <a href="inventory_plugins.html" title="next chapter">ansible_deployment.inventory_plugins</a></li>
+  </ul></li>
+</ul>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/Inventory.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+
+    
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Michael Wilson.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+    
+
+  </body>
+</html>
