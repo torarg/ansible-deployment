@@ -78,7 +78,6 @@ class InventoryPlugin:
         """
 
     def delete_added_files(self):
-        print("about to delete: ", self.added_files)
         for path_name in self.added_files:
             p = Path(path_name)
             if not p.exists():
@@ -86,5 +85,4 @@ class InventoryPlugin:
             if p.is_dir():
                 shutil.rmtree(p)
             else:
-                print("deleting ", p)
                 p.unlink()

@@ -68,10 +68,8 @@ class Inventory(AnsibleDeployment):
 
         self.update_added_files()
         if read_sources:
-            print("loading inventory plugins")
             self.run_reader_plugins()
         else:
-            print("loading just local inventory")
             self.local_inventory.update_inventory()
             self._update_plugin_inventory(self.local_inventory)
 
