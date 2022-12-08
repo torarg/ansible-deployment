@@ -90,9 +90,7 @@ class DeploymentDirectory(AnsibleDeployment):
         """
         roles = load_config_file(self.config_file).roles
         for role_name in roles:
-            print(f"copy role to {self.roles_path}")
             role = Role(self.roles_repo_path / role_name)
-            print(role)
             role.copy_to(self.roles_path)
 
     def _write_role_defaults_to_group_vars(self, roles):
@@ -175,10 +173,10 @@ class DeploymentDirectory(AnsibleDeployment):
         if scope in ("all", "roles"):
             self.roles_repo.pull()
             self._copy_roles_to_deployment()
+            self._write_role_defaults_to_group_vars(deployment.roles)
         if scope in ("all", "playbook"):
             deployment.playbook.write()
         if scope in ("all", "inventory"):
-            self._write_role_defaults_to_group_vars(deployment.roles)
             deployment.inventory.write()
         if scope in ("all", "ansible_cfg"):
             self._write_ansible_cfg()
