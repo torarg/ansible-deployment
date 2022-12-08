@@ -20,6 +20,15 @@ from ansible_deployment.exceptions import NotSupportedByPlugin
 
 @contextmanager
 def unlock_deployment(deployment, mode='w'):
+    """
+    Context manager function for unlocking deployment.
+
+    Args:
+        deployment (ansible_deployment.Deployment): Deployment object.
+        mode (str): Open mode (either 'r' or 'w').
+    Returns:
+        ansible_deployment.Deployment: unlocked Deployment object.
+    """
     was_locked = deployment.deployment_dir.vault.locked
     unlocked_deployment = deployment
     if was_locked:
@@ -41,6 +50,14 @@ def unlock_deployment(deployment, mode='w'):
 
 @contextmanager
 def lock_deployment(deployment):
+    """
+    Context manager function for locking deployment.
+
+    Args:
+        deployment (ansible_deployment.Deployment): Deployment object.
+    Returns:
+        ansible_deployment.Deployment: locked Deployment object.
+    """
     was_locked = deployment.deployment_dir.vault.locked
     if was_locked:
         locked_deployment = deployment
@@ -65,8 +82,10 @@ class Deployment(AnsibleDeployment):
     Args:
         path (str): Path to deployment directory.
         config (DeploymentConfig): Namedtuple containing deployment config.
+        read_sources (bool): Flag to control reading of inventory sources.
 
     Attributes:
+        name (str): Deployment name.
         deployment_dir (DeploymentDirectory): Deployment directory object.
         name (str): Deployment name.
         config (DeploymentConfig): Namedtuple containing deployment config.
@@ -164,6 +183,7 @@ class Deployment(AnsibleDeployment):
 
         Args:
             tags (sequence): an optional sequence of playbook tags.
+            limit (sequence): an optional sequence of playbook scope limits.
             extra_vars (sequence): an optional sequence of extra vars.
         """
         command = ["ansible-playbook", "playbook.yml"]
@@ -201,7 +221,7 @@ class Deployment(AnsibleDeployment):
 
     def fetch_key(self, inventory_source):
         """
-        Updates inventory.
+        Fetches key from given inventory source.
 
         Args:
             inventory_source (str): Name of inventory source to fetch key from.
