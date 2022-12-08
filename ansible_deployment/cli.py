@@ -7,10 +7,16 @@ from pprint import pformat
 import click
 import subprocess
 from ansible_deployment import Deployment, cli_helpers, unlock_deployment, lock_deployment
+from ansible_deployment.cli_autocomplete import (
+    RoleType,
+    HostType,
+    InventoryWriterType,
+    InventorySourceType
+)
+
 
 deployment_path = Path.cwd()
 deployment_config_path = Path.cwd() / "deployment.json"
-
 
 @click.group()
 @click.version_option()
@@ -99,12 +105,12 @@ def show(ctx, attribute):
 @cli.command()
 @click.pass_context
 @click.option(
-    "-l", "--limit", help="Limit playbook execution."
+    "-l", "--limit", help="Limit playbook execution.", type=HostType(deployment_config_path)
 )
 @click.option(
     "-e", "--extra-var", help="Set extra var for playbook execution.", multiple=True
 )
-@click.argument("role", required=False, nargs=-1)
+@click.argument("role", required=False, nargs=-1, type=RoleType(deployment_config_path))
 def run(ctx, role, limit, extra_var):
     """
     Run deployment with ansible-playbook.
@@ -124,7 +130,8 @@ def run(ctx, role, limit, extra_var):
     "-w", "--from-writer",
     help="""Only delete deployment from specified inventory writer.
             May be specified multiple times.""",
-    multiple=True
+    multiple=True,
+    type=InventoryWriterType(deployment_config_path)
 )
 @click.option(
     "--non-interactive", is_flag=True, help="Don't ask before deleting deployment."
@@ -208,7 +215,7 @@ def unlock(ctx, force):
 
 @cli.command()
 @click.pass_context
-@click.argument("host")
+@click.argument("host", type=HostType(deployment_config_path))
 def ssh(ctx, host):
     """
     Run 'ssh' command to connect to a inventory host.
@@ -281,7 +288,8 @@ def pull(ctx):
 @click.option(
     "-s", "--from-source", help="""Only query given inventory sources.
                                    May be specified multiple times.""",
-    multiple=True
+    multiple=True,
+    type=InventorySourceType(deployment_config_path)
 )
 def update(ctx, non_interactive, from_source):
     """
@@ -392,7 +400,7 @@ def update_known_hosts(ctx):
 
 @cli.command()
 @click.pass_context
-@click.argument("inventory_source")
+@click.argument("inventory_source", type=InventorySourceType(deployment_config_path))
 def fetch_key(ctx, inventory_source):
     """
     Fetch deployment key from given inventory source.
