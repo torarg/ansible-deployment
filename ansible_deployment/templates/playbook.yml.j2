@@ -6,13 +6,17 @@
 {% raw %}
   - name: wait for host to become reachable
     wait_for:
-      port: 22
+      port: '{{ ansible_ssh_port|default(22) }}'
       host: '{{ ansible_ssh_host }}'
       search_regex: OpenSSH
       timeout: 300
 
   - name: test ssh connection with {{ ansible_user }}
-    shell: 'ssh -oStrictHostkeyChecking=no -oBatchMode=yes {{ ansible_user }}@{{ ansible_ssh_host }} echo test'
+    shell: |
+      ssh -p{{ ansible_ssh_port|default(22) }} \
+        -oStrictHostkeyChecking=no \
+        -oBatchMode=yes \
+        {{ ansible_user }}@{{ ansible_ssh_host }} echo test
     register: connection_test
     ignore_errors: yes
 
