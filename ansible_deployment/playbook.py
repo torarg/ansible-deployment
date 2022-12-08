@@ -14,6 +14,9 @@ class Playbook:
         self.roles = roles
         self.playbook_data = self._generate_playbook_data()
 
+    def __repr__(self):
+        return 'Playbook({})'.format(self.name)
+
     def _generate_playbook_data(self):
         playbook_template = self.jinja2_env.get_template('playbook.yml.j2')
         return playbook_template.render(playbook=self)

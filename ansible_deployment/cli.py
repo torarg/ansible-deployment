@@ -1,5 +1,6 @@
 import click
 from pathlib import Path
+from pprint import pprint
 from ansible_deployment.deployment import Deployment
 from ansible_deployment.helpers import save_object, load_object
 
@@ -24,7 +25,7 @@ def init(roles, ansible_roles_dir):
 def show():
     deployment_state_path = Path.cwd() / '.deployment.state'
     deployment = load_object(deployment_state_path)
-    print(deployment.__dict__)
+    pprint(deployment.__dict__)
     
 
 def main():
