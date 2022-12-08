@@ -22,9 +22,11 @@ class DeploymentDirectory(AnsibleDeployment):
         self.roles_path = self.path / '.roles'
         self.state_file = self.path / 'deployment.json'
         self.repo = Repo.init(self.path)
-        self.roles_repo = None
         self.unstaged_changes = []
         self._update_unstaged_changes()
+        self.roles_repo = None
+        if (self.roles_path / '.git').exists():
+            self.roles_repo = Repo(self.roles_path)
 
     def _update_unstaged_changes(self):
         self.unstaged_changes = [
@@ -77,8 +79,7 @@ class DeploymentDirectory(AnsibleDeployment):
     def update(self, roles):
         if not self.roles_path.exists():
             return None
-        roles_repo = Repo(self.roles_path)
-        roles_repo.remotes.origin.pull()
+        self.roles_repo.remotes.origin.pull()
         self._reset_role_symlinks(roles)
         self._write_role_defaults_to_group_vars(roles)
         self._write_ansible_cfg()
