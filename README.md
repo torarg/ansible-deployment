@@ -1,27 +1,36 @@
 # ansible-deployment
 
-## table of contents
+## Table Of Contents
 - [ansible-deployment](#ansible-deployment)
-  * [overview](#overview)
-  * [inventory sources](#inventory-sources)
+  * [Overview](#overview)
+  * [Requirements](#requirements)
+  * [Quick Start](#quick-start)
+    + [Setup](#setup)
+    + [Configuration](#configuration)
+      - [Example 1: Locally managed terraform deployment](#example-1--locally-managed-terraform-deployment)
+      - [Example 2: Locally managed terraform deployment with local overwrite](#example-2--locally-managed-terraform-deployment-with-local-overwrite)
+  * [Inventory Sources](#inventory-sources)
     + [local](#local)
     + [terraform](#terraform)
     + [vault](#vault)
-  * [inventory writers](#inventory-writers)
+  * [Inventory Writers](#inventory-writers)
     + [vault](#vault-1)
-  * [setup](#setup)
-  * [configuration](#configuration)
-    + [examples](#examples)
-      - [stateful deployment with dynamic terraform inventory](#stateful-deployment-with-dynamic-terraform-inventory)
-      - [stateless vault inventory](#stateless-vault-inventory)
-  * [usage](#usage)
 
-
-## overview
+## Overview
 ansible-deployment is a cli application for managing ansible deployments.
 
-Deployments can either be stateless or stateful depending on the configured
-``inventory_sources`` and ``inventory_writers``.
+It will initialize a ready to use deployment directory from it's configuration
+file ``deployment.json```. 
+
+This file specifies which ansible roles the deployment will use in it's
+playbook and from which git repository to get them from.
+
+The configuration also specifies ``inventory_sources`` and ``ìnventory_writers``.
+
+Deployment inventories can be sourced by multiple ``ìnventory_sources`` and
+will be merged in the specified order and produce the final deployment inventory.
+
+``ìnventory_writers`` persist the deployment inventory.
 
 When initialized ansible-deployment will:
 - clone the configured roles repository into deployment directory
@@ -42,11 +51,76 @@ Each role will add an inventory group with the same name and will have
 a group called 'ansible-deployment' as their child and all parsed hosts
 will be added to this 'ansible-deployment' group.
 
-In addition to this role defaults based inventory creation one ore more 
-inventory sources may be specified to update the inventory.
+## Requirements
+- python >= 3.9
 
+## Quick Start
+### Setup
+ansible-deployment is shipped as a python package and can be installed via pip:
 
-## inventory sources
+```
+$ pip install .
+```
+
+### Configuration
+
+#### Example 1: Locally managed terraform deployment
+```
+$ cat deployment.json 
+{
+    "name": "locally managed terraform deployment",
+    "roles": [
+        "bootstrap",
+        "webserver",
+        "gitea"
+    ],
+    "roles_src": {
+        "repo": "git@github.com:torarg/ansible-roles.git",
+        "branch": "master"
+    },
+    "inventory_sources": [
+        "terraform"
+    ],
+    "inventory_writers": [
+    ]
+}
+```
+
+This configuration example will source it's inventory from a
+``terraform.tfstate`` file inside the deployment directory.
+Values supplied by the terraform ``ìnventory_source`` will alway overwrite
+the local deployment inventory. Inventory variables that are not supplied
+by terraform still can be locally managed.
+
+#### Example 2: Locally managed terraform deployment with local overwrite
+```
+$ cat deployment.json 
+{
+    "name": "locally managed terraform deployment with local overwrite",
+    "roles": [
+        "bootstrap",
+        "webserver",
+        "gitea"
+    ],
+    "roles_src": {
+        "repo": "git@github.com:torarg/ansible-roles.git",
+        "branch": "master"
+    },
+    "inventory_sources": [
+        "terraform",
+        "local"
+    ],
+    "inventory_writers": [
+    ]
+}
+```
+
+This configuration example will source it's inventory from a
+``terraform.tfstate`` file inside the deployment directory and then apply
+the local deployment inventory on top of it. This will allow the local
+deployment inventory to overwrite any terraform supplied inventory values.
+
+## Inventory Sources
 Inventory sources specify where from and in which order the deployment
 inventory is created.
 
@@ -100,7 +174,7 @@ Currently only kv is supported as secrets engine. It's path is expected to be
 in 'secret/' 
 
 
-## inventory writers
+## Inventory Writers
 Inventory writers persist the state of the deployment inventory and will be 
 executed when the ``persist`` subcommand is executed.
 
@@ -118,142 +192,3 @@ The current deployment inventory will be written in the vault path
 
 Currently only kv is supported as secrets engine. It's path is expected to be 
 in 'secret/' 
-
-
-## setup
-
-```
-pip install .
-```
-
-## configuration
-
-ansible-deployment requires a deployment.json configuration file
-to be present in the current working directory.
-
-### examples
-
-
-#### stateful deployment with dynamic terraform inventory
-This example sources it's inventory first from terraform and then applies
-locally commited changes on top of it. The resulting inventory is persisted
-in vault.
-
-```
-$ cd mydeployment/
-$ ls -l
--rw-r--r--  1 mw  staff   408  6 Sep 23:28 deployment.json
--rw-r--r--  1 mw  staff  3472  6 Sep 23:29 terraform.tfstate
-$ cat deployment.json
-{
-    "roles": [
-        "openbsd_install_from_rescue",
-        "bootstrap",
-        "wireguard",
-        "dns_server",
-        "webserver",
-        "mailserver",
-        "gitea",
-        "firewall",
-        "data_sync"
-    ],
-    "roles_src": {
-        "repo": "git@github.com:torarg/ansible-roles.git",
-        "branch": "master"
-    },
-    "inventory_sources": [
-        "terraform",
-        "local"
-    ],
-    "inventory_writers": [
-        "vault"
-    ]
-}
-$ ansible-deployment init
-$ ls -l
--rw-r--r--   1 mw  staff    58  7 Sep 00:27 ansible.cfg
--rw-r--r--   1 mw  staff   408  6 Sep 23:28 deployment.json
--r--------   1 mw  staff    44  7 Sep 00:27 deployment.key
-drwxr-xr-x  11 mw  staff   352  7 Sep 00:27 group_vars
-drwxr-xr-x   3 mw  staff    96  7 Sep 00:27 host_vars
--rw-r--r--   1 mw  staff   686  7 Sep 00:27 hosts.yml
--rw-r--r--   1 mw  staff  2544  7 Sep 00:27 playbook.yml
-drwxr-xr-x  22 mw  staff   704  7 Sep 00:27 roles
--rw-r--r--   1 mw  staff  3472  6 Sep 23:29 terraform.tfstate
-```
-
-#### stateless vault inventory
-This example sources it's inventory completely from vault.
-
-```
-$ cd mydeployment/
-$ ls -l
--rw-r--r--  1 mw  staff   408  6 Sep 23:28 deployment.json
--rw-r--r--  1 mw  staff  3472  6 Sep 23:29 terraform.tfstate
-$ cat deployment.json
-{
-    "roles": [
-        "openbsd_install_from_rescue",
-        "bootstrap",
-        "wireguard",
-        "dns_server",
-        "webserver",
-        "mailserver",
-        "gitea",
-        "firewall",
-        "data_sync"
-    ],
-    "roles_src": {
-        "repo": "git@github.com:torarg/ansible-roles.git",
-        "branch": "master"
-    },
-    "inventory_sources": [
-        "vault"
-    ],
-    "inventory_writers": [
-    ]
-}
-$ ansible-deployment init
-$ ls -l
--rw-r--r--   1 mw  staff    58  7 Sep 00:27 ansible.cfg
--rw-r--r--   1 mw  staff   408  6 Sep 23:28 deployment.json
--r--------   1 mw  staff    44  7 Sep 00:27 deployment.key
-drwxr-xr-x  11 mw  staff   352  7 Sep 00:27 group_vars
-drwxr-xr-x   3 mw  staff    96  7 Sep 00:27 host_vars
--rw-r--r--   1 mw  staff   686  7 Sep 00:27 hosts.yml
--rw-r--r--   1 mw  staff  2544  7 Sep 00:27 playbook.yml
-drwxr-xr-x  22 mw  staff   704  7 Sep 00:27 roles
--rw-r--r--   1 mw  staff  3472  6 Sep 23:29 terraform.tfstate
-```
-
-## usage
-```
-Usage: ansible-deployment [OPTIONS] COMMAND [ARGS]...
-
-  All available commands are listed below.
-
-  Each command has it's own help that can be shown by passing ``--help``:
-
-      ``ansible-deployment COMMAND --help``
-
-Options:
-  --version  Show the version and exit.
-  --debug    Enable debug output.
-  --help     Show this message and exit.
-
-Commands:
-  delete   Delete deployment.
-  init     Initialize deployment directory.
-  lock     Encrypt all deployment files except the roles directory.
-  persist  Run configured ``ìnventory_writers``.
-  run      Run deployment with ansible-playbook.
-  show     Show deployment information.
-  ssh      Run 'ssh' command to connect to a inventory host.
-  unlock   Decrypt all deployment files except the roles directory.
-  update   Updates all deployment files and directories.
-```
-
-
-For further information: https://www.1wilson.org/restricted/docs/cli.html#ansible-deployment
-
-
