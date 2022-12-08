@@ -1,6 +1,7 @@
 """
 Inventory class skeleton.
 """
+from pathlib import Path
 from ansible_deployment import SSHKeypair
 
 
@@ -75,3 +76,15 @@ class InventoryPlugin:
             upadate `self.added_files` with a list of plugin specific
             files to add to the deployment repository.
         """
+
+    def delete_added_files(self):
+        print("about to delete: ", self.added_files)
+        for path_name in self.added_files:
+            p = Path(path_name)
+            if not p.exists():
+                continue
+            if p.is_dir():
+                shutil.rmtree(p)
+            else:
+                print("deleting ", p)
+                p.unlink()
