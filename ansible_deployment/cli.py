@@ -81,19 +81,25 @@ def ssh(host):
 @cli.command(help='Update deployment roles.')
 def update():
     deployment = Deployment.load(deployment_state_path)
+    files_to_commit = []
     if not deployment:
         err_exit("Failed to load deployment.json")
+    if len(deployment.deployment_dir.unstaged_changes) > 0:
+        err_exit("Update aborted because of unstaged changes in git repository.")
     deployment.update()
-    click.echo(deployment.deployment_dir.repo.git.diff())
-    update_choice = click.prompt(
-        'Please select update strategy',
-        default='keep_unstaged',
-        type=click.Choice(['commit', 'keep_unstaged', 'discard'])
-    )
-    if update_choice == 'commit':
-        deployment.deployment_dir.update_git()
-    elif update_choice == 'discard':
-        deployment.deployment_dir.repo.git.reset('--hard')
+    for file_name in deployment.deployment_dir.unstaged_changes:
+        click.echo(deployment.deployment_dir.repo.git.diff(file_name))
+        update_choice = click.prompt(
+            'Please select update strategy',
+            default='keep_unstaged',
+            type=click.Choice(['apply', 'discard', 'keep_unstaged'])
+        )
+        if update_choice == 'apply':
+            files_to_commit.append(file_name)
+        elif update_choice == 'discard':
+            deployment.deployment_dir.repo.git.checkout(file_name)
+
+        deployment.deployment_dir.update_git(files=files_to_commit)
 
 
 def err_exit(error_message):
