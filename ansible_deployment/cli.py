@@ -19,8 +19,8 @@ def cli(ctx):
     if deployment.deployment_dir.vault.new_key:
         new_key_message = click.style('New key generated: {}'.format(
             deployment.deployment_dir.vault.key_file),
-                                      fg='red',
-                                      bold=True)
+            fg='red',
+            bold=True)
         click.echo(new_key_message)
     ctx.ensure_object(dict)
     ctx.obj['DEPLOYMENT'] = deployment
@@ -48,7 +48,7 @@ def init(ctx):
 @click.argument('attribute', required=False, nargs=-1)
 def show(ctx, attribute):
     """
-    Show deployment information. 
+    Show deployment information.
 
     Deployment information may be filtered by specifying attribute(s).
     """

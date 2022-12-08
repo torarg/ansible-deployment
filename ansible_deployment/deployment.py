@@ -143,7 +143,7 @@ class Deployment(AnsibleDeployment):
         Args:
             tags (sequence): an optional sequence of playbook tags.
 
-        Every deployment run triggers a new git commit in 
+        Every deployment run triggers a new git commit in
         `self.deployment_dir.repo` containing the executed command.
         """
         command = ['ansible-playbook', 'playbook.yml']
