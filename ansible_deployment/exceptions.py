@@ -24,4 +24,17 @@ class AttributeNotFound(Exception):
         self.attribute = attribute
         self.message = f"Deployment attrbute ({self.attribute}) doesn't exist."
         super().__init__(self.message)
-        
+
+
+class NotSupportedByPlugin(Exception):
+    """
+    Exception raised when an unsupported plugin operation is requested.
+
+    Attributes:
+        attribute (str): Attribute tried to lookup.
+        message (str): Exception message
+    """
+    def __init__(self, plugin_name):
+        self.plugin_name = plugin_name
+        self.message = f"Operation not supported by plugin ({self.plugin_name})."
+        super().__init__(self.message)

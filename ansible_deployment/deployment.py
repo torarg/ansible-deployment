@@ -15,6 +15,7 @@ from ansible_deployment import (
     DeploymentDirectory,
 )
 from ansible_deployment.config import load_config_file, DeploymentConfig
+from ansible_deployment.exceptions import NotSupportedByPlugin
 
 
 @contextmanager
@@ -216,6 +217,9 @@ class Deployment(AnsibleDeployment):
             self.deployment_dir.path, self.config, None,
             self.roles
         )
+        
+        if self.inventory.deployment_key is None:
+            raise NotSupportedByPlugin(inventory_source)
         self.deployment_dir.vault.key = self.inventory.deployment_key
         self.deployment_dir.vault._save_key()
 

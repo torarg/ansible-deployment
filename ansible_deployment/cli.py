@@ -417,7 +417,10 @@ def fetch_key(ctx, inventory_source):
     Fetch deployment key from given inventory source.
     """
     deployment = ctx.obj["DEPLOYMENT"]
-    deployment.fetch_key(inventory_source)
+    try:
+        deployment.fetch_key(inventory_source)
+    except Exception as err:
+        raise click.ClickException(err)
 
 def main():
     """
