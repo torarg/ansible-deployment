@@ -53,6 +53,7 @@ def lock_deployment(deployment):
     finally:
         if not was_locked:
             locked_deployment.deployment_dir.vault.unlock()
+            locked_deployment.deployment_dir.vault.delete()
 
 
 class Deployment(AnsibleDeployment):
