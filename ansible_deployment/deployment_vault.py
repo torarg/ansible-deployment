@@ -139,6 +139,7 @@ class DeploymentVault(AnsibleDeployment):
         """
         if not self.locked:
             self._encrypt_files(self.files)
+            self.locked = True
 
     def unlock(self):
         """
@@ -146,3 +147,4 @@ class DeploymentVault(AnsibleDeployment):
         """
         if self.locked:
             self._decrypt_files(self.files)
+            self.locked = False
