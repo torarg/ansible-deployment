@@ -112,6 +112,22 @@ def prompt_for_update_choices(deployment_dir):
     return files_to_commit
 
 def update_deployment(deployment, scope, non_interactive, sources_override):
+    """
+    Helper function for the cli `update` command.
+
+    Args:
+        deployment (Deployment): Deployment object.
+        scope (str): Update scope.
+        scope (str): Scope of update. May be:
+                    `all`
+                    `roles`
+                    `playbook`
+                    `inventory`
+                    `group_vars`
+                    `ansible_cfg`
+        non_interactive (bool): Whether or not to update will be interactive.
+        sources_override (sequence): Override inventory sources.
+    """
     check_environment(deployment)
     try:
         old_roles_repo_head = (

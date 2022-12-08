@@ -24,7 +24,7 @@ def unlock_deployment(deployment, mode='w'):
     Context manager function for unlocking deployment.
 
     Args:
-        deployment (ansible_deployment.Deployment): Deployment object.
+        deployment (Deployment): Deployment object.
         mode (str): Open mode (either 'r' or 'w').
     Returns:
         ansible_deployment.Deployment: unlocked Deployment object.
@@ -54,7 +54,7 @@ def lock_deployment(deployment):
     Context manager function for locking deployment.
 
     Args:
-        deployment (ansible_deployment.Deployment): Deployment object.
+        deployment (Deployment): Deployment object.
     Returns:
         ansible_deployment.Deployment: locked Deployment object.
     """
@@ -87,7 +87,6 @@ class Deployment(AnsibleDeployment):
     Attributes:
         name (str): Deployment name.
         deployment_dir (DeploymentDirectory): Deployment directory object.
-        name (str): Deployment name.
         config (DeploymentConfig): Namedtuple containing deployment config.
         roles (list): List of Role objects associated with deployment.
         inventory (Inventory): Inventory object.

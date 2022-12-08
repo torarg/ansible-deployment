@@ -1,5 +1,5 @@
 """
-ansible-deployment specific exceptions.
+This module contains custom Exception classes.
 """
 
 
