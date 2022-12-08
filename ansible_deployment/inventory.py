@@ -1,7 +1,7 @@
 from pathlib import Path
 from pprint import pformat
-from ansible_deployment.class_skeleton import AnsibleDeployment
-from ansible_deployment.inventory_plugins.terraform import Terraform
+from ansible_deployment import AnsibleDeployment
+from ansible_deployment.inventory_plugins import Terraform
 import json
 import yaml
 
