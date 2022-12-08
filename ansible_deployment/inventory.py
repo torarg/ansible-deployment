@@ -28,6 +28,11 @@ class Inventory(AnsibleDeployment):
         host_vars (dict): Host variables.
         group_vars (dict): Group variables.
         vars (dict): Variable lookup table.
+        plugin (InventoryPlugin): Merged plugin inventory.
+        local_inventory (Local): Local inventory.
+        config (DeploymentConfig): Deployment configuration.
+        loaded_writers (list): Loaded inventory writers.
+        loaded_sources (list): Loaded inventory sources.
     """
 
     inventory_sources = {"terraform": Terraform, "vault": VaultReader, "local": Local}
