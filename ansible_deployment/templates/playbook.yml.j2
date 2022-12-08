@@ -10,7 +10,7 @@
       wait_for:
         port: '{{ ansible_ssh_port|default(22) }}'
         host: '{{ ansible_ssh_host }}'
-        search_regex: OpenSSH
+        search_regex: OpenSSH|dropbear
         timeout: 300
 
     - name: test ssh connection with {{ ansible_user }}
@@ -37,6 +37,15 @@
   pre_tasks:
   - name: connection setup
     block:
+    - name: test if disk is locked
+      raw: "[[ -x /usr/bin/cryptroot-unlock ]]"
+      notify: unlock_disk
+      failed_when: false
+      ignore_errors: yes
+
+    - name: flush handlers if disk is locked
+      meta: flush_handlers
+
     - name: clear facts
       meta: clear_facts
 
