@@ -72,7 +72,9 @@ class Deployment:
         for role in self.roles:
             for defaults_file in role.defaults.values():
                 with open(group_vars_path, 'a') as group_vars_file:
+                    group_vars_file.write('# role: {}\n'.format(role.name))
                     yaml.dump(defaults_file['data'], group_vars_file)
+                    group_vars_file.write('\n')
 
     def _write_ansible_cfg(self):
         ansible_cfg_path = self.path / 'ansible.cfg'
