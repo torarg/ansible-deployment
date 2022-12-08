@@ -352,6 +352,15 @@ def reset(ctx):
     except Exception as err:
         raise click.ClickException(err)
 
+@cli.command()
+@click.pass_context
+@click.argument("inventory_source")
+def fetch_key(ctx, inventory_source):
+    """
+    Fetch deployment key from given inventory source.
+    """
+    deployment = ctx.obj["DEPLOYMENT"]
+    deployment.fetch_key(inventory_source)
 
 def main():
     """

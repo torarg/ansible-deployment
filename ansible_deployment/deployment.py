@@ -195,6 +195,27 @@ class Deployment(AnsibleDeployment):
             self.roles
         )
 
+    def fetch_key(self, inventory_source):
+        """
+        Updates inventory.
+
+        Args:
+            inventory_source (str): Name of inventory source to fetch key from.
+        """
+        self.config = DeploymentConfig(
+                        name=self.config.name,
+                        deployment_repo=self.config.deployment_repo,
+                        roles_repo=self.config.roles_repo,
+                        roles=self.config.roles,
+                        inventory_sources=(inventory_source,),
+                        inventory_writers=self.config.inventory_writers)
+        self.inventory = Inventory(
+            self.deployment_dir.path, self.config, None,
+            self.roles
+        )
+        self.deployment_dir.vault.key = self.inventory.deployment_key
+        self.deployment_dir.vault._save_key()
+
 
     def ssh(self, host):
         """
