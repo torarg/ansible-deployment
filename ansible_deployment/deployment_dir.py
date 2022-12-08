@@ -69,8 +69,10 @@ class DeploymentDirectory(AnsibleDeployment):
         git_repo_content += [deployment_key_file]
         self.deployment_repo = DeploymentRepo(self.path, files=git_repo_content, remote_config=deployment_repo_config)
 
-        self.vault_files = self.deployment_files + list(self.directory_layout)
-        self.vault_files.remove('.roles.git')
+        if self.deployment_repo.repo is not None:
+            self.vault_files = self.deployment_repo.current_content + ['.git']
+        else:
+            self.vault_files = []
         self.vault = DeploymentVault(self.vault_files, self.path, deployment_key)
 
         if not self.vault.locked and self.deployment_repo.repo:
@@ -152,20 +154,9 @@ class DeploymentDirectory(AnsibleDeployment):
         """
         if full_delete:
             self.vault.delete(delete_shadowgit=True)
-        for directory_name in self.directory_layout:
-            directory_path = self.path / directory_name
-            if directory_path.exists() and directory_path.name not in keep:
-                shutil.rmtree(directory_path)
 
-        for file_name in self.deployment_files:
-            file_path = self.path / file_name
-            if file_path.exists() and file_path.name not in keep:
-                file_path.unlink()
-
-        if self.roles_path.exists():
-            shutil.rmtree(self.roles_path)
-
-        for path_name in additional_paths:
+        files_to_delete = self.deployment_repo.current_content
+        for path_name in files_to_delete:
             p = Path(path_name)
             if not p.exists() or p.name in keep:
                 continue

@@ -8,6 +8,8 @@ from git import Repo
 from git.exc import GitCommandError
 from ansible_deployment.class_skeleton import AnsibleDeployment
 
+DEPLOYMENT_CORE_FILES = ('deployment.key', 'deployment.json')
+
 class RepoOriginError(Exception):
     pass
 
@@ -35,6 +37,7 @@ class DeploymentRepo(AnsibleDeployment):
         self.path = path
 
         self.content = files
+        self.current_content = []
         self.blobs = blobs
         self.changes = {"all": [], "staged": [], "unstaged": [], "new": []}
         self._git_path = self.path / ".git"
@@ -44,9 +47,26 @@ class DeploymentRepo(AnsibleDeployment):
             self.repo = Repo(self.path)
             self.update_remote_config(remote_config)
             self.update_changed_files()
+            self.current_content = self._get_current_content()
         else:
             self.repo = None
 
+    def _get_current_content(self, ignore_paths=DEPLOYMENT_CORE_FILES):
+        """
+        Get current repo content.
+
+        Args:
+            ignore_paths (sequence): Sequence of paths to ignore from content list.
+
+        Returns:
+            list: List of paths.
+        """
+        current_content = self.repo.git.ls_tree('--name-only', 'master').split('\n')
+        for path in ignore_paths:
+            if path in current_content:
+                current_content.remove(path)
+        return current_content
+        
     def update_remote_config(self, remote_config):
         """
         Update remote repo config.
