@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ansible-deployment"
-version = "1.0.0"
+version = "1.0.1"
 description = "Manage ansible deployments"
 authors = ["Michael Wilson <mw@1wilson.org>"]
 
@@ -22,3 +22,8 @@ ansible-deployment = "ansible_deployment.cli:cli"
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[project.urls]
+homepage = "https://torarg.github.io/ansible-deployment/index.html"
+documentation = "https://torarg.github.io/ansible-deployment/index.html"
+repository = "https://github.com/torarg/ansible-deployment"
