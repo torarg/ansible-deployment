@@ -30,9 +30,10 @@ def unlock_deployment(deployment, mode='w'):
         if was_locked:
             if mode == 'w':
                 unlocked_deployment.deployment_dir.vault.lock()
+                unlocked_deployment.deployment_dir.delete(keep_git=True)
             else:
                 unlocked_deployment.deployment_dir.vault.lock_file_path.touch()
-            unlocked_deployment.deployment_dir.delete(keep_git=True, file_whitelist=["deployment.tar.gz.enc"])
+                unlocked_deployment.deployment_dir.delete(keep_git=True, file_whitelist=["deployment.tar.gz.enc"])
             unlocked_deployment.deployment_dir.vault.setup_shadow_repo()
 
 @contextmanager
