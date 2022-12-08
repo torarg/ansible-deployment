@@ -15,6 +15,13 @@ deployment_config_path = Path.cwd() / "deployment.json"
 @click.version_option()
 @click.pass_context
 def cli(ctx):
+    """
+    All available commands are listed below.
+
+    Each command has it's own help that can be shown by passing '--help':
+
+        ansible-deployment COMMAND --help
+    """
     try:
         deployment = Deployment.load(deployment_config_path)
     except Exception as err:

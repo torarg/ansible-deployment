@@ -86,8 +86,7 @@ def prompt_for_update_choices(deployment_dir):
         list: List of file names with update strategy 'apply'.
     """
     files_to_commit = []
-    prompt_message = \
-        """
+    prompt_message = """
         The final deployment inventory will be commited to all configured
         inventory writers.
 
