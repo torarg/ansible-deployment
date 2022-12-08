@@ -187,10 +187,10 @@ class DeploymentDirectory(AnsibleDeployment):
         if scope in ("all", "roles"):
             self.roles_repo.pull()
             self._copy_roles_to_deployment()
-            self.write_role_defaults_to_group_vars(deployment.roles)
         if scope in ("all", "playbook"):
             deployment.playbook.write()
         if scope in ("all", "inventory"):
+            deployment.update_inventory()
             deployment.inventory.write()
         if scope in ("all", "ansible_cfg"):
             self._write_ansible_cfg()

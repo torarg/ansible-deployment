@@ -20,7 +20,7 @@ class InventoryPlugin:
     name = "skeleton"
     plugin_type = "reader"
 
-    def __init__(self, config):
+    def __init__(self, config, roles=None):
         self.deployment_name = config.name
         self.deployment_key = None
         self.all_hosts = {}
@@ -39,8 +39,21 @@ class InventoryPlugin:
                                   "ansible_ssh_private_key_file": "./.ssh/id_rsa",
                                   "ansible_ssh_public_key_file": "./.ssh/id_rsa.pub"}
         self._set_groups()
+        if roles is not None:
+            self._load_role_defaults(roles)
         self.added_files = []
         self.vars = {"host_vars": self.host_vars, "group_vars": self.group_vars}
+
+    def _load_role_defaults(self, roles):
+        """
+        Loads role defaults into inventory.
+
+        Args:
+            roles (list): List of role objects.
+        """
+        for role in roles:
+            for vars_file in role.defaults:
+                self.group_vars[role.name] = self.group_vars.get(role.name, {}) | role.defaults[vars_file]['data']
 
     def _set_groups(self):
         """

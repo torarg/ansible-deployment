@@ -136,6 +136,17 @@ class Deployment(AnsibleDeployment):
         )
         subprocess.run(command, check=True)
 
+
+    def update_inventory(self):
+        """
+        Updates inventory.
+        """
+        self.inventory = Inventory(
+            self.deployment_dir.path, self.config, self.deployment_dir.vault.key,
+            self.roles
+        )
+
+
     def ssh(self, host):
         """
         Run ssh to connect to a given deployment host as `ansible_user`.
