@@ -33,7 +33,7 @@ and needs to be installed manually:
 ### Install as python package
 ansible-deployment is shipped as a python package and can be installed via pip:
 
-```
+```sh
 pip install ansible-deployment
 ```
 
@@ -44,7 +44,7 @@ pip install ansible-deployment
 ansible-deployment needs at least a ``deployment.json`` file to initialize
 a deployment directory:
 
-```
+```sh
 mkdir -p ~/deployments/my_deployment
 cat <<EOF > deployment.json
 {
@@ -89,7 +89,7 @@ need to make sure those are ready to use.
 #### vault
 The vault inventory source is configured via the same environment variables as the
 vault cli client:
-```
+```sh
 export VAULT_ADDR=https://vault.1wilson.home:8200
 export VAULT_TOKEN=someToken
 ```
