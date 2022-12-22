@@ -180,18 +180,24 @@ class DeploymentRepo(AnsibleDeployment):
             self.repo.git.pull('-f', '--tags', 'origin', self.remote_config.reference)
             self._pull_blobs()
 
-    def push(self):
+    def push(self, force_push=False):
         """
         Push changes to origin.
         """
+        push_successful = False
         if 'origin' not in self.repo.remotes:
             raise RepoOriginError("Missing git remote origin")
         self.repo.remotes.origin.fetch()
         if self.remote_config is not None:
             self.repo.git.checkout(self.remote_config.reference)
         if not self.repo.head.is_detached:
-            self.repo.git.push('-f', '--set-upstream', 'origin', 'master')
-            if self.blobs:
+            if force_push:
+                self.repo.git.push('-f', '--set-upstream', 'origin', 'master')
+                push_successful = True
+            else:
+                self.repo.git.push('--set-upstream', 'origin', 'master')
+                push_successful = True
+            if self.blobs and push_successful:
                 self.repo.git.push("-f", "--tags")
 
     def clone(self):
