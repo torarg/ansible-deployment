@@ -193,28 +193,28 @@ on your shell. After following the steps listed below you will need to start
 a new shell session to use shell completion.
 ### Bash
 Save shell completion script somewhere:
-```
+```sh
 _ANSIBLE_DEPLOYMENT_COMPLETE=bash_source ansible-deployment > ~/.ansible-deployment-complete.bash
 ```
 
 Source shell completion script in your `.bashrc`:
-```
+```sh
 echo ". ~/.ansible-deployment-complete.bash" >> ~/.bashrc
 ```
 
 ### Zsh
 Save shell completion script somewhere:
-```
+```sh
 _ANSIBLE_DEPLOYMENT_COMPLETE=zsh_source ansible-deployment > ~/.ansible-deployment-complete.zsh
 ```
 
 Source shell completion script in your `.zshrc`:
-```
+```sh
 echo ". ~/.ansible-deployment-complete.zsh" >> ~/.zshrc
 ```
 
 ### Fish
 Save shell completion script:
-```
+```sh
 _ANSIBLE_DEPLOYMENT_COMPLETE=fish_source ansible-deployment > ~/.config/fish/completions/ansible-deployment-complete.fish
 ```
