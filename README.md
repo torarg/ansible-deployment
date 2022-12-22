@@ -34,7 +34,7 @@ and needs to be installed manually:
 ansible-deployment is shipped as a python package and can be installed via pip:
 
 ```
-$ pip install ansible-deployment
+pip install ansible-deployment
 ```
 
 ## Quick Start
@@ -45,8 +45,8 @@ ansible-deployment needs at least a ``deployment.json`` file to initialize
 a deployment directory:
 
 ```
-$ mkdir -p ~/deployments/my_deployment
-$ cat <<EOF > deployment.json
+mkdir -p ~/deployments/my_deployment
+cat <<EOF > deployment.json
 {
     "name": "my-deployment",
     "deployment_repo": {
@@ -90,8 +90,8 @@ need to make sure those are ready to use.
 The vault inventory source is configured via the same environment variables as the
 vault cli client:
 ```
-$ export VAULT_ADDR=https://vault.1wilson.home:8200
-$ export VAULT_TOKEN=someToken
+export VAULT_ADDR=https://vault.1wilson.home:8200
+export VAULT_TOKEN=someToken
 ```
 
 ### terraform
