@@ -34,7 +34,7 @@ and needs to be installed manually:
 ansible-deployment is shipped as a python package and can be installed via pip:
 
 ```
-$ pip install .
+$ pip install ansible-deployment
 ```
 
 ## Quick Start
