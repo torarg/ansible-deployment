@@ -254,12 +254,24 @@ def ssh(ctx, host):
 @cli.command()
 @click.option('--template-mode', is_flag=True,
               help='Run inventory writers without ssh and deployment keys.')
+@click.option('--force', is_flag=True,
+              help='Force push.')
 @click.pass_context
-def push(ctx, template_mode=False):
+def push(ctx, template_mode=False, force=False):
     """
     Run configured ìnventory_writers and push encrypted git repo.
     """
     deployment = ctx.obj["DEPLOYMENT"]
+    with lock_deployment(deployment) as locked_deployment:
+        try:
+            locked_deployment.deployment_dir.deployment_repo.push(force)
+        except Exception as err:
+            if ctx.obj["DEBUG"]:
+                raise
+            else:
+                raise click.ClickException(err)
+
+    deployment = Deployment(deployment.deployment_dir.path, deployment.config)
     with unlock_deployment(deployment, 'r') as unlocked_deployment:
         cli_helpers.check_environment(unlocked_deployment)
         if unlocked_deployment.inventory.loaded_writers:
@@ -271,15 +283,6 @@ def push(ctx, template_mode=False):
                 else:
                     raise click.ClickException(err)
 
-    deployment = Deployment(deployment.deployment_dir.path, deployment.config)
-    with lock_deployment(deployment) as locked_deployment:
-        try:
-            locked_deployment.deployment_dir.deployment_repo.push()
-        except Exception as err:
-            if ctx.obj["DEBUG"]:
-                raise
-            else:
-                raise click.ClickException(err)
 
 
 @cli.command()
