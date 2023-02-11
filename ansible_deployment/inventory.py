@@ -85,19 +85,20 @@ class Inventory(AnsibleDeployment):
         filtered_representation = {}
         for host in self.hosts["all"]["hosts"]:
             filtered_representation[host] = {}
-            if "ansible_host" in self.host_vars[host]:
+            host_has_hostvars = host in self.host_vars
+            if host_has_hostvars and "ansible_host" in self.host_vars[host]:
                 filtered_representation[host]["ansible_host"] = self.host_vars[
                     host
                 ]["ansible_host"]
             else:
                 filtered_representation[host]["ansible_host"] = host
-            if "ansible_user" in self.host_vars[host]:
+            if host_has_hostvars and "ansible_user" in self.host_vars[host]:
                 filtered_representation[host]["ansible_user"] = self.host_vars[
                     host
                 ]["ansible_user"]
             else:
                 filtered_representation[host]["ansible_user"] = self.group_vars["all"]["ansible_user"]
-            if "ansible_port" in self.host_vars[host]:
+            if host_has_hostvars and "ansible_port" in self.host_vars[host]:
                 filtered_representation[host]["ansible_port"] = self.host_vars[
                     host
                 ]["ansible_port"]
