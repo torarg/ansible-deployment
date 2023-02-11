@@ -433,7 +433,10 @@ def fetch_key(ctx, inventory_source):
     try:
         deployment.fetch_key(inventory_source)
     except Exception as err:
-        raise click.ClickException(err)
+        if ctx.obj['DEBUG']:
+            raise
+        else:
+            raise click.ClickException(err)
 
 def main():
     """
