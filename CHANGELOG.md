@@ -1,4 +1,7 @@
 # CHANGELOG
+## 1.0.4 (upcoming)
+- fix filtered represantion for hosts without host_vars
+- add support for debug flag for fetch-key command
 ## 1.0.3 (2022/12/22)
 - don't force push encrypted deployment
 ## 1.0.2 (2022/12/08)
