@@ -1,5 +1,3 @@
-# ansible-deployment
-
 ## Description
 ansible-deployment is a cli application for creating, managing and updating
 deployment repositories which are seperated from your actual role development repositories.

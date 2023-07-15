@@ -1,7 +1,5 @@
 """
-ansible-deployment is a cli application for managing
-ansible deployments coming with a set of classes
-representing the deployment.
+.. include:: ../README.md
 """
 from ansible_deployment.ssh import SSHKeypair
 from ansible_deployment.class_skeleton import AnsibleDeployment
